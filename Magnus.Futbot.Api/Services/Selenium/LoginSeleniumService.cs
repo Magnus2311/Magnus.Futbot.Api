@@ -8,15 +8,16 @@ namespace Magnus.Futbot.Api.Services.Selenium
     {
         public LoginResponseDTO Login(string username, string password)
         {
-
-            webDriver.Navigate().GoToUrl("https://www.ea.com/fifa/ultimate-team/web-app/");
+            var driverInstance = GetInstance(username);
+            var driver = driverInstance.Driver;
+            driverInstance.Driver.Navigate().GoToUrl("https://www.ea.com/fifa/ultimate-team/web-app/");
             Thread.Sleep(4000);
             IWebElement? element = null;
             do
             {
                 try
                 {
-                    element = webDriver.FindElement(By.CssSelector("#Login > div > div > button.btn-standard.call-to-action"));
+                    element = driver.FindElement(By.CssSelector("#Login > div > div > button.btn-standard.call-to-action"));
                 }
                 catch { }
             }
@@ -24,23 +25,23 @@ namespace Magnus.Futbot.Api.Services.Selenium
             element.Click();
             Thread.Sleep(2000);
 
-            IWebElement emailInput = webDriver.FindElement(By.CssSelector("#email"));
+            IWebElement emailInput = driver.FindElement(By.CssSelector("#email"));
             emailInput.SendKeys(username);
 
-            IWebElement passwordInput = webDriver.FindElement(By.CssSelector("#password"));
+            IWebElement passwordInput = driver.FindElement(By.CssSelector("#password"));
             passwordInput.SendKeys(password);
 
-            IWebElement rememberMeInput = webDriver.FindElement(By.CssSelector("#rememberMe"));
+            IWebElement rememberMeInput = driver.FindElement(By.CssSelector("#rememberMe"));
             if (!rememberMeInput.Selected) rememberMeInput.Click();
 
-            IWebElement signInButton = webDriver.FindElement(By.CssSelector("#logInBtn"));
+            IWebElement signInButton = driver.FindElement(By.CssSelector("#logInBtn"));
             signInButton.Click();
             Thread.Sleep(1500);
 
             IWebElement? wrongCredentials = null;
             try
             {
-                wrongCredentials = webDriver.FindElement(By.CssSelector("#online-general-error > p"));
+                wrongCredentials = driver.FindElement(By.CssSelector("#online-general-error > p"));
             }
             catch { }
 
@@ -49,19 +50,44 @@ namespace Magnus.Futbot.Api.Services.Selenium
             IWebElement? securityCodeRequired = null;
             try
             {
-                securityCodeRequired = webDriver.FindElement(By.CssSelector("#page_header"));
+                securityCodeRequired = driver.FindElement(By.CssSelector("#page_header"));
             }
             catch { }
 
             if (securityCodeRequired != null)
             {
-                IWebElement sendCodeBtn = webDriver.FindElement(By.CssSelector("#btnSendCode"));
+                IWebElement sendCodeBtn = driver.FindElement(By.CssSelector("#btnSendCode"));
                 sendCodeBtn.Click();
                 return new LoginResponseDTO(LoginStatusType.ConfirmationKeyRequired);
             }
 
 
             return new LoginResponseDTO(LoginStatusType.Successful);
+        }
+
+        public ConfirmationCodeResponseDTO SubmitCode(string username, string code)
+        {
+            var driver = GetInstance(username).Driver;
+
+            var codeInput = driver.FindElement(By.CssSelector("#twoFactorCode"));
+            if (codeInput != null)
+            {
+                codeInput.SendKeys(code);
+                Thread.Sleep(500);
+
+                var rememberDeviceCheck = driver.FindElement(By.CssSelector("#trustThisDevice"));
+                if (rememberDeviceCheck != null && !rememberDeviceCheck.Selected)
+                    rememberDeviceCheck.Click();
+
+                var signInBtn = driver.FindElement(By.CssSelector("#btnSubmit"));
+                signInBtn?.Click();
+                Thread.Sleep(1500);
+
+                var errMessage = driver.FindElement(By.CssSelector("#online-general-error > p"));
+                if (errMessage != null) return new ConfirmationCodeResponseDTO(ConfirmationCodeStatusType.WrongCode);
+            }
+
+            return new ConfirmationCodeResponseDTO(ConfirmationCodeStatusType.Successful);
         }
     }
 }

@@ -12,5 +12,6 @@ namespace Magnus.Futbot.Database.Models
         public ObjectId UserId { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime UpdatedDate { get; set; } = DateTime.Now;
+        public bool IsCodeConfirmed { get; set; }
     }
 }

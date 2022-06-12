@@ -8,4 +8,10 @@
 
         UnknownError = 999
     }
+
+    public enum ConfirmationCodeStatusType
+    {
+        Successful,
+        WrongCode,
+    }
 }

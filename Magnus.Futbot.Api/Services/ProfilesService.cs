@@ -40,5 +40,22 @@ namespace Magnus.Futbot.Api.Services
 
             return loginResponseDTO;
         }
+
+        public async Task<ConfirmationCodeResponseDTO> SubmitCode(SubmitCodeDTO submitCodeDTO)
+        {
+            var response = _loginSeleniumService.SubmitCode(submitCodeDTO.Email, submitCodeDTO.Code);
+            if (response.Status == ConfirmationCodeStatusType.Successful)
+            {
+                var profile = (await _profilesRepository.GetAll())
+                    .FirstOrDefault(p => p.Email.ToUpper() == submitCodeDTO.Email.ToUpper());
+                if (profile is not null)
+                {
+                    profile.IsCodeConfirmed = true;
+                    await _profilesRepository.Update(profile);
+                }
+            }
+
+            return response;
+        }
     }
 }

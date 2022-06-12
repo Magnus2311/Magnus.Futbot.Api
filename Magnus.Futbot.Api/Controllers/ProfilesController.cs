@@ -24,5 +24,9 @@ namespace Magnus.Futbot.Api.Controllers
         [HttpPost("add-profile")]
         public async Task<IActionResult> AddProfile(ProfileDTO profileDTO)
             => Ok(await _profilesService.Add(profileDTO));
+
+        [HttpPost("submit-code")]
+        public async Task<IActionResult> SubmitCode(SubmitCodeDTO submitCodeDTO)
+            => Ok(await _profilesService.SubmitCode(submitCodeDTO));
     }
 }

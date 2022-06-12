@@ -13,7 +13,7 @@ namespace Magnus.Futbot.Database
         {
             _configuration = configuration;
 
-            _client = new MongoClient($"mongodb+srv://{_configuration["DB:Futbot:Username"]}:{_configuration["DB:Futbot:Password"]}{_configuration["DB:Futbot:Cluster"]}.rdkdn.mongodb.net/{_configuration["DB:Futbot:Collection"]}?retryWrites=true&w=majority");
+            _client = new MongoClient($"mongodb+srv://{_configuration["DB:Futbot:Username"]}:{_configuration["DB:Futbot:Password"]}@{_configuration["DB:Futbot:Cluster"]}.rdkdn.mongodb.net/{_configuration["DB:Futbot:Collection"]}?retryWrites=true&w=majority");
 
             _db = _client.GetDatabase(_configuration["DB:Futbot:Collection"]);
         }
