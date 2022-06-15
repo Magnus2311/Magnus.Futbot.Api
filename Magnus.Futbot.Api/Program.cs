@@ -6,6 +6,7 @@ using Magnus.Futbot.Api.Services.Connections;
 using Magnus.Futbot.Api.Services.Selenium;
 using Magnus.Futbot.Common;
 using Magnus.Futbot.Database.Repositories;
+using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,8 @@ builder.Services
 
 builder.Services
     .AddHttpClient<SsoConnectionService>();
+
+builder.Services.AddSingleton<IUserIdProvider, UserProvider>();
 
 builder.Services.AddSignalR();
 
