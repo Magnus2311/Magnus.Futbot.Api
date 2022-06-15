@@ -45,7 +45,7 @@ namespace Magnus.Futbot.Api.Services.Selenium
             }
             catch { }
 
-            if (wrongCredentials != null) return new LoginResponseDTO(LoginStatusType.WrongCredentials);
+            if (wrongCredentials != null) return new LoginResponseDTO(LoginStatusType.WrongCredentials, new ProfileDTO() { Email = username, Password = password });
 
             IWebElement? securityCodeRequired = null;
             try
@@ -58,11 +58,11 @@ namespace Magnus.Futbot.Api.Services.Selenium
             {
                 IWebElement sendCodeBtn = driver.FindElement(By.CssSelector("#btnSendCode"));
                 sendCodeBtn.Click();
-                return new LoginResponseDTO(LoginStatusType.ConfirmationKeyRequired);
+                return new LoginResponseDTO(LoginStatusType.ConfirmationKeyRequired, new ProfileDTO() { Email = username, Password = password });
             }
 
 
-            return new LoginResponseDTO(LoginStatusType.Successful);
+            return new LoginResponseDTO(LoginStatusType.Successful, new ProfileDTO() { Email = username, Password = password });
         }
 
         public ConfirmationCodeResponseDTO SubmitCode(string username, string code)

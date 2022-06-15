@@ -1,5 +1,6 @@
 using AutoMapper;
 using Magnus.Futbot.Api.Helpers;
+using Magnus.Futbot.Api.Hubs;
 using Magnus.Futbot.Api.Services;
 using Magnus.Futbot.Api.Services.Connections;
 using Magnus.Futbot.Api.Services.Selenium;
@@ -19,7 +20,8 @@ builder.Services.AddSingleton(mapper);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services
+    .AddSwaggerGen();
 builder.Services
     .AddScoped<AppSettings>()
     .AddTransient<ProfilesService>()
@@ -28,6 +30,8 @@ builder.Services
 
 builder.Services
     .AddHttpClient<SsoConnectionService>();
+
+builder.Services.AddSignalR();
 
 builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
 {
@@ -39,12 +43,15 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-
 app.UseCors("corsapp");
 app.UseHttpsRedirection();
 
+app.UseRouting();
 app.UseAuthorization();
-
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<ProfilesHub>("/hubs/profiles");
+    endpoints.MapControllers();
+});
 
 app.Run();

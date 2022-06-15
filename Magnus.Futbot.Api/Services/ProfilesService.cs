@@ -35,7 +35,7 @@ namespace Magnus.Futbot.Api.Services
             }
             catch
             {
-                loginResponseDTO = new LoginResponseDTO(LoginStatusType.UnknownError);
+                loginResponseDTO = new LoginResponseDTO(LoginStatusType.UnknownError, profileDTO);
             }
 
             return loginResponseDTO;
