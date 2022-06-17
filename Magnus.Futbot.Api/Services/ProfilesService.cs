@@ -4,6 +4,7 @@ using Magnus.Futbot.Api.Models.DTOs;
 using Magnus.Futbot.Api.Services.Selenium;
 using Magnus.Futbot.Database.Models;
 using Magnus.Futbot.Database.Repositories;
+using MongoDB.Bson;
 
 namespace Magnus.Futbot.Api.Services
 {
@@ -21,12 +22,13 @@ namespace Magnus.Futbot.Api.Services
             _loginSeleniumService = loginSeleniumService;
         }
 
-        public async Task<IEnumerable<ProfileDTO>> GetAll()
-            => _mapper.Map<IEnumerable<ProfileDTO>>(await _profilesRepository.GetAll());
+        public async Task<IEnumerable<ProfileDTO>> GetAll(ObjectId userId)
+            => _mapper.Map<IEnumerable<ProfileDTO>>(await _profilesRepository.GetAll(userId));
 
         public async Task<LoginResponseDTO> Add(ProfileDTO profileDTO)
         {
-            await _profilesRepository.Add(_mapper.Map<ProfileDocument>(profileDTO));
+
+            var entity = await _profilesRepository.Add(_mapper.Map<ProfileDocument>(profileDTO));
 
             LoginResponseDTO? loginResponseDTO;
             try
@@ -35,7 +37,8 @@ namespace Magnus.Futbot.Api.Services
             }
             catch
             {
-                loginResponseDTO = new LoginResponseDTO(LoginStatusType.UnknownError);
+                loginResponseDTO = new LoginResponseDTO(ProfileStatusType.UnknownError, profileDTO);
+
             }
 
             return loginResponseDTO;
@@ -46,7 +49,7 @@ namespace Magnus.Futbot.Api.Services
             var response = _loginSeleniumService.SubmitCode(submitCodeDTO.Email, submitCodeDTO.Code);
             if (response.Status == ConfirmationCodeStatusType.Successful)
             {
-                var profile = (await _profilesRepository.GetAll())
+                var profile = (await _profilesRepository.GetAll(submitCodeDTO.UserId))
                     .FirstOrDefault(p => p.Email.ToUpper() == submitCodeDTO.Email.ToUpper());
                 if (profile is not null)
                 {

@@ -10,59 +10,51 @@ namespace Magnus.Futbot.Database.Repositories
         where TEntity : class, IEntity
     {
         protected readonly IMongoCollection<TEntity> _collection;
-        protected readonly AppSettings _appSettings;
 
-        public BaseRepository(IConfiguration configuration,
-            AppSettings appSettings) : base(configuration)
+        public BaseRepository(IConfiguration configuration) : base(configuration)
         {
             _collection = _db.GetCollection<TEntity>(typeof(TEntity).Name);
-            _appSettings = appSettings;
         }
 
-        public async Task Add(TEntity entity)
+        public async Task<TEntity> Add(TEntity entity)
         {
-            entity.UserId = _appSettings.UserId;
             entity.CreatedDate = DateTime.Now;
             await _collection.InsertOneAsync(entity);
+            return entity;
         }
 
         public async Task Delete(ObjectId id)
         {
             var entity = await (await _collection.FindAsync(e => e.Id == id)).FirstOrDefaultAsync();
-            if (entity.UserId == _appSettings.UserId)
-            {
-                entity.IsDeleted = true;
-                await _collection.ReplaceOneAsync(Builders<TEntity>.Filter.Eq(e => e.Id, entity.Id), entity);
-            }
+            entity.IsDeleted = true;
+            await _collection.ReplaceOneAsync(Builders<TEntity>.Filter.Eq(e => e.Id, entity.Id), entity);
+
         }
 
         public async Task<TEntity> Recover(ObjectId id)
         {
             var entity = await (await _collection.FindAsync(e => e.Id == id)).FirstOrDefaultAsync();
-            if (entity.UserId == _appSettings.UserId)
-            {
-                entity.IsDeleted = false;
-                await _collection.ReplaceOneAsync(Builders<TEntity>.Filter.Eq(e => e.Id, entity.Id), entity);
-            }
+            entity.IsDeleted = false;
+            await _collection.ReplaceOneAsync(Builders<TEntity>.Filter.Eq(e => e.Id, entity.Id), entity);
             return entity;
         }
 
-        public async Task<TEntity> Get(ObjectId id)
-            => await (await _collection.FindAsync(e => e.Id == id && e.UserId == _appSettings.UserId)).FirstOrDefaultAsync();
+        public async Task<TEntity> Get(ObjectId id, ObjectId userId)
+            => await (await _collection.FindAsync(e => e.Id == id && e.UserId == userId)).FirstOrDefaultAsync();
 
-        public async Task<IEnumerable<TEntity>> GetActive()
-            => await (await _collection.FindAsync(e => !e.IsDeleted && e.UserId == _appSettings.UserId)).ToListAsync();
+        public async Task<IEnumerable<TEntity>> GetActive(ObjectId userId)
+            => await (await _collection.FindAsync(e => !e.IsDeleted && e.UserId == userId)).ToListAsync();
 
-        public async Task<IEnumerable<TEntity>> GetDeleted()
-            => await (await _collection.FindAsync(e => e.IsDeleted && e.UserId == _appSettings.UserId)).ToListAsync();
+        public async Task<IEnumerable<TEntity>> GetDeleted(ObjectId userId)
+            => await (await _collection.FindAsync(e => e.IsDeleted && e.UserId == userId)).ToListAsync();
 
-        public async Task<IEnumerable<TEntity>> GetAll()
-            => await (await _collection.FindAsync(e => e.UserId == _appSettings.UserId)).ToListAsync();
+        public async Task<IEnumerable<TEntity>> GetAll(ObjectId userId)
+            => await (await _collection.FindAsync(e => e.UserId == userId)).ToListAsync();
 
         public async Task Update(TEntity entity)
         {
             var oldEntity = await (await _collection.FindAsync(e => e.Id == entity.Id)).FirstOrDefaultAsync();
-            if (oldEntity.UserId == _appSettings.UserId)
+            if (oldEntity.UserId == entity.UserId)
             {
                 entity.UpdatedDate = DateTime.Now;
 

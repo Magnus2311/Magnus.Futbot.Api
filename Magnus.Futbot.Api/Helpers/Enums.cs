@@ -1,10 +1,11 @@
 ﻿namespace Magnus.Futbot.Api.Helpers
 {
-    public enum LoginStatusType
+    public enum ProfileStatusType
     {
-        Successful,
+        Logged,
         WrongCredentials,
         ConfirmationKeyRequired,
+        CaptchaNeeded,
 
         UnknownError = 999
     }
