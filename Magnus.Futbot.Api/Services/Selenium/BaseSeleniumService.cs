@@ -12,7 +12,7 @@ namespace Magnus.Futbot.Api.Services.Selenium
         {
             var chromeOptions = new ChromeOptions();
             chromeOptions.AddArguments("--disable-backgrounding-occluded-windows");
-            chromeOptions.AddArgument(@$"user-data-dir={Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Google\Chrome\User Data\{username.Split("@").FirstOrDefault()}7\Default");
+            chromeOptions.AddArgument(@$"user-data-dir={Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Google\Chrome\User Data\{username.Split("@").FirstOrDefault()}\Default");
 
             if (_chromeDrivers.ContainsKey(username))
             {
