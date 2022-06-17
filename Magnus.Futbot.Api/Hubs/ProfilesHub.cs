@@ -1,6 +1,5 @@
 using Magnus.Futbot.Api.Models.DTOs;
 using Magnus.Futbot.Api.Services;
-using Magnus.Futbot.Common;
 using Microsoft.AspNetCore.SignalR;
 using MongoDB.Bson;
 
@@ -10,8 +9,7 @@ namespace Magnus.Futbot.Api.Hubs
     {
         private readonly ProfilesService _profilesService;
 
-        public ProfilesHub(ProfilesService profilesService,
-            AppSettings appSettings)
+        public ProfilesHub(ProfilesService profilesService)
         {
             _profilesService = profilesService;
         }

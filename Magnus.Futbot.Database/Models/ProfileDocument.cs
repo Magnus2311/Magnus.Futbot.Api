@@ -1,4 +1,5 @@
-﻿using Magnus.Futbot.Database.Models.Interfaces;
+﻿using Magnus.Futbot.Common;
+using Magnus.Futbot.Database.Models.Interfaces;
 using MongoDB.Bson;
 
 namespace Magnus.Futbot.Database.Models
@@ -12,6 +13,6 @@ namespace Magnus.Futbot.Database.Models
         public ObjectId UserId { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime UpdatedDate { get; set; } = DateTime.Now;
-        public bool IsCodeConfirmed { get; set; }
+        public ProfileStatusType ProfilesStatus { get; set; }
     }
 }

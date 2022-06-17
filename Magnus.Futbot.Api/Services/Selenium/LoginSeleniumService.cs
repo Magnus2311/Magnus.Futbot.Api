@@ -1,5 +1,5 @@
-﻿using Magnus.Futbot.Api.Helpers;
-using Magnus.Futbot.Api.Models.DTOs;
+﻿using Magnus.Futbot.Api.Models.DTOs;
+using Magnus.Futbot.Common;
 using OpenQA.Selenium;
 
 namespace Magnus.Futbot.Api.Services.Selenium

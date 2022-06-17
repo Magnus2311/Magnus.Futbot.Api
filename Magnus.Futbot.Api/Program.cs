@@ -24,7 +24,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services
     .AddSwaggerGen();
 builder.Services
-    .AddScoped<AppSettings>()
     .AddTransient<ProfilesService>()
     .AddTransient<ProfilesRepository>()
     .AddScoped<LoginSeleniumService>();

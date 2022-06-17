@@ -1,4 +1,4 @@
-using Magnus.Futbot.Api.Helpers;
+using Magnus.Futbot.Common;
 
 namespace Magnus.Futbot.Api.Models.DTOs
 {

@@ -2,6 +2,7 @@
 using Magnus.Futbot.Api.Helpers;
 using Magnus.Futbot.Api.Models.DTOs;
 using Magnus.Futbot.Api.Services.Selenium;
+using Magnus.Futbot.Common;
 using Magnus.Futbot.Database.Models;
 using Magnus.Futbot.Database.Repositories;
 using MongoDB.Bson;
@@ -41,6 +42,9 @@ namespace Magnus.Futbot.Api.Services
 
             }
 
+            entity.ProfilesStatus = loginResponseDTO.LoginStatus;
+            await _profilesRepository.Update(entity);
+
             return loginResponseDTO;
         }
 
@@ -53,7 +57,7 @@ namespace Magnus.Futbot.Api.Services
                     .FirstOrDefault(p => p.Email.ToUpper() == submitCodeDTO.Email.ToUpper());
                 if (profile is not null)
                 {
-                    profile.IsCodeConfirmed = true;
+                    profile.ProfilesStatus = ProfileStatusType.Logged;
                     await _profilesRepository.Update(profile);
                 }
             }
