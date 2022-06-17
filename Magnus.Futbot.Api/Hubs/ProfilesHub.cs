@@ -1,3 +1,4 @@
+using Magnus.Futbot.Api.Hubs.Interfaces;
 using Magnus.Futbot.Api.Models.DTOs;
 using Magnus.Futbot.Api.Services;
 using Microsoft.AspNetCore.SignalR;
