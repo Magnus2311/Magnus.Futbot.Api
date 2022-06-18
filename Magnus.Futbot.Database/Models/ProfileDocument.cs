@@ -1,9 +1,11 @@
 ﻿using Magnus.Futbot.Common;
 using Magnus.Futbot.Database.Models.Interfaces;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Magnus.Futbot.Database.Models
 {
+    [BsonIgnoreExtraElements]
     public class ProfileDocument : IEntity
     {
         public ObjectId Id { get; set; }

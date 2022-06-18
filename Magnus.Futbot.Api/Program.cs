@@ -25,7 +25,8 @@ builder.Services
 builder.Services
     .AddTransient<ProfilesService>()
     .AddTransient<ProfilesRepository>()
-    .AddScoped<LoginSeleniumService>()
+    .AddTransient<InitProfileSeleniumService>()
+    .AddTransient<LoginSeleniumService>()
     .AddSingleton<Initializer>();
 
 builder.Services
@@ -57,6 +58,7 @@ app.UseEndpoints(endpoints =>
 });
 
 var initializer = app.Services.GetService<Initializer>()!;
+initializer.CloseAllChromeInstances();
 initializer.InitSeleniumProfiles();
 
 app.Run();

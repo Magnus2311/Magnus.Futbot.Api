@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Magnus.Futbot.Api.Helpers;
 using Magnus.Futbot.Api.Models.DTOs;
 using Magnus.Futbot.Api.Services.Selenium;
 using Magnus.Futbot.Common;
@@ -25,6 +24,9 @@ namespace Magnus.Futbot.Api.Services
 
         public async Task<IEnumerable<ProfileDTO>> GetAll(ObjectId userId)
             => _mapper.Map<IEnumerable<ProfileDTO>>(await _profilesRepository.GetAll(userId));
+
+        public async Task<IEnumerable<ProfileDTO>> GetAll()
+            => _mapper.Map<IEnumerable<ProfileDTO>>(await _profilesRepository.GetAll());
 
         public async Task<LoginResponseDTO> Add(ProfileDTO profileDTO)
         {

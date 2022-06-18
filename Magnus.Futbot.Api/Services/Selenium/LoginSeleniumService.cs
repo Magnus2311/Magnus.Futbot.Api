@@ -12,17 +12,17 @@ namespace Magnus.Futbot.Api.Services.Selenium
             var driver = driverInstance.Driver;
             driverInstance.Driver.Navigate().GoToUrl("https://www.ea.com/fifa/ultimate-team/web-app/");
             Thread.Sleep(4000);
-            IWebElement? element = null;
+            IWebElement? loginBtn = null;
             do
             {
                 try
                 {
-                    element = driver.FindElement(By.CssSelector("#Login > div > div > button.btn-standard.call-to-action"));
+                    loginBtn = driver.FindElement(By.CssSelector("#Login > div > div > button.btn-standard.call-to-action"));
                 }
                 catch { }
             }
-            while (!(element != null && element.Displayed && element.Enabled));
-            element.Click();
+            while (!(loginBtn != null && loginBtn.Displayed && loginBtn.Enabled));
+            loginBtn.Click();
             Thread.Sleep(2000);
 
             IWebElement emailInput = driver.FindElement(By.CssSelector("#email"));

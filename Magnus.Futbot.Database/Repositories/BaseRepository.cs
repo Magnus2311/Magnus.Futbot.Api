@@ -51,6 +51,9 @@ namespace Magnus.Futbot.Database.Repositories
         public async Task<IEnumerable<TEntity>> GetAll(ObjectId userId)
             => await (await _collection.FindAsync(e => e.UserId == userId)).ToListAsync();
 
+        public async Task<IEnumerable<TEntity>> GetAll()
+            => await (await _collection.FindAsync(FilterDefinition<TEntity>.Empty)).ToListAsync();
+
         public async Task Update(TEntity entity)
         {
             var oldEntity = await (await _collection.FindAsync(e => e.Id == entity.Id)).FirstOrDefaultAsync();
