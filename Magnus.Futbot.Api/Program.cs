@@ -4,7 +4,6 @@ using Magnus.Futbot.Api.Hubs;
 using Magnus.Futbot.Api.Services;
 using Magnus.Futbot.Api.Services.Connections;
 using Magnus.Futbot.Api.Services.Selenium;
-using Magnus.Futbot.Common;
 using Magnus.Futbot.Database.Repositories;
 using Microsoft.AspNetCore.SignalR;
 
@@ -26,7 +25,8 @@ builder.Services
 builder.Services
     .AddTransient<ProfilesService>()
     .AddTransient<ProfilesRepository>()
-    .AddScoped<LoginSeleniumService>();
+    .AddScoped<LoginSeleniumService>()
+    .AddSingleton<Initializer>();
 
 builder.Services
     .AddHttpClient<SsoConnectionService>();
@@ -55,5 +55,8 @@ app.UseEndpoints(endpoints =>
     endpoints.MapHub<ProfilesHub>("/hubs/profiles");
     endpoints.MapControllers();
 });
+
+var initializer = app.Services.GetService<Initializer>()!;
+initializer.InitSeleniumProfiles();
 
 app.Run();
