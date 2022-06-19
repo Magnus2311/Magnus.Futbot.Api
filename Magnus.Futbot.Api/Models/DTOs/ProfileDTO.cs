@@ -7,5 +7,8 @@ namespace Magnus.Futbot.Api.Models.DTOs
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public ObjectId UserId { get; set; }
+
+        public override int GetHashCode()
+            => HashCode.Combine(Email);
     }
 }

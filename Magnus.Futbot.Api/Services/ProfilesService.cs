@@ -66,5 +66,8 @@ namespace Magnus.Futbot.Api.Services
 
             return response;
         }
+
+        public async Task UpdateStatusByEmail(string email, ProfileStatusType profileStatus)
+            => (await _profilesRepository.GetByEmail(email)).ToList().ForEach(async (p) => await _profilesRepository.Update(p));
     }
 }

@@ -9,19 +9,26 @@ namespace Magnus.Futbot.Api.Services.Selenium
         public static IWebElement? FindElement(this ChromeDriver driver, By by, int milliseconds)
         {
             var wait = new WebDriverWait(driver, TimeSpan.FromMilliseconds(milliseconds));
-            var isElementActive = wait.Until(drv =>
+            try
             {
-                try
+                var isElementActive = wait.Until(drv =>
                 {
-                    var element = drv.FindElement(by);
-                    return element.Displayed && element.Enabled;
-                }
-                catch
-                {
-                    return false;
-                }
-            });
-            return isElementActive ? driver.FindElement(by) : null;
+                    try
+                    {
+                        var element = drv.FindElement(by);
+                        return element.Displayed && element.Enabled;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                });
+                return isElementActive ? driver.FindElement(by) : null;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public static IEnumerable<IWebElement> FindElements(this IWebDriver driver, By by, int milliseconds)

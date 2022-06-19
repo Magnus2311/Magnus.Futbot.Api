@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Magnus.Futbot.Api.Models.DTOs;
 using Magnus.Futbot.Api.Services;
 using Magnus.Futbot.Api.Services.Selenium;
 
@@ -38,12 +39,13 @@ namespace Magnus.Futbot.Api.Helpers
 
         public async void InitSeleniumProfiles()
         {
-            var profiles = await _profilesService.GetAll();
+            var profiles = new HashSet<ProfileDTO>(await _profilesService.GetAll());
             var tasks = new List<Task>();
-            foreach (var profile in profiles)
-                tasks.Add(Task.Run(() =>
+            foreach (var profileDTO in profiles)
+                tasks.Add(Task.Run(async () =>
                 {
-                    var response = _initProfileSeleniumService.InitProfile(profile);
+                    var response = _initProfileSeleniumService.InitProfile(profileDTO);
+                    await _profilesService.UpdateStatusByEmail(profileDTO.Email, response.PofileStatus);
                 }));
 
             await Task.WhenAll(tasks);

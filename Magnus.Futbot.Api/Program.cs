@@ -57,8 +57,6 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllers();
 });
 
-var initializer = app.Services.GetService<Initializer>()!;
-initializer.CloseAllChromeInstances();
-initializer.InitSeleniumProfiles();
+app.Services.GetService<Initializer>()!.Init();
 
 app.Run();
