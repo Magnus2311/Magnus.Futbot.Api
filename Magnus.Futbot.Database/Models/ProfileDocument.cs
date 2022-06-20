@@ -16,5 +16,11 @@ namespace Magnus.Futbot.Database.Models
         public bool IsDeleted { get; set; }
         public DateTime UpdatedDate { get; set; } = DateTime.Now;
         public ProfileStatusType ProfilesStatus { get; set; }
+        public int Coins { get; set; }
+        public int ActiveBidsCount { get; set; }
+        public int WonTargetsCount { get; set; }
+        public int TransferListCount { get; set; }
+        public int UnassignedCount { get; set; }
+        public int Outbidded { get; set; }
     }
 }
