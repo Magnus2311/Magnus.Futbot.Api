@@ -13,7 +13,7 @@ namespace Magnus.Futbot.Api.Services.Selenium
             _loginSeleniumService = loginSeleniumService;
         }
 
-        public InitProfileResponse InitProfile(ProfileDTO profile)
+        public InitProfileResponse InitProfile(AddProfileDTO profile)
         {
             var driverInstance = GetInstance(profile.Email);
             var driver = driverInstance.Driver;

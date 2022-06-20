@@ -5,13 +5,13 @@ namespace Magnus.Futbot.Api.Models.DTOs
     public class ConfirmationCodeResponseDTO
     {
         public ConfirmationCodeResponseDTO(ConfirmationCodeStatusType confirmationCodeStatusType,
-            string email)
+            ProfileDTO profile)
         {
             Status = confirmationCodeStatusType;
-            Email = email;
+            Profile = profile;
         }
 
         public ConfirmationCodeStatusType Status { get; }
-        public string Email { get; }
+        public ProfileDTO Profile { get; }
     }
 }

@@ -39,7 +39,7 @@ namespace Magnus.Futbot.Api.Helpers
 
         public async void InitSeleniumProfiles()
         {
-            var profiles = new HashSet<ProfileDTO>(await _profilesService.GetAll());
+            var profiles = new HashSet<AddProfileDTO>(await _profilesService.GetAll());
             var tasks = new List<Task>();
             foreach (var profileDTO in profiles)
                 tasks.Add(Task.Run(async () =>

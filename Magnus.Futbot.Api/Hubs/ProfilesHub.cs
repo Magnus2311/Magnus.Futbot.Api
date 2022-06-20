@@ -15,7 +15,7 @@ namespace Magnus.Futbot.Api.Hubs
             _profilesService = profilesService;
         }
 
-        public async Task AddProfile(ProfileDTO profileDTO)
+        public async Task AddProfile(AddProfileDTO profileDTO)
         {
             var userId = new ObjectId(Context.UserIdentifier ?? "");
             profileDTO.UserId = userId;

@@ -45,7 +45,7 @@ namespace Magnus.Futbot.Api.Services.Selenium
             }
             catch { }
 
-            if (wrongCredentials != null) return new LoginResponseDTO(ProfileStatusType.WrongCredentials, new ProfileDTO() { Email = username, Password = password });
+            if (wrongCredentials != null) return new LoginResponseDTO(ProfileStatusType.WrongCredentials, new ProfileDTO() { Email = username });
 
             IWebElement? securityCodeRequired = null;
             try
@@ -58,14 +58,14 @@ namespace Magnus.Futbot.Api.Services.Selenium
             {
                 IWebElement sendCodeBtn = driver.FindElement(By.CssSelector("#btnSendCode"));
                 sendCodeBtn.Click();
-                return new LoginResponseDTO(ProfileStatusType.ConfirmationKeyRequired, new ProfileDTO() { Email = username, Password = password });
+                return new LoginResponseDTO(ProfileStatusType.ConfirmationKeyRequired, new ProfileDTO() { Email = username });
             }
 
 
-            return new LoginResponseDTO(ProfileStatusType.Logged, new ProfileDTO() { Email = username, Password = password });
+            return new LoginResponseDTO(ProfileStatusType.Logged, new ProfileDTO() { Email = username });
         }
 
-        public ConfirmationCodeResponseDTO SubmitCode(string username, string code)
+        public ConfirmationCodeStatusType SubmitCode(string username, string code)
         {
             var driver = GetInstance(username).Driver;
 
@@ -86,12 +86,12 @@ namespace Magnus.Futbot.Api.Services.Selenium
                 try
                 {
                     var errMessage = driver.FindElement(By.CssSelector("#online-general-error > p"));
-                    if (errMessage != null) return new ConfirmationCodeResponseDTO(ConfirmationCodeStatusType.WrongCode, username);
+                    if (errMessage != null) return ConfirmationCodeStatusType.WrongCode;
                 }
                 catch { }
             }
 
-            return new ConfirmationCodeResponseDTO(ConfirmationCodeStatusType.Successful, username);
+            return ConfirmationCodeStatusType.Successful;
         }
     }
 }
