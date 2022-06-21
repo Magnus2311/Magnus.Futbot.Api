@@ -10,6 +10,12 @@ namespace Magnus.Futbot.Api.Helpers
         {
             CreateMap<ProfileDTO, ProfileDocument>();
             CreateMap<ProfileDocument, ProfileDTO>();
+
+            CreateMap<AddProfileDTO, ProfileDocument>();
+            CreateMap<ProfileDocument, AddProfileDTO>();
+
+            CreateMap<ProfileDTO, AddProfileDTO>();
+            CreateMap<AddProfileDTO, ProfileDTO>();
         }
     }
 }

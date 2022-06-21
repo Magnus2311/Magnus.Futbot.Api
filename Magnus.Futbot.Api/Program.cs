@@ -3,6 +3,7 @@ using Magnus.Futbot.Api.Helpers;
 using Magnus.Futbot.Api.Hubs;
 using Magnus.Futbot.Api.Services;
 using Magnus.Futbot.Api.Services.Connections;
+using Magnus.Futbot.Api.Services.Connections.SignalR;
 using Magnus.Futbot.Api.Services.Selenium;
 using Magnus.Futbot.Database.Repositories;
 using Microsoft.AspNetCore.SignalR;
@@ -27,6 +28,8 @@ builder.Services
     .AddTransient<ProfilesRepository>()
     .AddTransient<InitProfileSeleniumService>()
     .AddTransient<LoginSeleniumService>()
+    .AddTransient<DataSeleniumService>()
+    .AddTransient<ProfilesConnection>()
     .AddSingleton<Initializer>();
 
 builder.Services

@@ -6,7 +6,7 @@ namespace Magnus.Futbot.Api.Services.Selenium
 {
     public static class SeleniumExtensions
     {
-        public static IWebElement? FindElement(this ChromeDriver driver, By by, int milliseconds)
+        public static IWebElement? FindElement(this IWebDriver driver, By by, int milliseconds)
         {
             var wait = new WebDriverWait(driver, TimeSpan.FromMilliseconds(milliseconds));
             try
@@ -68,6 +68,12 @@ namespace Magnus.Futbot.Api.Services.Selenium
             Thread.Sleep(500);
             driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div.tile.col-1-2.ut-tile-transfer-list")).Click();
             Thread.Sleep(500);
+        }
+
+        public static void OpenHomePage(this IWebDriver driver)
+        {
+            var homeBtn = driver.FindElement(By.CssSelector("body > main > section > nav > button.ut-tab-bar-item.icon-home"), 10000);
+            homeBtn?.Click();
         }
     }
 }

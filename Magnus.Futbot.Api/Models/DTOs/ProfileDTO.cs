@@ -11,7 +11,7 @@ namespace Magnus.Futbot.Api.Models.DTOs
         public int ActiveBidsCount { get; set; }
         public int WonTargetsCount { get; set; }
         public int TransferListCount { get; set; }
-        public int UnAssignedCount { get; set; }
+        public int UnassignedCount { get; set; }
         public int Outbidded { get; set; }
         public ObjectId UserId { get; set; }
 

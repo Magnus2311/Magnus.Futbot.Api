@@ -69,6 +69,23 @@ namespace Magnus.Futbot.Api.Services
             return new ConfirmationCodeResponseDTO(statusType, _mapper.Map<ProfileDTO>(profile));
         }
 
+        public async Task Update(ProfileDTO profileDTO)
+        {
+            var profile = (await _profilesRepository.GetByEmail(profileDTO.Email))
+                .FirstOrDefault(p => p.UserId == profileDTO.UserId);
+
+            if (profile is null) return;
+
+            profile.Coins = profileDTO.Coins;
+            profile.ActiveBidsCount = profileDTO.ActiveBidsCount;
+            profile.WonTargetsCount = profileDTO.WonTargetsCount;
+            profile.TransferListCount = profileDTO.TransferListCount;
+            profile.UnassignedCount = profileDTO.UnassignedCount;
+            profile.Outbidded = profileDTO.Outbidded;
+
+            await _profilesRepository.Update(profile);
+        }
+
         public async Task UpdateStatusByEmail(string email, ProfileStatusType profileStatus)
             => (await _profilesRepository.GetByEmail(email)).ToList().ForEach(async (p) => await _profilesRepository.Update(p));
     }
