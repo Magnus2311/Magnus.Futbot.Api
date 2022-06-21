@@ -17,7 +17,7 @@ namespace Magnus.Futbot.Api.Services.Selenium
         {
             var driverInstance = GetInstance(profile.Email);
             var driver = driverInstance.Driver;
-            driverInstance.Driver.Navigate().GoToUrl("https://www.ea.com/fifa/ultimate-team/web-app/");
+            driver.Navigate().GoToUrl("https://www.ea.com/fifa/ultimate-team/web-app/");
 
             IWebElement? loginBtn = driver.FindElement(By.CssSelector("#Login > div > div > button.btn-standard.call-to-action"), 6000);
             loginBtn?.Click();

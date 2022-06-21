@@ -15,4 +15,19 @@ namespace Magnus.Futbot.Common
         Successful,
         WrongCode,
     }
+
+    public enum PromoType
+    {
+        Basic
+    }
+
+    public enum PositionType
+    {
+        Any
+    }
+
+    public enum ChemistryStyleType
+    {
+        Any
+    }
 }

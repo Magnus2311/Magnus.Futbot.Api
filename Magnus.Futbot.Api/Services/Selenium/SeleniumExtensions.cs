@@ -75,5 +75,13 @@ namespace Magnus.Futbot.Api.Services.Selenium
             var homeBtn = driver.FindElement(By.CssSelector("body > main > section > nav > button.ut-tab-bar-item.icon-home"), 10000);
             homeBtn?.Click();
         }
+
+        public static void OpenSearchTransfer(this IWebDriver driver)
+        {
+            driver.OpenTransfer();
+            var searchDiv = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div.tile.col-1-1.ut-tile-transfer-market"), 2000);
+            if (searchDiv is not null) searchDiv.Click();
+            Thread.Sleep(1000);
+        }
     }
 }
