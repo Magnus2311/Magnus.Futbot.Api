@@ -30,6 +30,7 @@ builder.Services
     .AddTransient<LoginSeleniumService>()
     .AddTransient<DataSeleniumService>()
     .AddTransient<ProfilesConnection>()
+    .AddTransient<BidSeleniumService>()
     .AddSingleton<Initializer>();
 
 builder.Services

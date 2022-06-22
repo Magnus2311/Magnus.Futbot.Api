@@ -1,9 +1,7 @@
-using Magnus.Futbot.Api.Hubs;
-using Magnus.Futbot.Api.Hubs.Interfaces;
 using Magnus.Futbot.Api.Models.DTOs;
 using Magnus.Futbot.Api.Models.DTOs.Selenium;
+using Magnus.Futbot.Api.Services.Connections.SignalR;
 using Magnus.Futbot.Common;
-using Microsoft.AspNetCore.SignalR;
 using OpenQA.Selenium;
 
 namespace Magnus.Futbot.Api.Services.Selenium
@@ -12,19 +10,19 @@ namespace Magnus.Futbot.Api.Services.Selenium
     {
         private int _wonPlayers;
 
-        private readonly IHubContext<ProfilesHub, IProfilesClient> _profilesContext;
+        private readonly ProfilesConnection _profilesConnection;
 
-        public BidSeleniumService(IHubContext<ProfilesHub, IProfilesClient> profilesContext)
+        public BidSeleniumService(ProfilesConnection profilesConnection)
         {
-            _profilesContext = profilesContext;
+            _profilesConnection = profilesConnection;
         }
 
-        public void BidPlayer(ProfileDTO profileDTO, BidPlayerDTO bidPlayerDTO)
+        public async Task BidPlayer(ProfileDTO profileDTO, BidPlayerDTO bidPlayerDTO)
         {
             var driver = GetInstance(profileDTO.Email).Driver;
 
             SearchPlayer(driver, bidPlayerDTO);
-            BidPlayers(driver, bidPlayerDTO, profileDTO);
+            await BidPlayers(driver, bidPlayerDTO, profileDTO);
         }
 
         private void SearchPlayer(IWebDriver driver, BidPlayerDTO bidPlayerDTO)
@@ -77,25 +75,27 @@ namespace Magnus.Futbot.Api.Services.Selenium
             resetBtn?.Click();
         }
 
-        private void BidPlayers(IWebDriver driver, BidPlayerDTO bidPlayerDTO, ProfileDTO profileDTO)
+        private async Task BidPlayers(IWebDriver driver, BidPlayerDTO bidPlayerDTO, ProfileDTO profileDTO)
         {
             var endDate = DateTime.Now.AddHours(1);
             do
             {
-                TryBidForPlayers(driver, bidPlayerDTO, profileDTO);
+                await TryBidForPlayers(driver, bidPlayerDTO, profileDTO);
             }
             while (_wonPlayers < bidPlayerDTO.MaxPlayers && endDate > DateTime.Now);
         }
 
-        private void TryBidForPlayers(IWebDriver driver, BidPlayerDTO bidPlayerDTO, ProfileDTO profileDTO)
+        private async Task TryBidForPlayers(IWebDriver driver, BidPlayerDTO bidPlayerDTO, ProfileDTO profileDTO)
         {
             try
             {
                 var nextBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > div > button.flat.pagination.next"));
+                var prevBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > div > button.flat.pagination.prev"));
                 var allPlayers = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > ul > li"), 1000);
                 if (allPlayers is null)
                 {
                     nextBtn?.Click();
+                    prevBtn?.Click();
                     Thread.Sleep(1000);
                     allPlayers = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > ul > li"), 1000);
                 }
@@ -103,15 +103,21 @@ namespace Magnus.Futbot.Api.Services.Selenium
                 if (allPlayers.All(p => p.GetAttribute("class").Contains("won") || p.GetAttribute("class").Contains("expired")))
                 {
                     var currentlyWon = allPlayers.Count(p => p.GetAttribute("class").Contains("won"));
-                    var outbidded = allPlayers.Count(p => p.GetAttribute("class").Contains("expired"));
                     _wonPlayers += currentlyWon;
                     profileDTO.WonTargetsCount += currentlyWon;
-                    nextBtn?.Click();
+                    await _profilesConnection.UpdateProfile(profileDTO);
+                    nextBtn?.Click(); //outbid
+                    prevBtn?.Click();
                     Thread.Sleep(1000);
                     allPlayers = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > ul > li"), 1000);
                 }
 
-                var activePlayers = allPlayers.Where(p => !p.GetAttribute("class").Contains("won") && !p.GetAttribute("class").Contains("expired"));
+
+                var outbidded = allPlayers.Count(p => p.GetAttribute("class").Contains("outbid"));
+                profileDTO.Outbidded += outbidded;
+                await _profilesConnection.UpdateProfile(profileDTO);
+
+                var activePlayers = allPlayers.Where(p => !p.GetAttribute("class").Contains("won") && !p.GetAttribute("class").Contains("expired") && !p.GetAttribute("class").Contains("highest-bid"));
                 foreach (var player in activePlayers)
                 {
                     var startSpan = player.FindElement(By.CssSelector("div > div.auction > div.auctionStartPrice.auctionValue > span.currency-coins.value"));
@@ -123,7 +129,8 @@ namespace Magnus.Futbot.Api.Services.Selenium
 
                     var bid = int.MaxValue;
                     int.TryParse(bidSpan.Text.Replace(",", ""), out bid);
-                    if (bidSpan.Text == "---" || bid < bidPlayerDTO.MaxPrice)
+                    var remainingTime = player.FindElement(By.CssSelector("div > div.auction > div.auction-state > span.time")).Text;
+                    if ((bidSpan.Text == "---" || bid < bidPlayerDTO.MaxPrice) && remainingTime.Contains("Seconds"))
                     {
                         player.Click();
 
@@ -138,6 +145,7 @@ namespace Magnus.Futbot.Api.Services.Selenium
                             var makeBidBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-navigation-container-view.ui-layout-right > div > div > div.DetailPanel > div.bidOptions > button.btn-standard.call-to-action.bidButton"));
                             makeBidBtn?.Click();
                             profileDTO.ActiveBidsCount += 1;
+                            await _profilesConnection.UpdateProfile(profileDTO);
                         }
                     }
                 }
