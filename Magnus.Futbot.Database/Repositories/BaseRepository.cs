@@ -1,5 +1,4 @@
-﻿using Magnus.Futbot.Common;
-using Magnus.Futbot.Database.Models.Interfaces;
+﻿using Magnus.Futbot.Database.Models.Interfaces;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;

@@ -3,6 +3,7 @@ using AutoMapper;
 using Magnus.Futbot.Api.Models.DTOs;
 using Magnus.Futbot.Api.Services;
 using Magnus.Futbot.Api.Services.Connections.SignalR;
+using Magnus.Futbot.Api.Services.Players;
 using Magnus.Futbot.Api.Services.Selenium;
 
 namespace Magnus.Futbot.Api.Helpers
@@ -15,13 +16,15 @@ namespace Magnus.Futbot.Api.Helpers
         private readonly DataSeleniumService _dataSeleniumService;
         private readonly IMapper _mapper;
         private readonly ProfilesConnection _profilesConnection;
+        private readonly InitPlayersService _initPlayersService;
 
         public Initializer(ProfilesService profilesService,
             LoginSeleniumService loginSeleniumService,
             InitProfileSeleniumService initProfileSeleniumService,
             DataSeleniumService dataSeleniumService,
             IMapper mapper,
-            ProfilesConnection profilesConnection)
+            ProfilesConnection profilesConnection,
+            InitPlayersService initPlayersService)
         {
             _profilesService = profilesService;
             _loginSeleniumService = loginSeleniumService;
@@ -29,10 +32,12 @@ namespace Magnus.Futbot.Api.Helpers
             _dataSeleniumService = dataSeleniumService;
             _mapper = mapper;
             _profilesConnection = profilesConnection;
+            _initPlayersService = initPlayersService;
         }
 
-        public void Init()
+        public async Task Init()
         {
+            await _initPlayersService.Init();
             //CloseAllChromeInstances();
             InitSeleniumProfiles();
         }
