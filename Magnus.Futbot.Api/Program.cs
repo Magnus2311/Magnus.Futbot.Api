@@ -1,9 +1,11 @@
 using AutoMapper;
+using Magnus.Futbot.Api.Caches;
 using Magnus.Futbot.Api.Helpers;
 using Magnus.Futbot.Api.Hubs;
 using Magnus.Futbot.Api.Services;
 using Magnus.Futbot.Api.Services.Connections;
 using Magnus.Futbot.Api.Services.Connections.SignalR;
+using Magnus.Futbot.Api.Services.Players;
 using Magnus.Futbot.Api.Services.Selenium;
 using Magnus.Futbot.Database.Repositories;
 using Microsoft.AspNetCore.SignalR;
@@ -24,17 +26,28 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services
     .AddSwaggerGen();
 builder.Services
+    .AddTransient<ProfilesConnection>()
+    .AddTransient<PlayersConnection>()
     .AddTransient<ProfilesService>()
-    .AddTransient<ProfilesRepository>()
+    .AddTransient<InitPlayersService>()
+    .AddSingleton<Initializer>()
+    .AddSingleton<PlayersCache>();
+
+builder.Services
     .AddTransient<InitProfileSeleniumService>()
     .AddTransient<LoginSeleniumService>()
     .AddTransient<DataSeleniumService>()
-    .AddTransient<ProfilesConnection>()
-    .AddTransient<BidSeleniumService>()
-    .AddSingleton<Initializer>();
+    .AddTransient<BidSeleniumService>();
+
+builder.Services
+    .AddTransient<ProfilesRepository>()
+    .AddTransient<PlayersRepository>();
 
 builder.Services
     .AddHttpClient<SsoConnectionService>();
+
+builder.Services
+    .AddHttpClient<EaConnectionService>();
 
 builder.Services.AddSingleton<IUserIdProvider, UserProvider>();
 
@@ -58,9 +71,9 @@ app.UseAuthorization();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapHub<ProfilesHub>("/hubs/profiles");
-    endpoints.MapControllers();
+    endpoints.MapHub<PlayersHub>("/hubs/players");
 });
 
-app.Services.GetService<Initializer>()!.Init();
+await app.Services.GetService<Initializer>()!.Init();
 
 app.Run();
