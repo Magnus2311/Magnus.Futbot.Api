@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Magnus.Futbot.Api.Hubs;
 using Magnus.Futbot.Api.Hubs.Interfaces;
 using Magnus.Futbot.Database.Models;
@@ -14,7 +15,7 @@ namespace Magnus.Futbot.Api.Services.Connections.SignalR
             _playersHub = playersHub;
         }
 
-        public async Task AddPlayer(PlayerDocument player)
-            => await _playersHub.Clients.All.OnPlayerAdded(player);
+        public async Task UpdatePlayers(IEnumerable<PlayerDocument> players)
+            => await _playersHub.Clients.All.OnPlayersLoaded(players);
     }
 }

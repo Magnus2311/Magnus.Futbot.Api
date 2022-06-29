@@ -31,9 +31,20 @@ namespace Magnus.Futbot.Api.Caches
             var enumerator = _playersRepository.Cursor.ToEnumerable().GetEnumerator();
             while (enumerator.MoveNext())
             {
-                var player = enumerator.Current.FullDocument;
-                Players.TryAdd(player.Id, player);
-                await _playersConnection.AddPlayer(player);
+                if (enumerator.Current.OperationType == ChangeStreamOperationType.Delete)
+                {
+                    enumerator.Current.DocumentKey.TryGetValue("_id", out var value);
+                    var id = value.ToInt32();
+                    var player = Players[id];
+                    Players.TryRemove(new KeyValuePair<int, PlayerDocument>(id, player));
+                    await _playersConnection.UpdatePlayers(Players.Select(p => p.Value));
+                }
+                else if (enumerator.Current.OperationType == ChangeStreamOperationType.Insert)
+                {
+                    var player = enumerator.Current.FullDocument;
+                    Players.TryAdd(player.Id, player);
+                    await _playersConnection.UpdatePlayers(Players.Select(p => p.Value));
+                }
             }
         }
     }
