@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
-using Magnus.Futbot.Api.Models.DTOs;
-using Magnus.Futbot.Api.Services.Selenium;
 using Magnus.Futbot.Common;
+using Magnus.Futbot.Common.Models.DTOs;
+using Magnus.Futbot.Common.Models.Responses;
+using Magnus.Futbot.Common.Models.Selenium.Profiles;
 using Magnus.Futbot.Database.Models;
 using Magnus.Futbot.Database.Repositories;
 using MongoDB.Bson;
@@ -12,14 +13,12 @@ namespace Magnus.Futbot.Api.Services
     {
         private readonly IMapper _mapper;
         private readonly ProfilesRepository _profilesRepository;
-        private readonly LoginSeleniumService _loginSeleniumService;
 
         public ProfilesService(ProfilesRepository profilesRepository,
-            IMapper mapper, LoginSeleniumService loginSeleniumService)
+            IMapper mapper)
         {
             _profilesRepository = profilesRepository;
             _mapper = mapper;
-            _loginSeleniumService = loginSeleniumService;
         }
 
         public async Task<IEnumerable<ProfileDTO>> GetAll(ObjectId userId)
@@ -30,63 +29,16 @@ namespace Magnus.Futbot.Api.Services
 
         public async Task<LoginResponseDTO> Add(AddProfileDTO profileDTO)
         {
+            await _profilesRepository.Add(_mapper.Map<ProfileDocument>(profileDTO));
 
-            var entity = await _profilesRepository.Add(_mapper.Map<ProfileDocument>(profileDTO));
-
-            LoginResponseDTO? loginResponseDTO;
-            try
-            {
-                loginResponseDTO = _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
-            }
-            catch
-            {
-                loginResponseDTO = new LoginResponseDTO(ProfileStatusType.UnknownError, new ProfileDTO() { Email = profileDTO.Email });
-
-            }
-
-            entity.ProfilesStatus = loginResponseDTO.LoginStatus;
-            await _profilesRepository.Update(entity);
-
-            return loginResponseDTO;
+            return new LoginResponseDTO(ProfileStatusType.WrongCredentials, _mapper.Map<ProfileDTO>(profileDTO));
         }
 
         public async Task<ConfirmationCodeResponseDTO> SubmitCode(SubmitCodeDTO submitCodeDTO)
         {
             var profile = new ProfileDocument();
-            var statusType = _loginSeleniumService.SubmitCode(submitCodeDTO.Email, submitCodeDTO.Code);
-            if (statusType == ConfirmationCodeStatusType.Successful)
-            {
-                profile = (await _profilesRepository.GetAll(submitCodeDTO.UserId))
-                    .FirstOrDefault(p => p.Email.ToUpper() == submitCodeDTO.Email.ToUpper());
-                if (profile is not null)
-                {
-                    profile.ProfilesStatus = ProfileStatusType.Logged;
-                    await _profilesRepository.Update(profile);
 
-                }
-            }
-
-            return new ConfirmationCodeResponseDTO(statusType, _mapper.Map<ProfileDTO>(profile));
+            return new ConfirmationCodeResponseDTO(ConfirmationCodeStatusType.WrongCode, _mapper.Map<ProfileDTO>(profile));
         }
-
-        public async Task Update(ProfileDTO profileDTO)
-        {
-            var profile = (await _profilesRepository.GetByEmail(profileDTO.Email))
-                .FirstOrDefault(p => p.UserId == profileDTO.UserId);
-
-            if (profile is null) return;
-
-            profile.Coins = profileDTO.Coins;
-            profile.ActiveBidsCount = profileDTO.ActiveBidsCount;
-            profile.WonTargetsCount = profileDTO.WonTargetsCount;
-            profile.TransferListCount = profileDTO.TransferListCount;
-            profile.UnassignedCount = profileDTO.UnassignedCount;
-            profile.Outbidded = profileDTO.Outbidded;
-
-            await _profilesRepository.Update(profile);
-        }
-
-        public async Task UpdateStatusByEmail(string email, ProfileStatusType profileStatus)
-            => (await _profilesRepository.GetByEmail(email)).ToList().ForEach(async (p) => await _profilesRepository.Update(p));
     }
 }

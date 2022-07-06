@@ -1,6 +1,6 @@
 using Magnus.Futbot.Api.Hubs.Interfaces;
-using Magnus.Futbot.Api.Models.DTOs;
 using Magnus.Futbot.Api.Services;
+using Magnus.Futbot.Common.Models.Selenium.Profiles;
 using Microsoft.AspNetCore.SignalR;
 using MongoDB.Bson;
 

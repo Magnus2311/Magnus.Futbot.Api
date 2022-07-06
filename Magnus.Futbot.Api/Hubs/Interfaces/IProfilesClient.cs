@@ -1,4 +1,5 @@
-using Magnus.Futbot.Api.Models.DTOs;
+using Magnus.Futbot.Common.Models.DTOs;
+using Magnus.Futbot.Common.Models.Responses;
 
 namespace Magnus.Futbot.Api.Hubs.Interfaces
 {

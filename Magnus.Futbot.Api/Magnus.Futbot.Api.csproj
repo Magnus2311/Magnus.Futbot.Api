@@ -9,15 +9,15 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="11.0.1" />
-    <PackageReference Include="Microsoft.Azure.SignalR" Version="1.18.0" />
-    <PackageReference Include="MongoDB.Bson" Version="2.16.0" />
-    <PackageReference Include="Selenium.WebDriver" Version="4.2.0" />
-    <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="102.0.5005.6102" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    <PackageReference Include="Magnus2311.Futbot.Common" Version="0.0.5" />
+    <PackageReference Include="Microsoft.Azure.SignalR" Version="1.18.1" />
+    <PackageReference Include="MongoDB.Bson" Version="2.16.1" />
+    <PackageReference Include="Selenium.WebDriver" Version="4.3.0" />
+    <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="103.0.5060.5300" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Magnus.Futbot.Common\Magnus.Futbot.Common.csproj" />
     <ProjectReference Include="..\Magnus.Futbot.Database\Magnus.Futbot.Database.csproj" />
   </ItemGroup>
 
