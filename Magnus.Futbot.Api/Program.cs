@@ -2,6 +2,7 @@ using AutoMapper;
 using Magnus.Futbot.Api.Caches;
 using Magnus.Futbot.Api.Helpers;
 using Magnus.Futbot.Api.Hubs;
+using Magnus.Futbot.Api.Kafka.Producers;
 using Magnus.Futbot.Api.Services;
 using Magnus.Futbot.Api.Services.Connections;
 using Magnus.Futbot.Api.Services.Connections.SignalR;
@@ -31,6 +32,9 @@ builder.Services
 builder.Services
     .AddTransient<ProfilesRepository>()
     .AddTransient<PlayersRepository>();
+
+builder.Services
+    .AddSingleton<ProfileProducer>();
 
 builder.Services
     .AddHttpClient<SsoConnectionService>();

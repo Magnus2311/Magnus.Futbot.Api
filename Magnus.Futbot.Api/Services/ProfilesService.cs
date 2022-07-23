@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Magnus.Futbot.Api.Kafka.Producers;
 using Magnus.Futbot.Common;
 using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.Responses;
@@ -13,11 +14,14 @@ namespace Magnus.Futbot.Api.Services
     {
         private readonly IMapper _mapper;
         private readonly ProfilesRepository _profilesRepository;
+        private readonly ProfileProducer _profileProducer;
 
         public ProfilesService(ProfilesRepository profilesRepository,
+            ProfileProducer profileProducer,
             IMapper mapper)
         {
             _profilesRepository = profilesRepository;
+            _profileProducer = profileProducer;
             _mapper = mapper;
         }
 
@@ -29,7 +33,7 @@ namespace Magnus.Futbot.Api.Services
 
         public async Task<LoginResponseDTO> Add(AddProfileDTO profileDTO)
         {
-            await _profilesRepository.Add(_mapper.Map<ProfileDocument>(profileDTO));
+            await _profileProducer.Produce(profileDTO);
 
             return new LoginResponseDTO(ProfileStatusType.WrongCredentials, _mapper.Map<ProfileDTO>(profileDTO));
         }
