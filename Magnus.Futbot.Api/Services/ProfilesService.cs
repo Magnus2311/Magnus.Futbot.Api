@@ -3,6 +3,7 @@ using Confluent.Kafka;
 using Magnus.Futbot.Api.Hubs;
 using Magnus.Futbot.Api.Hubs.Interfaces;
 using Magnus.Futbot.Api.Kafka.Consumers;
+using Magnus.Futbot.Api.Kafka.Fetchers;
 using Magnus.Futbot.Api.Kafka.Producers;
 using Magnus.Futbot.Common;
 using Magnus.Futbot.Common.Models.DTOs;
@@ -17,40 +18,25 @@ namespace Magnus.Futbot.Api.Services
     {
         private readonly IMapper _mapper;
         private readonly ProfileProducer _profileProducer;
+        private readonly ProfilesFetcher _profilesFetcher;
         private readonly IHubContext<ProfilesHub, IProfilesClient> _profilesHub;
         private readonly IConfiguration _configuration;
 
         public ProfilesService(ProfileProducer profileProducer,
+            ProfilesFetcher profilesFetcher,
             IHubContext<ProfilesHub, IProfilesClient> profilesHub,
             IConfiguration configuration,
             IMapper mapper)
         {
             _profileProducer = profileProducer;
+            _profilesFetcher = profilesFetcher;
             _profilesHub = profilesHub;
             _configuration = configuration;
             _mapper = mapper;
         }
 
         public IEnumerable<ProfileDTO> GetAll(string userId)
-        {
-            var profilesConsumer = new UserProfilesConsumer(_configuration, userId);
-            var profiles = new Dictionary<string, ProfileDTO>();
-
-            profilesConsumer.Subscribe();
-
-            while (true)
-            {
-                var message = profilesConsumer.Consumer.Consume(TimeSpan.FromMilliseconds(150));
-                if (message is null) break;
-
-                if (profiles.ContainsKey(message.Message.Value.Email))
-                    profiles[message.Message.Value.Email] = message.Message.Value;
-                else
-                    profiles.Add(message.Message.Value.Email, message.Message.Value);
-            }
-
-            return profiles.Values;
-        }
+            => _profilesFetcher.FetchProfiles(userId);
 
         public async Task<LoginResponseDTO> Add(AddProfileDTO profileDTO)
         {

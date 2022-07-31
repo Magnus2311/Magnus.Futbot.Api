@@ -4,7 +4,9 @@ using Magnus.Futbot.Api.Caches;
 using Magnus.Futbot.Api.Helpers;
 using Magnus.Futbot.Api.Hubs;
 using Magnus.Futbot.Api.Kafka.Consumers;
+using Magnus.Futbot.Api.Kafka.Fetchers;
 using Magnus.Futbot.Api.Kafka.Producers;
+using Magnus.Futbot.Api.Kafka.Producers.Requests;
 using Magnus.Futbot.Api.Services;
 using Magnus.Futbot.Api.Services.Connections;
 using Magnus.Futbot.Api.Services.Connections.SignalR;
@@ -39,7 +41,11 @@ builder.Services
     .AddTransient<ProfilesConsumer>();
 
 builder.Services
-    .AddSingleton<ProfileProducer>();
+    .AddTransient<ProfilesFetcher>();
+
+builder.Services
+    .AddSingleton<ProfileProducer>()
+    .AddSingleton<ProfilesRequest>();
 
 builder.Services
     .AddHttpClient<SsoConnectionService>();
