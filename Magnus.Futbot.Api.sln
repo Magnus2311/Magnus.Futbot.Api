@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Magnus.Futbot.Api", "Magnus
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Magnus.Futbot.Database", "Magnus.Futbot.Database\Magnus.Futbot.Database.csproj", "{24CB6909-77EB-412B-BB70-A7D0FAA5D249}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Magnus.Futbot.Common", "..\Magnus.Futbot.Common\Magnus.Futbot.Common\Magnus.Futbot.Common.csproj", "{DAA474BA-DF1E-4595-BB01-C46B4E4670BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{24CB6909-77EB-412B-BB70-A7D0FAA5D249}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24CB6909-77EB-412B-BB70-A7D0FAA5D249}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24CB6909-77EB-412B-BB70-A7D0FAA5D249}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAA474BA-DF1E-4595-BB01-C46B4E4670BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAA474BA-DF1E-4595-BB01-C46B4E4670BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAA474BA-DF1E-4595-BB01-C46B4E4670BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAA474BA-DF1E-4595-BB01-C46B4E4670BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

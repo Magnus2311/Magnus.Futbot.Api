@@ -7,8 +7,9 @@ namespace Magnus.Futbot.Api.Kafka.Producers.Requests
     {
         public ProfilesRequest(IConfiguration configuration) : base(configuration)
         {
+            Topic = "Magnus.Futbot.Profiles.Requests";
         }
 
-        public override string Topic => "Magnus.Futbot.Profiles.Requests";
+        public override string Topic { get; protected set; }
     }
 }

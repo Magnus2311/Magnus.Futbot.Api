@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
-using Confluent.Kafka;
 using Magnus.Futbot.Api.Hubs;
 using Magnus.Futbot.Api.Hubs.Interfaces;
-using Magnus.Futbot.Api.Kafka.Consumers;
 using Magnus.Futbot.Api.Kafka.Fetchers;
 using Magnus.Futbot.Api.Kafka.Producers;
 using Magnus.Futbot.Common;
@@ -36,7 +34,11 @@ namespace Magnus.Futbot.Api.Services
         }
 
         public IEnumerable<ProfileDTO> GetAll(string userId)
-            => _profilesFetcher.FetchProfiles(userId);
+        {
+            _profilesFetcher.RequestProfiles(userId);
+            var a = _profilesFetcher.FetchProfiles(userId);
+            return a;
+        }
 
         public async Task<LoginResponseDTO> Add(AddProfileDTO profileDTO)
         {

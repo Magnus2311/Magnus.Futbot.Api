@@ -5,18 +5,10 @@ using Magnus.Futbot.Common.Models.Kafka;
 namespace Magnus.Futbot.Api.Kafka.Consumers
 {
 
-    public class UserProfilesConsumer : BaseConsumer<Ignore, ProfileDTO>
+    public class UserProfilesConsumer : ResponseConsumer<Ignore, ProfileDTO>
     {
-        private readonly string _userId;
-
-        public UserProfilesConsumer(IConfiguration configuration,
-            string userId) : base(configuration)
+        public UserProfilesConsumer(IConfiguration configuration) : base(configuration)
         {
-            _userId = userId;
         }
-
-        public override string Topic => $"Magnus.Futbot.Profiles.{_userId}";
-
-        public override string GroupId => Guid.NewGuid().ToString();
     }
 }

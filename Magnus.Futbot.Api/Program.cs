@@ -41,7 +41,10 @@ builder.Services
     .AddTransient<ProfilesConsumer>();
 
 builder.Services
-    .AddTransient<ProfilesFetcher>();
+    .AddSingleton<ProfilesFetcher>();
+
+builder.Services
+    .AddSingleton<UserProfilesConsumer>();
 
 builder.Services
     .AddSingleton<ProfileProducer>()
