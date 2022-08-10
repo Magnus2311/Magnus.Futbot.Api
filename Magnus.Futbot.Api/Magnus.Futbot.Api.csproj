@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Magnus.Futbot.Common\Magnus.Futbot.Common\Magnus.Futbot.Common.csproj" />
     <ProjectReference Include="..\Magnus.Futbot.Database\Magnus.Futbot.Database.csproj" />
   </ItemGroup>
 

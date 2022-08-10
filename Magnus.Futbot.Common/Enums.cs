@@ -1,4 +1,4 @@
-namespace Magnus.Futbot.Common
+﻿namespace Magnus.Futbot.Common
 {
     public enum ProfileStatusType
     {
