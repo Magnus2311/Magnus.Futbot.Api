@@ -3,61 +3,57 @@ using Magnus.Futbot.Api;
 using Magnus.Futbot.Api.Caches;
 using Magnus.Futbot.Api.Helpers;
 using Magnus.Futbot.Api.Hubs;
-using Magnus.Futbot.Api.Kafka.Consumers;
-using Magnus.Futbot.Api.Kafka.Fetchers;
-using Magnus.Futbot.Api.Kafka.Producers;
-using Magnus.Futbot.Api.Kafka.Producers.Requests;
 using Magnus.Futbot.Api.Services;
 using Magnus.Futbot.Api.Services.Connections;
 using Magnus.Futbot.Api.Services.Connections.SignalR;
+using Magnus.Futbot.Common.Interfaces;
 using Magnus.Futbot.Database.Repositories;
+using Magnus.Futbot.Initializer;
+using Magnus.Futbot.Initializer.Connections;
 using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var mapperConfig = new MapperConfiguration(mc =>
-{
-    mc.AddProfile(new MapperProfile());
-});
-
-IMapper mapper = mapperConfig.CreateMapper();
-builder.Services.AddSingleton(mapper);
-
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
+// Automapper
 builder.Services
-    .AddSwaggerGen();
+    .AddSingleton(new MapperConfiguration(mc =>
+    {
+        mc.AddProfile(new MapperProfile());
+    }).CreateMapper());
+
+// SignalR Connections
 builder.Services
     .AddTransient<ProfilesConnection>()
-    .AddTransient<PlayersConnection>()
-    .AddTransient<ProfilesService>()
-    .AddSingleton<PlayersCache>();
+    .AddTransient<PlayersConnection>();
 
+// Repositories
 builder.Services
     .AddTransient<ProfilesRepository>()
     .AddTransient<PlayersRepository>();
 
-builder.Services
-    .AddTransient<ProfilesConsumer>();
-
-builder.Services
-    .AddSingleton<ProfilesFetcher>();
-
-builder.Services
-    .AddSingleton<UserProfilesConsumer>();
-
-builder.Services
-    .AddSingleton<ProfileProducer>()
-    .AddSingleton<ProfilesRequest>();
-
+// Http Clients
 builder.Services
     .AddHttpClient<SsoConnectionService>();
+builder.Services
+    .AddHttpClient<EaConnectionService>();
 
+// Services
+builder.Services
+    .AddTransient<ProfilesService>()
+    .AddTransient<IPlayersService, PlayersService>();
+
+// Caches
+builder.Services
+    .AddSingleton<PlayersCache>();
+
+// Background workers
 builder
     .Services
-    .AddHostedService<ProfilesWorker>();
+    .AddHostedService<ProfilesWorker>()
+    .AddHostedService<RefreshPlayersWorker>();
 
-builder.Services.AddSingleton<IUserIdProvider, UserProvider>();
+builder.Services
+    .AddSingleton<IUserIdProvider, UserProvider>();
 
 builder.Services.AddSignalR();
 
