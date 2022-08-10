@@ -1,40 +1,40 @@
 ﻿using AutoMapper;
+using Magnus.Futbot.Common.Interfaces;
 using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Initializer.Connections;
 using Magnus.Futbot.Initializer.Models.Players;
-using Magnus.Futbot.Initializer.Producers;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace Magnus.Futbot.Initializer
 {
     public class RefreshPlayersWorker : BackgroundService
     {
-        private readonly ILogger<RefreshPlayersWorker> _logger;
-        private readonly IMapper _mapper;
         private readonly EaConnectionService _eaConnectionService;
-        private readonly PlayersProducer _playersProducer;
+        private readonly ILogger<RefreshPlayersWorker> _logger;
+        private readonly IPlayersService _playersService;
+        private readonly IMapper _mapper;
 
         public RefreshPlayersWorker(ILogger<RefreshPlayersWorker> logger,
             EaConnectionService eaConnectionService,
-            PlayersProducer playersProducer,
+            IPlayersService playersService,
             IMapper mapper)
         {
-            _logger = logger;
             _eaConnectionService = eaConnectionService;
+            _playersService = playersService;
+            _logger = logger;
             _mapper = mapper;
-            _playersProducer = playersProducer;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var players = await FetchPlayers();
-
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
-                    foreach (var player in players.Take(10))
-                        await _playersProducer.Produce(player);
+                    var players = await FetchPlayers();
+                    await _playersService.Add(players);
 
                     await Task.Delay(TimeSpan.FromHours(1), stoppingToken);
                 }
@@ -43,7 +43,6 @@ namespace Magnus.Futbot.Initializer
                     _logger.LogError(JsonConvert.SerializeObject(ex));
                 }
             }
-            _playersProducer.Producer.Flush(stoppingToken);
         }
 
         private async Task<IEnumerable<PlayerDTO>> FetchPlayers()
