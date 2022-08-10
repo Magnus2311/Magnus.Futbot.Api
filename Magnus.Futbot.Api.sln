@@ -7,11 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Magnus.Futbot.Api", "Magnus
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Magnus.Futbot.Database", "Magnus.Futbot.Database\Magnus.Futbot.Database.csproj", "{24CB6909-77EB-412B-BB70-A7D0FAA5D249}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Magnus.Futbot.Common", "..\Magnus.Futbot.Common\Magnus.Futbot.Common\Magnus.Futbot.Common.csproj", "{E733BE50-36FC-4AE2-A508-9705C8E1B8C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Magnus.Futbot.Common", "Magnus.Futbot.Common\Magnus.Futbot.Common.csproj", "{DD653A8B-4C1B-42EC-9F8D-C6DEEF28E518}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Magnus.Futbot.Initializer", "..\Magnus.Futbot.Initializer\Magnus.Futbot.Initializer\Magnus.Futbot.Initializer.csproj", "{EE7A72F6-9667-49A5-8E48-9CA6C05FA35F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Magnus.Futbot.Initializer", "Magnus.Futbot.Initializer\Magnus.Futbot.Initializer.csproj", "{DAA5BEE6-CDC1-44E1-9089-F14F3FB4D36B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Magnus.Futbot.Selenium", "..\Magnus.Futbot.Selenium\Magnus.Futbot.Selenium\Magnus.Futbot.Selenium.csproj", "{FFF678F6-CFCE-4CD7-B6D9-290A84B67803}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Magnus.Futbot.Selenium", "Magnus.Futbot.Selenium\Magnus.Futbot.Selenium.csproj", "{61F9C713-B984-4A2D-938C-2C52075DECE8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,18 +27,18 @@ Global
 		{24CB6909-77EB-412B-BB70-A7D0FAA5D249}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24CB6909-77EB-412B-BB70-A7D0FAA5D249}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24CB6909-77EB-412B-BB70-A7D0FAA5D249}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E733BE50-36FC-4AE2-A508-9705C8E1B8C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E733BE50-36FC-4AE2-A508-9705C8E1B8C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E733BE50-36FC-4AE2-A508-9705C8E1B8C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E733BE50-36FC-4AE2-A508-9705C8E1B8C5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EE7A72F6-9667-49A5-8E48-9CA6C05FA35F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EE7A72F6-9667-49A5-8E48-9CA6C05FA35F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EE7A72F6-9667-49A5-8E48-9CA6C05FA35F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EE7A72F6-9667-49A5-8E48-9CA6C05FA35F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FFF678F6-CFCE-4CD7-B6D9-290A84B67803}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FFF678F6-CFCE-4CD7-B6D9-290A84B67803}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FFF678F6-CFCE-4CD7-B6D9-290A84B67803}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FFF678F6-CFCE-4CD7-B6D9-290A84B67803}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD653A8B-4C1B-42EC-9F8D-C6DEEF28E518}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD653A8B-4C1B-42EC-9F8D-C6DEEF28E518}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD653A8B-4C1B-42EC-9F8D-C6DEEF28E518}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD653A8B-4C1B-42EC-9F8D-C6DEEF28E518}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAA5BEE6-CDC1-44E1-9089-F14F3FB4D36B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAA5BEE6-CDC1-44E1-9089-F14F3FB4D36B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAA5BEE6-CDC1-44E1-9089-F14F3FB4D36B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAA5BEE6-CDC1-44E1-9089-F14F3FB4D36B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61F9C713-B984-4A2D-938C-2C52075DECE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61F9C713-B984-4A2D-938C-2C52075DECE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61F9C713-B984-4A2D-938C-2C52075DECE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61F9C713-B984-4A2D-938C-2C52075DECE8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
