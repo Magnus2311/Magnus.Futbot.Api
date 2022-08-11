@@ -7,7 +7,7 @@ namespace Magnus.Futbot.Api.Hubs.Interfaces
     {
         Task OnProfileAdded(LoginResponseDTO loginResponse);
         Task OnProfilesLoaded(IEnumerable<ProfileDTO> profiles);
-        Task OnCodeSubmited(ConfirmationCodeResponseDTO confirmationCodeResponseDTO);
+        Task OnCodeSubmited(ProfileDTO confirmationCodeResponseDTO);
         Task OnProfileUpdated(ProfileDTO profileDTO);
     }
 }

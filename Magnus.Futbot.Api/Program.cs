@@ -49,7 +49,6 @@ builder.Services
 // Background workers
 builder
     .Services
-    .AddHostedService<ProfilesWorker>()
     .AddHostedService<RefreshPlayersWorker>();
 
 builder.Services

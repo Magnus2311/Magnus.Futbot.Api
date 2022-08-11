@@ -25,7 +25,7 @@ namespace Magnus.Futbot.Api.Hubs
         public async Task GetProfiles()
         {
             var userId = Context.UserIdentifier ?? "";
-            var profiles = _profilesService.GetAll(userId);
+            var profiles = await _profilesService.GetAll(userId);
             await Clients.Users(userId).OnProfilesLoaded(profiles);
         }
 
