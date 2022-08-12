@@ -63,9 +63,6 @@ builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI();
-
 app.UseCors("corsapp");
 app.UseHttpsRedirection();
 
