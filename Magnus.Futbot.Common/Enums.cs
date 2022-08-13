@@ -6,6 +6,7 @@
         WrongCredentials,
         ConfirmationKeyRequired,
         CaptchaNeeded,
+        AlreadyAdded,
 
         UnknownError = 999
     }
