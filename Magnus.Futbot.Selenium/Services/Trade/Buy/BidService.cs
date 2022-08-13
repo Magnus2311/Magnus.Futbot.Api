@@ -9,12 +9,12 @@ namespace Magnus.Futbot.Services.Trade.Buy
     {
         private int _wonPlayers;
 
-        public async Task BidPlayer(ProfileDTO profileDTO, BidPlayerDTO bidPlayerDTO)
+        public void BidPlayer(ProfileDTO profileDTO, BidPlayerDTO bidPlayerDTO)
         {
             var driver = GetInstance(profileDTO.Email).Driver;
 
             SearchPlayer(driver, bidPlayerDTO);
-            await BidPlayers(driver, bidPlayerDTO, profileDTO);
+            BidPlayers(driver, bidPlayerDTO, profileDTO);
         }
 
         private void SearchPlayer(IWebDriver driver, BidPlayerDTO bidPlayerDTO)
@@ -67,17 +67,17 @@ namespace Magnus.Futbot.Services.Trade.Buy
             resetBtn?.Click();
         }
 
-        private async Task BidPlayers(IWebDriver driver, BidPlayerDTO bidPlayerDTO, ProfileDTO profileDTO)
+        private void BidPlayers(IWebDriver driver, BidPlayerDTO bidPlayerDTO, ProfileDTO profileDTO)
         {
             var endDate = DateTime.Now.AddHours(1);
             do
             {
-                await TryBidForPlayers(driver, bidPlayerDTO, profileDTO);
+                TryBidForPlayers(driver, bidPlayerDTO, profileDTO);
             }
             while (_wonPlayers < bidPlayerDTO.MaxPlayers && endDate > DateTime.Now);
         }
 
-        private async Task TryBidForPlayers(IWebDriver driver, BidPlayerDTO bidPlayerDTO, ProfileDTO profileDTO)
+        private void TryBidForPlayers(IWebDriver driver, BidPlayerDTO bidPlayerDTO, ProfileDTO profileDTO)
         {
             try
             {
