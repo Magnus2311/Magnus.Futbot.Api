@@ -17,7 +17,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
             BidPlayers(driver, bidPlayerDTO, profileDTO);
         }
 
-        private void SearchPlayer(IWebDriver driver, BidPlayerDTO bidPlayerDTO)
+        private static void SearchPlayer(IWebDriver driver, BidPlayerDTO bidPlayerDTO)
         {
             driver.OpenSearchTransfer();
 
@@ -39,7 +39,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
                 if (item is null) continue;
 
                 var playerName = item.FindElement(By.XPath("/span[1]")).Text;
-                int.TryParse(item.FindElement(By.XPath("/span[2]")).Text, out var baseRating);
+                _ = int.TryParse(item.FindElement(By.XPath("/span[2]")).Text, out var baseRating);
 
                 if (baseRating == bidPlayerDTO.BaseRating)
                 {
