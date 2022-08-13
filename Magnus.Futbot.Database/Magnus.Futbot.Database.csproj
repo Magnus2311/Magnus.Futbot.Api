@@ -7,10 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Magnus2311.Futbot.Common" Version="0.0.5" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
     <PackageReference Include="MongoDB.Bson" Version="2.16.1" />
     <PackageReference Include="MongoDB.Driver" Version="2.16.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Magnus.Futbot.Common\Magnus.Futbot.Common.csproj" />
   </ItemGroup>
 
 </Project>
