@@ -22,8 +22,8 @@ namespace Magnus.Futbot.Api.Services
         {
             var allIds = (await _playersRepository.GetAll()).Select(p => p.Id);
             var newPlayers = players.Where(p => !allIds.Contains(p.Id));
-
-            await _playersRepository.AddPlayers(_mapper.Map<IEnumerable<PlayerDocument>>(players));
+            if (newPlayers.Any())
+                await _playersRepository.AddPlayers(_mapper.Map<IEnumerable<PlayerDocument>>(newPlayers));
         }
     }
 }
