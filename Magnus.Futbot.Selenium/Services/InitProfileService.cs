@@ -16,7 +16,12 @@ namespace Magnus.Futbot.Services
                 Status = ProfileStatusType.CaptchaNeeded
             };
 
-            var driverInstance = GetInstance(profile.Email);
+            return InitProfile(profileDTO);
+        }
+
+        public static ProfileDTO InitProfile(ProfileDTO profileDTO)
+        {
+            var driverInstance = GetInstance(profileDTO.Email);
             var driver = driverInstance.Driver;
             driver.Navigate().GoToUrl("https://www.ea.com/fifa/ultimate-team/web-app/");
 
@@ -27,11 +32,16 @@ namespace Magnus.Futbot.Services
             var emailInput = driver.FindElement(By.CssSelector("#email"), 1000);
             if (emailInput is not null)
             {
-                profileDTO.Status = LoginSeleniumService.Login(profile.Email, profile.Password);
+                profileDTO.Status = LoginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
             }
 
             var transferBtn = driver.FindElement(By.CssSelector("body > main > section > nav > button.ut-tab-bar-item.icon-transfer"), 10000);
             if (transferBtn is not null) profileDTO.Status = ProfileStatusType.Logged;
+
+            if (profileDTO.Status == ProfileStatusType.Logged)
+            {
+                profileDTO = DataSeleniumService.GetBasicData(profileDTO);
+            }
 
             return profileDTO;
         }

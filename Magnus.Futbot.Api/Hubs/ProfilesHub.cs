@@ -36,5 +36,12 @@ namespace Magnus.Futbot.Api.Hubs
             var response = await _profilesService.SubmitCode(submitCodeDTO);
             await Clients.Users(userId).OnCodeSubmited(response);
         }
+
+        public async Task OnProfileRefresh(string profileId)
+        {
+            var userId = Context.UserIdentifier ?? "";
+            var profileDTO = await _profilesService.RefreshProfile(profileId, userId);
+            await Clients.Users(userId).OnProfileUpdated(profileDTO);
+        }
     }
 }

@@ -50,5 +50,13 @@ namespace Magnus.Futbot.Api.Services
             var response = LoginSeleniumService.SubmitCode(submitCodeDTO);
             return _mapper.Map<ProfileDTO>(await _profilesRepository.UpdateSubmitCodeStatus(submitCodeDTO.Email, response));
         }
+
+        public async Task<ProfileDTO> RefreshProfile(string profileId, string userId)
+        {
+            var profile = await _profilesRepository.Get(new ObjectId(profileId), new ObjectId(userId));
+            var refreshedProfile = InitProfileService.InitProfile(_mapper.Map<ProfileDTO>(profile));
+            await _profilesRepository.Update(_mapper.Map<ProfileDocument>(refreshedProfile));
+            return refreshedProfile;
+        }
     }
 }

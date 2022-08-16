@@ -2,7 +2,9 @@
 {
     public class ProfileDTO
     {
+        public string Id { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
         public ProfileStatusType Status { get; set; }
         public int Coins { get; set; }
         public int ActiveBidsCount { get; set; }
