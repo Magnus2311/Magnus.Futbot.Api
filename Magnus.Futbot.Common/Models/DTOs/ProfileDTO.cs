@@ -1,4 +1,6 @@
-﻿namespace Magnus.Futbot.Common.Models.DTOs
+﻿using Magnus.Futbot.Common.Models.Selenium.Trading;
+
+namespace Magnus.Futbot.Common.Models.DTOs
 {
     public class ProfileDTO
     {
@@ -13,6 +15,8 @@
         public int UnassignedCount { get; set; }
         public int Outbidded { get; set; }
         public string UserId { get; set; } = string.Empty;
+        public string UTSID { get; set; } = string.Empty;
+        public TradePile TradePile { get; set; } = new TradePile();
 
         public override int GetHashCode()
             => HashCode.Combine(Email);

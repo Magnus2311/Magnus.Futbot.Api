@@ -1,4 +1,5 @@
 ﻿using Magnus.Futbot.Common;
+using Magnus.Futbot.Common.Models.Selenium.Trading;
 using Magnus.Futbot.Database.Models.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
@@ -22,5 +23,6 @@ namespace Magnus.Futbot.Database.Models
         public int TransferListCount { get; set; }
         public int UnassignedCount { get; set; }
         public int Outbidded { get; set; }
+        public TradePile TradePile { get; set; } = new TradePile();
     }
 }
