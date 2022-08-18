@@ -10,6 +10,7 @@ using Magnus.Futbot.Common.Interfaces;
 using Magnus.Futbot.Database.Repositories;
 using Magnus.Futbot.Initializer;
 using Magnus.Futbot.Initializer.Connections;
+using Magnus.Futbot.Selenium.Trading.Connections;
 using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,6 +37,8 @@ builder.Services
     .AddHttpClient<SsoConnectionService>();
 builder.Services
     .AddHttpClient<EaConnectionService>();
+builder.Services
+    .AddHttpClient<TradePileConnection>();
 
 // Services
 builder.Services
