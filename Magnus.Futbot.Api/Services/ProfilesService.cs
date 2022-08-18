@@ -1,14 +1,13 @@
 ﻿using AutoMapper;
-using Magnus.Futbot.Api.Hubs;
-using Magnus.Futbot.Api.Hubs.Interfaces;
 using Magnus.Futbot.Common;
 using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.Responses;
 using Magnus.Futbot.Common.Models.Selenium.Profiles;
+using Magnus.Futbot.Common.Models.Selenium.Trading;
 using Magnus.Futbot.Database.Models;
 using Magnus.Futbot.Database.Repositories;
+using Magnus.Futbot.Selenium.Trading.Connections;
 using Magnus.Futbot.Services;
-using Microsoft.AspNetCore.SignalR;
 using MongoDB.Bson;
 
 namespace Magnus.Futbot.Api.Services
@@ -16,19 +15,17 @@ namespace Magnus.Futbot.Api.Services
     public class ProfilesService
     {
         private readonly IMapper _mapper;
-        private readonly IHubContext<ProfilesHub, IProfilesClient> _profilesHub;
-        private readonly IConfiguration _configuration;
         private readonly ProfilesRepository _profilesRepository;
+        private readonly TradePileConnection _tradePileConnection;
 
-        public ProfilesService(IHubContext<ProfilesHub, IProfilesClient> profilesHub,
+        public ProfilesService(
             ProfilesRepository profilesRepository,
-            IConfiguration configuration,
+            TradePileConnection tradePileConnection,
             IMapper mapper)
         {
-            _profilesHub = profilesHub;
-            _configuration = configuration;
             _mapper = mapper;
             _profilesRepository = profilesRepository;
+            _tradePileConnection = tradePileConnection;
         }
 
         public async Task<IEnumerable<ProfileDTO>> GetAll(string userId)
@@ -55,6 +52,7 @@ namespace Magnus.Futbot.Api.Services
         {
             var profile = await _profilesRepository.Get(new ObjectId(profileId), new ObjectId(userId));
             var refreshedProfile = InitProfileService.InitProfile(_mapper.Map<ProfileDTO>(profile));
+            refreshedProfile.TradePile = await _tradePileConnection.GetTradePileAsync("") ?? new TradePile();
             await _profilesRepository.Update(_mapper.Map<ProfileDocument>(refreshedProfile));
             return refreshedProfile;
         }
