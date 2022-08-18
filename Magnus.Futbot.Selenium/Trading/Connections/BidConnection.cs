@@ -9,9 +9,9 @@ namespace Magnus.Futbot.Selenium.Trading.Connections
         {
         }
 
-        protected override string UTSID => throw new NotImplementedException();
+        protected override string UTSID { get; set; } = string.Empty;
 
-        protected override Uri BaseAddress { get; set; } = new Uri("");
+        protected override Uri BaseAddress { get; set; } = new Uri(string.Empty);
 
         public async Task Bid(Bid bid)
         {
