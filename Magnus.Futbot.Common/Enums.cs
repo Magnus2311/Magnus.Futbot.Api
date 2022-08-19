@@ -38,4 +38,13 @@
         Won,
         Outbidded
     }
+
+    public enum PlayerCardType
+    {
+        Bronze,
+        Silver,
+        Gold,
+        TOTW,
+        // New types should be added
+    }
 }

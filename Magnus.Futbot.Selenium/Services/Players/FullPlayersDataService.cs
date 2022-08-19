@@ -51,9 +51,11 @@ namespace Magnus.Futbot.Selenium.Services.Players
             {
                 var canvas = player.FindElement(By.CssSelector("div > div.entityContainer > div.small.player.item.specials.ut-item-loaded > canvas"));
                 // Getting card photo and should check it later for player type
+                // current.PlayerType should be set accordingly
                 var image = driver.ExecuteScript("return arguments[0].toDataURL('image/png').substring(22);", canvas);
                 var currentPlayer = player.ConvertPlayerElementToPlayerCard();
                 currentPlayer.PlayerCardStatus = PlayerCardStatus.Won;
+                currentPlayer.PlayerType = PlayerCardType.TOTW;
                 yield return currentPlayer;
             }
         }

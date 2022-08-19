@@ -5,6 +5,7 @@
         public string Name { get; set; } = string.Empty;
         public int Rating { get; set; }
         public PlayerCardStatus PlayerCardStatus {get; set;}
+        public PlayerCardType PlayerType { get; set; }
     }
 
     public class TradePile
