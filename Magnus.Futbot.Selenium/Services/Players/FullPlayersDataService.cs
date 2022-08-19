@@ -115,7 +115,7 @@ namespace Magnus.Futbot.Selenium.Services.Players
             foreach (var player in players)
             {
                 var currentPlayer = player.ConvertPlayerElementToPlayerCard();
-                currentPlayer.PlayerCardStatus = PlayerCardStatus.Won;
+                currentPlayer.PlayerCardStatus = PlayerCardStatus.Outbidded;
                 yield return currentPlayer;
             }
         }
@@ -145,7 +145,7 @@ namespace Magnus.Futbot.Selenium.Services.Players
             foreach (var player in players)
             {
                 var currentPlayer = player.ConvertPlayerElementToPlayerCard();
-                currentPlayer.PlayerCardStatus = PlayerCardStatus.Won;
+                currentPlayer.PlayerCardStatus = PlayerCardStatus.Pending;
                 yield return currentPlayer;
             }
         }
