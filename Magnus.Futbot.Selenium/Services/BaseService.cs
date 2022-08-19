@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 
 namespace Magnus.Futbot.Services
 {
-    public class BaseService
+    public abstract class BaseService
     {
         private static readonly ConcurrentDictionary<string, DriverInstance> _chromeDrivers = new();
 
