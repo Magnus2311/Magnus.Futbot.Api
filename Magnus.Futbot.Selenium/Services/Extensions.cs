@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using Magnus.Futbot.Common.Models.Selenium.Trading;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 
 namespace Magnus.Futbot.Services
@@ -82,5 +83,12 @@ namespace Magnus.Futbot.Services
             if (searchDiv is not null) searchDiv.Click();
             Thread.Sleep(1000);
         }
+
+        public static PlayerCard ConvertPlayerElementToPlayerCard(this IWebElement player)
+            => new PlayerCard
+            {
+                Name = player.FindElement(By.CssSelector("div > div.entityContainer > div.name")).Text,
+                Rating = int.Parse(player.FindElement(By.CssSelector("div > div.entityContainer > div.small.player.item.specials.ut-item-loaded > div.ut-item-view--main.ut-item-view > div.playerOverview > div.rating")).Text)
+            };
     }
 }

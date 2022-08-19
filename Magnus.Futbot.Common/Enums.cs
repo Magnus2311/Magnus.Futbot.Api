@@ -31,4 +31,11 @@
     {
         Any
     }
+
+    public enum PlayerCardStatus
+    {
+        Pending,
+        Won,
+        Outbidded
+    }
 }

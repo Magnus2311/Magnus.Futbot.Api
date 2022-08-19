@@ -3,10 +3,9 @@ using Magnus.Futbot.Common;
 using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.Responses;
 using Magnus.Futbot.Common.Models.Selenium.Profiles;
-using Magnus.Futbot.Common.Models.Selenium.Trading;
 using Magnus.Futbot.Database.Models;
 using Magnus.Futbot.Database.Repositories;
-using Magnus.Futbot.Selenium.Trading.Connections;
+using Magnus.Futbot.Selenium.Services.Players;
 using Magnus.Futbot.Services;
 using MongoDB.Bson;
 
@@ -16,16 +15,13 @@ namespace Magnus.Futbot.Api.Services
     {
         private readonly IMapper _mapper;
         private readonly ProfilesRepository _profilesRepository;
-        private readonly TradePileConnection _tradePileConnection;
 
         public ProfilesService(
             ProfilesRepository profilesRepository,
-            TradePileConnection tradePileConnection,
             IMapper mapper)
         {
             _mapper = mapper;
             _profilesRepository = profilesRepository;
-            _tradePileConnection = tradePileConnection;
         }
 
         public async Task<IEnumerable<ProfileDTO>> GetAll(string userId)
@@ -52,7 +48,7 @@ namespace Magnus.Futbot.Api.Services
         {
             var profile = await _profilesRepository.Get(new ObjectId(profileId), new ObjectId(userId));
             var refreshedProfile = InitProfileService.InitProfile(_mapper.Map<ProfileDTO>(profile));
-            refreshedProfile.TradePile = await _tradePileConnection.GetTradePileAsync("") ?? new TradePile();
+            refreshedProfile.TradePile.TransferList = FullPlayersDataService.GetTransferListCards(refreshedProfile).ToList();
             await _profilesRepository.Update(_mapper.Map<ProfileDocument>(refreshedProfile));
             return refreshedProfile;
         }
