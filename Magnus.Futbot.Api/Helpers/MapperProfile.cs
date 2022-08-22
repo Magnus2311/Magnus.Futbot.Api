@@ -3,6 +3,7 @@ using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.Selenium.Profiles;
 using Magnus.Futbot.Database.Models;
 using Magnus.Futbot.Initializer.Models.Players;
+using MongoDB.Bson;
 
 namespace Magnus.Futbot.Api.Helpers
 {
@@ -10,7 +11,10 @@ namespace Magnus.Futbot.Api.Helpers
     {
         public MapperProfile()
         {
-            CreateMap<ProfileDTO, ProfileDocument>().ReverseMap();
+            CreateMap<ProfileDTO, ProfileDocument>()
+                .ForMember(dest => dest.Id, options => options.MapFrom(src => string.IsNullOrEmpty(src.Id) ? new ObjectId() : new ObjectId(src.Id)));
+            CreateMap<ProfileDocument, ProfileDTO>()
+                .ForMember(dest => dest.Id, options => options.MapFrom(src => src.Id.ToString()));
             CreateMap<AddProfileDTO, ProfileDocument>().ReverseMap();
             CreateMap<ProfileDTO, AddProfileDTO>().ReverseMap();
 
