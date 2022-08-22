@@ -29,11 +29,12 @@ namespace Magnus.Futbot.Api.Services
 
         public async Task<LoginResponseDTO> Add(AddProfileDTO profileDTO)
         {
+            await _profilesRepository.Add(_mapper.Map<ProfileDocument>(profileDTO));
             if ((await _profilesRepository.GetByEmail(profileDTO.Email)).Any())
                 return new LoginResponseDTO(ProfileStatusType.AlreadyAdded, _mapper.Map<ProfileDTO>(profileDTO));
 
             var response = InitProfileService.InitProfile(profileDTO);
-            await _profilesRepository.Add(_mapper.Map<ProfileDocument>(response));
+            await _profilesRepository.Update(_mapper.Map<ProfileDocument>(response));
 
             return new LoginResponseDTO(response.Status, _mapper.Map<ProfileDTO>(profileDTO));
         }
