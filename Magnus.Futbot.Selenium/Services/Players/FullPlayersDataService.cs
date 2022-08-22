@@ -28,7 +28,6 @@ namespace Magnus.Futbot.Selenium.Services.Players
         public static IEnumerable<PlayerCard> GetUnsoldTransferListCards(ProfileDTO profileDTO)
         {
             var driver = GetInstance(profileDTO.Email).Driver;
-            driver.OpenTransferList();
 
             var players = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(2) > ul > li"));
 
@@ -43,7 +42,6 @@ namespace Magnus.Futbot.Selenium.Services.Players
         public static IEnumerable<PlayerCard> GetAvailableTransferListCards(ProfileDTO profileDTO)
         {
             var driver = GetInstance(profileDTO.Email).Driver;
-            driver.OpenTransferList();
 
             var players = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(3) > ul > li"));
 
@@ -63,7 +61,6 @@ namespace Magnus.Futbot.Selenium.Services.Players
         public static IEnumerable<PlayerCard> GetActiveTransferListCards(ProfileDTO profileDTO)
         {
             var driver = GetInstance(profileDTO.Email).Driver;
-            driver.OpenTransferList();
 
             var players = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(4) > ul > li"));
 
@@ -77,6 +74,10 @@ namespace Magnus.Futbot.Selenium.Services.Players
 
         public static IEnumerable<PlayerCard> GetTransferListCards(ProfileDTO profileDTO)
         {
+            var driver = GetInstance(profileDTO.Email).Driver;
+            driver.OpenHomePage();
+            driver.OpenTransferList();
+
             var transferList = new List<PlayerCard>();
 
             transferList.AddRange(GetUnsoldTransferListCards(profileDTO));
@@ -89,7 +90,7 @@ namespace Magnus.Futbot.Selenium.Services.Players
         public static IEnumerable<PlayerCard> GetUnassignedItems(ProfileDTO profileDTO)
         {
             var driver = GetInstance(profileDTO.Email).Driver;
-            driver.OpenTransferList();
+            driver.OpenUnassignedItems();
 
             var players = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-unassigned-view.ui-layout-left > section > ul > li"));
 
@@ -103,6 +104,8 @@ namespace Magnus.Futbot.Selenium.Services.Players
 
         public static IEnumerable<PlayerCard> GetTransferTargets(ProfileDTO profileDTO)
         {
+            var driver = GetInstance(profileDTO.Email).Driver;
+            driver.OpenTransferTargets();
             var transferTargets = new List<PlayerCard>();
             transferTargets.AddRange(GetLostTransferTargets(profileDTO));
             transferTargets.AddRange(GetWonTransferTargets(profileDTO));
@@ -113,7 +116,6 @@ namespace Magnus.Futbot.Selenium.Services.Players
         public static IEnumerable<PlayerCard> GetLostTransferTargets(ProfileDTO profileDTO)
         {
             var driver = GetInstance(profileDTO.Email).Driver;
-            driver.OpenTransferList();
 
             var players = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(4) > ul > li"));
 
@@ -128,7 +130,6 @@ namespace Magnus.Futbot.Selenium.Services.Players
         public static IEnumerable<PlayerCard> GetWonTransferTargets(ProfileDTO profileDTO)
         {
             var driver = GetInstance(profileDTO.Email).Driver;
-            driver.OpenTransferList();
 
             var players = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(3) > ul > li"));
 
@@ -143,7 +144,6 @@ namespace Magnus.Futbot.Selenium.Services.Players
         public static IEnumerable<PlayerCard> GetActiveTransferTargets(ProfileDTO profileDTO)
         {
             var driver = GetInstance(profileDTO.Email).Driver;
-            driver.OpenTransferList();
 
             var players = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(1) > ul > li"));
 

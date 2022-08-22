@@ -52,12 +52,19 @@ namespace Magnus.Futbot.Services
         public static void OpenTransfer(this IWebDriver driver)
         {
             driver.FindElement(By.CssSelector("body > main > section > nav > button.ut-tab-bar-item.icon-transfer")).Click();
+            Thread.Sleep(500);
+        }
+
+        public static void OpenUnassignedItems(this IWebDriver driver)
+        {
+            driver.OpenHomePage();
+            driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div.ut-unassigned-tile-view.tile.col-1-1")).Click();
+            Thread.Sleep(500);
         }
 
         public static void OpenTransferTargets(this IWebDriver driver)
         {
             driver.OpenTransfer();
-            Thread.Sleep(500);
             driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div.tile.col-1-2.ut-tile-transfer-targets")).Click();
             Thread.Sleep(500);
         }
@@ -65,7 +72,6 @@ namespace Magnus.Futbot.Services
         public static void OpenTransferList(this IWebDriver driver)
         {
             driver.OpenTransfer();
-            Thread.Sleep(500);
             driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div.tile.col-1-2.ut-tile-transfer-list")).Click();
             Thread.Sleep(500);
         }
@@ -74,6 +80,7 @@ namespace Magnus.Futbot.Services
         {
             var homeBtn = driver.FindElement(By.CssSelector("body > main > section > nav > button.ut-tab-bar-item.icon-home"), 10000);
             homeBtn?.Click();
+            Thread.Sleep(500);
         }
 
         public static void OpenSearchTransfer(this IWebDriver driver)
@@ -87,8 +94,8 @@ namespace Magnus.Futbot.Services
         public static PlayerCard ConvertPlayerElementToPlayerCard(this IWebElement player)
             => new PlayerCard
             {
-                Name = player.FindElement(By.CssSelector("div > div.entityContainer > div.name")).Text,
-                Rating = int.Parse(player.FindElement(By.CssSelector("div > div.entityContainer > div.small.player.item.specials.ut-item-loaded > div.ut-item-view--main.ut-item-view > div.playerOverview > div.rating")).Text)
+                Name = player.FindElement(By.ClassName("name")).Text,
+                Rating = int.Parse(player.FindElement(By.ClassName("rating")).Text)
             };
     }
 }
