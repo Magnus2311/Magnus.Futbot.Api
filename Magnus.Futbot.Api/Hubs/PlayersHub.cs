@@ -14,6 +14,6 @@ namespace Magnus.Futbot.Api.Hubs
         }
 
         public async Task GetPlayers()
-            => await Clients.All.OnPlayersLoaded(_playersCache.Players.Select(p => p.Value));
+            => await Clients.All.OnPlayersLoaded(_playersCache.Players.OrderByDescending(p => p.Value.Rating).Select(p => p.Value));
     }
 }
