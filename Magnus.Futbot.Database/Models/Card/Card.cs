@@ -11,7 +11,8 @@ namespace Magnus.Futbot.Database.Models.Card
         public string Club { get; internal set; } = string.Empty;
         public string Nation { get; internal set; } = string.Empty;
         public string League { get; internal set; } = string.Empty;
-        public string Image { get; set; } = string.Empty;
+        public string PlayerImage { get; set; } = string.Empty;
+        public string BackgroundImage { get; set; } = string.Empty;
         public MainData MainData { get; set; } = new MainData();
         public Stats Stats { get; set; } = new Stats();
         public ObjectId Id { get; set; }
@@ -19,5 +20,8 @@ namespace Magnus.Futbot.Database.Models.Card
         public DateTime UpdatedDate { get; set; } = DateTime.Now;
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         public ObjectId UserId { get; set; }
+        public int AssetId { get; internal set; }
+        public int ClubId { get; internal set; }
+        public int LeagueId { get; internal set; }
     }
 }

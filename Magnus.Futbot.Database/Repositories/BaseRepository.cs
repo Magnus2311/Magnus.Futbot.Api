@@ -22,6 +22,9 @@ namespace Magnus.Futbot.Database.Repositories
             return entity;
         }
 
+        public async Task Add(IEnumerable<TEntity> entities)
+            => await _collection.InsertManyAsync(entities);
+        
         public async Task Delete(ObjectId id)
         {
             var entity = await (await _collection.FindAsync(e => e.Id == id)).FirstOrDefaultAsync();
