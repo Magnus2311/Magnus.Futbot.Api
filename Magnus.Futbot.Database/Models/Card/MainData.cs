@@ -8,7 +8,6 @@
         public string Foot { get; internal set; } = string.Empty;
         public string Height { get; internal set; } = string.Empty;
         public string Weight { get; internal set; } = string.Empty;
-        public string Revision { get; internal set; } = string.Empty;
         public string DefensiveWorkRate { get; internal set; } = string.Empty;
         public string AttackingWorkRate { get; internal set; } = string.Empty;
         public string Origin { get; internal set; } = string.Empty;
