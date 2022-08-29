@@ -1,5 +1,4 @@
 using AutoMapper;
-using Magnus.Futbot.Api;
 using Magnus.Futbot.Api.Caches;
 using Magnus.Futbot.Api.Helpers;
 using Magnus.Futbot.Api.Hubs;

@@ -13,6 +13,7 @@ namespace Magnus.Futbot.Database.Models.Card
         public string League { get; internal set; } = string.Empty;
         public string PlayerImage { get; set; } = string.Empty;
         public string BackgroundImage { get; set; } = string.Empty;
+        public string Revision { get; set; } = string.Empty;
         public MainData MainData { get; set; } = new MainData();
         public Stats Stats { get; set; } = new Stats();
         public ObjectId Id { get; set; }
