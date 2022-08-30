@@ -24,7 +24,8 @@ builder.Services
 // SignalR Connections
 builder.Services
     .AddTransient<ProfilesConnection>()
-    .AddTransient<PlayersConnection>();
+    .AddTransient<PlayersConnection>()
+    .AddTransient<CardsConnection>();
 
 // Repositories
 builder.Services
@@ -46,7 +47,8 @@ builder.Services
 
 // Caches
 builder.Services
-    .AddSingleton<PlayersCache>();
+    .AddSingleton<PlayersCache>()
+    .AddSingleton<CardsCache>();
 
 // Background workers
 builder
@@ -74,6 +76,7 @@ app.UseEndpoints(endpoints =>
 {
     endpoints.MapHub<ProfilesHub>("/hubs/profiles");
     endpoints.MapHub<PlayersHub>("/hubs/players");
+    endpoints.MapHub<CardsHub>("/hubs/cards");
 });
 
 app.Run();
