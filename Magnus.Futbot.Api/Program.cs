@@ -30,7 +30,8 @@ builder.Services
 // Repositories
 builder.Services
     .AddTransient<ProfilesRepository>()
-    .AddTransient<PlayersRepository>();
+    .AddTransient<PlayersRepository>()
+    .AddTransient<CardsRepository>();
 
 // Http Clients
 builder.Services
