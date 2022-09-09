@@ -14,7 +14,7 @@ namespace Magnus.Futbot.Services
             var outbidded = GetOutbiddedCount(driver);
 
             profile.UnassignedCount = GetUnassignedItems(driver);
-            profile.Coins = GetCoins(driver);
+            profile.Coins = driver.GetCoins();
             profile.TransferListCount = GetTransferListCount(driver);
             profile.ActiveBidsCount = activeBids;
             profile.Outbidded = outbidded;
@@ -37,14 +37,6 @@ namespace Magnus.Futbot.Services
             driver.OpenTransfer();
             var outbiddedSpan = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div.tile.col-1-2.ut-tile-transfer-targets > div.tileContent > div > div.finished-transfers > span.value"), 1000);
             if (outbiddedSpan is not null && int.TryParse(outbiddedSpan.Text, out var outbiddedCount)) return outbiddedCount;
-
-            return 0;
-        }
-
-        private static int GetCoins(ChromeDriver driver)
-        {
-            var coinsDiv = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-bar-view.navbar-style-landscape.currency-purchase > div.view-navbar-currency > div.view-navbar-currency-coins"), 1000);
-            if (coinsDiv is not null && int.TryParse(coinsDiv.Text.Replace(",", ""), out var coins)) return coins;
 
             return 0;
         }
