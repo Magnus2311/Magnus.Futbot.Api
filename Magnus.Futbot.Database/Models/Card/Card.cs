@@ -17,6 +17,7 @@ namespace Magnus.Futbot.Database.Models.Card
         public MainData MainData { get; set; } = new MainData();
         public Stats Stats { get; set; } = new Stats();
         public ObjectId Id { get; set; }
+        public string CardId => Id.ToString();
         public bool IsDeleted { get; set; }
         public DateTime UpdatedDate { get; set; } = DateTime.Now;
         public DateTime CreatedDate { get; set; } = DateTime.Now;
