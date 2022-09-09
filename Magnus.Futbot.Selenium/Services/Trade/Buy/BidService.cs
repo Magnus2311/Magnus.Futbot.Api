@@ -1,6 +1,7 @@
 ﻿using Magnus.Futbot.Common;
 using Magnus.Futbot.Common.Models.DTOs;
-using Magnus.Futbot.Common.Models.Selenium;
+using Magnus.Futbot.Common.Models.DTOs.Trading;
+using Magnus.Futbot.Selenium.Helpers;
 using OpenQA.Selenium;
 
 namespace Magnus.Futbot.Services.Trade.Buy
@@ -8,16 +9,18 @@ namespace Magnus.Futbot.Services.Trade.Buy
     public class BidService : BaseService
     {
         private int _wonPlayers;
+        private Action<ProfileDTO>? _updateAction;
 
-        public void BidPlayer(ProfileDTO profileDTO, BidPlayerDTO bidPlayerDTO)
+        public void BidPlayer(ProfileDTO profileDTO, BuyCardDTO bidPlayerDTO, Action<ProfileDTO> updateAction)
         {
+            _updateAction = updateAction;
             var driver = GetInstance(profileDTO.Email).Driver;
 
             SearchPlayer(driver, bidPlayerDTO);
             BidPlayers(driver, bidPlayerDTO, profileDTO);
         }
 
-        private static void SearchPlayer(IWebDriver driver, BidPlayerDTO bidPlayerDTO)
+        private static void SearchPlayer(IWebDriver driver, BuyCardDTO bidPlayerDTO)
         {
             driver.OpenSearchTransfer();
 
@@ -27,7 +30,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
             var playerNameInput = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.ut-item-search-view > div.inline-list-select.ut-player-search-control > div > div.ut-player-search-control--input-container > input"), 5000);
             if (playerNameInput is null) return;
 
-            playerNameInput.SendKeys(bidPlayerDTO.Name);
+            playerNameInput.SendKeys(bidPlayerDTO.Card.Name);
 
             Thread.Sleep(500);
 
@@ -41,43 +44,38 @@ namespace Magnus.Futbot.Services.Trade.Buy
                 var playerName = item.FindElement(By.XPath("/span[1]")).Text;
                 _ = int.TryParse(item.FindElement(By.XPath("/span[2]")).Text, out var baseRating);
 
-                if (baseRating == bidPlayerDTO.BaseRating)
+                if (baseRating == bidPlayerDTO.Card.Rating)
                 {
                     item.Click();
                     break;
                 }
             }
 
-            if (bidPlayerDTO.PromoType != PromoType.Basic)
-            {
-                //TO DO: Add logic for picking rarity based on this prop
-            }
+            var promoType = TradingHelper.GetPromoTypeByRevision(bidPlayerDTO.Card.Revision);
 
-            if (bidPlayerDTO.PositionType != PositionType.Any)
+            switch (promoType)
             {
-                //TO DO: Add logic for position type based on this prop
-            }
-
-            if (bidPlayerDTO.ChemistryStyleType != ChemistryStyleType.Any)
-            {
-                //TO DO: Add logic for chemistry style based on this prop
+                case PromoType.Gold:
+                    break;
+                case PromoType.Icon:
+                    break;
             }
 
             var searchBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.button-container > button:nth-child(2)"), 1000);
             resetBtn?.Click();
         }
 
-        private void BidPlayers(IWebDriver driver, BidPlayerDTO bidPlayerDTO, ProfileDTO profileDTO)
+        private void BidPlayers(IWebDriver driver, BuyCardDTO bidPlayerDTO, ProfileDTO profileDTO)
         {
             var endDate = DateTime.Now.AddHours(1);
             do
             {
                 TryBidForPlayers(driver, bidPlayerDTO, profileDTO);
             }
-            while (_wonPlayers < bidPlayerDTO.MaxPlayers && endDate > DateTime.Now);
+            while (_wonPlayers < bidPlayerDTO.Count && endDate > DateTime.Now);
         }
 
-        private void TryBidForPlayers(IWebDriver driver, BidPlayerDTO bidPlayerDTO, ProfileDTO profileDTO)
+        private void TryBidForPlayers(IWebDriver driver, BuyCardDTO bidPlayerDTO, ProfileDTO profileDTO)
         {
             try
             {
@@ -97,24 +95,26 @@ namespace Magnus.Futbot.Services.Trade.Buy
                     var currentlyWon = allPlayers.Count(p => p.GetAttribute("class").Contains("won"));
                     _wonPlayers += currentlyWon;
                     profileDTO.WonTargetsCount += currentlyWon;
-                    // Send kafka message
+                    profileDTO.Coins = driver.GetCoins();
+
+                    _updateAction(profileDTO);
+
                     nextBtn?.Click(); //outbid
                     prevBtn?.Click();
                     Thread.Sleep(1000);
                     allPlayers = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > ul > li"), 1000);
                 }
 
-
                 var outbidded = allPlayers.Count(p => p.GetAttribute("class").Contains("outbid"));
                 profileDTO.Outbidded += outbidded;
-                // Send kafka message
+                _updateAction(profileDTO);
 
                 var activePlayers = allPlayers.Where(p => !p.GetAttribute("class").Contains("won") && !p.GetAttribute("class").Contains("expired") && !p.GetAttribute("class").Contains("highest-bid"));
                 foreach (var player in activePlayers)
                 {
                     var startSpan = player.FindElement(By.CssSelector("div > div.auction > div.auctionStartPrice.auctionValue > span.currency-coins.value"));
                     if (!int.TryParse(startSpan?.Text.Replace(",", ""), out var startPrice)) continue;
-                    if (startPrice > bidPlayerDTO.MaxPrice) continue;
+                    if (startPrice > bidPlayerDTO.Count) continue;
 
                     var bidSpan = player.FindElement(By.CssSelector("div > div.auction > div:nth-child(2) > span.currency-coins.value"));
                     if (bidSpan is null) continue;
@@ -122,7 +122,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
                     var bid = int.MaxValue;
                     int.TryParse(bidSpan.Text.Replace(",", ""), out bid);
                     var remainingTime = player.FindElement(By.CssSelector("div > div.auction > div.auction-state > span.time")).Text;
-                    if ((bidSpan.Text == "---" || bid < bidPlayerDTO.MaxPrice) && remainingTime.Contains("Seconds"))
+                    if ((bidSpan.Text == "---" || bid < bidPlayerDTO.Count) && remainingTime.Contains("Seconds"))
                     {
                         player.Click();
 
@@ -132,12 +132,12 @@ namespace Magnus.Futbot.Services.Trade.Buy
                         var currentPrice = int.MaxValue;
                         int.TryParse(priceInput.Text.Replace(",", ""), out currentPrice);
 
-                        if (currentPrice <= bidPlayerDTO.MaxPrice)
+                        if (currentPrice <= bidPlayerDTO.Count)
                         {
                             var makeBidBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-navigation-container-view.ui-layout-right > div > div > div.DetailPanel > div.bidOptions > button.btn-standard.call-to-action.bidButton"));
                             makeBidBtn?.Click();
                             profileDTO.ActiveBidsCount += 1;
-                            // Send kafka message
+                            _updateAction(profileDTO);
                         }
                     }
                 }
