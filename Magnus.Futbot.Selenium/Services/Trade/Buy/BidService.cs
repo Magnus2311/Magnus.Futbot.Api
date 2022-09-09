@@ -107,6 +107,8 @@ namespace Magnus.Futbot.Services.Trade.Buy
 
                 var outbidded = allPlayers.Count(p => p.GetAttribute("class").Contains("outbid"));
                 profileDTO.Outbidded += outbidded;
+                profileDTO.Coins = driver.GetCoins();
+
                 _updateAction(profileDTO);
 
                 var activePlayers = allPlayers.Where(p => !p.GetAttribute("class").Contains("won") && !p.GetAttribute("class").Contains("expired") && !p.GetAttribute("class").Contains("highest-bid"));
@@ -120,7 +122,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
                     if (bidSpan is null) continue;
 
                     var bid = int.MaxValue;
-                    int.TryParse(bidSpan.Text.Replace(",", ""), out bid);
+                    _ = int.TryParse(bidSpan.Text.Replace(",", ""), out bid);
                     var remainingTime = player.FindElement(By.CssSelector("div > div.auction > div.auction-state > span.time")).Text;
                     if ((bidSpan.Text == "---" || bid < bidPlayerDTO.Count) && remainingTime.Contains("Seconds"))
                     {
@@ -130,13 +132,14 @@ namespace Magnus.Futbot.Services.Trade.Buy
                         if (priceInput is null) continue;
 
                         var currentPrice = int.MaxValue;
-                        int.TryParse(priceInput.Text.Replace(",", ""), out currentPrice);
+                        _ = int.TryParse(priceInput.Text.Replace(",", ""), out currentPrice);
 
                         if (currentPrice <= bidPlayerDTO.Count)
                         {
                             var makeBidBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-navigation-container-view.ui-layout-right > div > div > div.DetailPanel > div.bidOptions > button.btn-standard.call-to-action.bidButton"));
                             makeBidBtn?.Click();
                             profileDTO.ActiveBidsCount += 1;
+                            profileDTO.Coins = driver.GetCoins();
                             _updateAction(profileDTO);
                         }
                     }
