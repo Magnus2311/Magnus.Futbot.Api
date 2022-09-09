@@ -1,4 +1,4 @@
-﻿namespace Magnus.Futbot.Database.Models.Card
+﻿namespace Magnus.Futbot.Common.Models.Database.Card
 {
     public class Pace
     {

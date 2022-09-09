@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Magnus.Futbot.Database.Models.Interfaces
+namespace Magnus.Futbot.Common.Models.Database.Interfaces
 {
     public interface IEntity
     {

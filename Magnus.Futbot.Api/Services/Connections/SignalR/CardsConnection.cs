@@ -1,7 +1,7 @@
 ﻿using Magnus.Futbot.Api.Hubs.Interfaces;
 using Magnus.Futbot.Api.Hubs;
 using Microsoft.AspNetCore.SignalR;
-using Magnus.Futbot.Database.Models.Card;
+using Magnus.Futbot.Common.Models.Database.Card;
 
 namespace Magnus.Futbot.Api.Services.Connections.SignalR
 {

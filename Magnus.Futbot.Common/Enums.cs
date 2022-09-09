@@ -19,7 +19,13 @@
 
     public enum PromoType
     {
-        Basic
+        Bronze,
+        Silver,
+        Gold,
+        Icon,
+        Hero,
+        TOTW,
+        SBC
     }
 
     public enum PositionType
