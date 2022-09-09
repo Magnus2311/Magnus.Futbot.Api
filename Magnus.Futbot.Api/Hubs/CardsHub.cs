@@ -1,5 +1,6 @@
 ﻿using Magnus.Futbot.Api.Caches;
 using Magnus.Futbot.Api.Hubs.Interfaces;
+using Magnus.Futbot.Api.Models.DTOs;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Magnus.Futbot.Api.Hubs
@@ -15,5 +16,10 @@ namespace Magnus.Futbot.Api.Hubs
 
         public async Task GetCards()
             => await Clients.All.OnCardsLoaded(_cardsCache.Cards);
+
+        public async Task BuyCard(BuyCardDTO buyCardDTO)
+        {
+
+        }
     }
 }
