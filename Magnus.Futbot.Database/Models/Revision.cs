@@ -1,4 +1,4 @@
-﻿using Magnus.Futbot.Database.Models.Interfaces;
+﻿using Magnus.Futbot.Common.Models.Database.Interfaces;
 using MongoDB.Bson;
 
 namespace Magnus.Futbot.Database.Models

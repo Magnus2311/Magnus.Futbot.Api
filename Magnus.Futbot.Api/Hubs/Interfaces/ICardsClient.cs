@@ -1,4 +1,4 @@
-﻿using Magnus.Futbot.Database.Models.Card;
+﻿using Magnus.Futbot.Common.Models.Database.Card;
 
 namespace Magnus.Futbot.Api.Hubs.Interfaces
 {

@@ -1,5 +1,5 @@
 ﻿using Magnus.Futbot.Api.Services.Connections.SignalR;
-using Magnus.Futbot.Database.Models.Card;
+using Magnus.Futbot.Common.Models.Database.Card;
 using Magnus.Futbot.Database.Repositories;
 using MongoDB.Driver;
 using System.Collections.Concurrent;

@@ -1,6 +1,6 @@
 ﻿using Magnus.Futbot.Common;
+using Magnus.Futbot.Common.Models.Database.Interfaces;
 using Magnus.Futbot.Common.Models.Selenium.Trading;
-using Magnus.Futbot.Database.Models.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 

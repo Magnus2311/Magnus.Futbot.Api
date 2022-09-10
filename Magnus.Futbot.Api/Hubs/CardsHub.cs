@@ -1,6 +1,6 @@
 ﻿using Magnus.Futbot.Api.Caches;
 using Magnus.Futbot.Api.Hubs.Interfaces;
-using Magnus.Futbot.Api.Models.DTOs;
+using Magnus.Futbot.Common.Models.DTOs.Trading;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Magnus.Futbot.Api.Hubs
