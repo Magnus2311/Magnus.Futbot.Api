@@ -16,6 +16,11 @@ namespace Magnus.Futbot.Services.Trade.Buy
             _updateAction = updateAction;
             var driver = GetInstance(profileDTO.Email).Driver;
 
+            if (!driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
+            {
+                LoginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
+            }
+
             SearchPlayer(driver, bidPlayerDTO);
             BidPlayers(driver, bidPlayerDTO, profileDTO);
         }
@@ -41,8 +46,8 @@ namespace Magnus.Futbot.Services.Trade.Buy
             {
                 if (item is null) continue;
 
-                var playerName = item.FindElement(By.XPath("/span[1]")).Text;
-                _ = int.TryParse(item.FindElement(By.XPath("/span[2]")).Text, out var baseRating);
+                var playerName = item.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.ut-item-search-view > div.inline-list-select.ut-player-search-control.has-selection.contract-text-input.is-open > div > div.inline-list > ul > button > span.btn-text")).Text;
+                _ = int.TryParse(item.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.ut-item-search-view > div.inline-list-select.ut-player-search-control.has-selection.contract-text-input.is-open > div > div.inline-list > ul > button > span.btn-subtext")).Text, out var baseRating);
 
                 if (baseRating == bidPlayerDTO.Card.Rating)
                 {
@@ -62,7 +67,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
             }
 
             var searchBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.button-container > button:nth-child(2)"), 1000);
-            resetBtn?.Click();
+            searchBtn?.Click();
         }
 
         private void BidPlayers(IWebDriver driver, BuyCardDTO bidPlayerDTO, ProfileDTO profileDTO)
@@ -116,7 +121,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
                 {
                     var startSpan = player.FindElement(By.CssSelector("div > div.auction > div.auctionStartPrice.auctionValue > span.currency-coins.value"));
                     if (!int.TryParse(startSpan?.Text.Replace(",", ""), out var startPrice)) continue;
-                    if (startPrice > bidPlayerDTO.Count) continue;
+                    if (startPrice > bidPlayerDTO.Price) continue;
 
                     var bidSpan = player.FindElement(By.CssSelector("div > div.auction > div:nth-child(2) > span.currency-coins.value"));
                     if (bidSpan is null) continue;
@@ -134,10 +139,25 @@ namespace Magnus.Futbot.Services.Trade.Buy
                         var currentPrice = int.MaxValue;
                         _ = int.TryParse(priceInput.Text.Replace(",", ""), out currentPrice);
 
-                        if (currentPrice <= bidPlayerDTO.Count)
+                        if (currentPrice <= bidPlayerDTO.Price)
                         {
                             var makeBidBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-navigation-container-view.ui-layout-right > div > div > div.DetailPanel > div.bidOptions > button.btn-standard.call-to-action.bidButton"));
                             makeBidBtn?.Click();
+
+                            Thread.Sleep(200);
+
+                            try
+                            {
+                                var errorMessage = driver.FindElement(By.CssSelector("#NotificationLayer > div"));
+                                if (errorMessage is not null)
+                                {
+                                    driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-bar-view.navbar-style-landscape.currency-purchase > button.ut-navigation-button-control")).Click();
+                                    var searchBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.button-container > button:nth-child(2)"), 1000);
+                                    searchBtn?.Click();
+                                }
+                            }
+                            catch { }
+
                             profileDTO.ActiveBidsCount += 1;
                             profileDTO.Coins = driver.GetCoins();
                             _updateAction(profileDTO);

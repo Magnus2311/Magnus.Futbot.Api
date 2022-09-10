@@ -5,11 +5,13 @@ using Magnus.Futbot.Api.Hubs;
 using Magnus.Futbot.Api.Services;
 using Magnus.Futbot.Api.Services.Connections;
 using Magnus.Futbot.Api.Services.Connections.SignalR;
+using Magnus.Futbot.Api.Services.Interfaces;
 using Magnus.Futbot.Common.Interfaces;
 using Magnus.Futbot.Database.Repositories;
 using Magnus.Futbot.Initializer;
 using Magnus.Futbot.Initializer.Connections;
 using Magnus.Futbot.Selenium.Trading.Connections;
+using Magnus.Futbot.Services.Trade.Buy;
 using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,7 +46,12 @@ builder.Services
 // Services
 builder.Services
     .AddTransient<ProfilesService>()
-    .AddTransient<IPlayersService, PlayersService>();
+    .AddTransient<IPlayersService, PlayersService>()
+    .AddTransient<ITradingService, TradingService>();
+
+// Selenium Services
+builder.Services
+    .AddTransient<BidService>();
 
 // Caches
 builder.Services
