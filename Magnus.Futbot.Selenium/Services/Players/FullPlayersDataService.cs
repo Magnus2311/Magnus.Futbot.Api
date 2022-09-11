@@ -45,9 +45,11 @@ namespace Magnus.Futbot.Selenium.Services.Players
 
             var players = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(3) > ul > li"));
 
-            foreach (var player in players)
+            for (int i = 0; i < players.Count; i++)
             {
-                var canvas = player.FindElement(By.CssSelector("div > div.entityContainer > div.small.player.item.specials.ut-item-loaded > canvas"));
+                var player = players[i];
+
+                var canvas = player.FindElement(By.CssSelector($"body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(3) > ul > li:nth-child({i + 1}) > div > div.entityContainer > div.small.player.item.specials.ut-item-loaded > canvas"));
                 // Getting card photo and should check it later for player type
                 // current.PlayerType should be set accordingly
                 var image = driver.ExecuteScript("return arguments[0].toDataURL('image/png').substring(22);", canvas);
