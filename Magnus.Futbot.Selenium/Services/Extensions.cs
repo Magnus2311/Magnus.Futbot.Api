@@ -111,6 +111,17 @@ namespace Magnus.Futbot.Services
 
         public static TransferCard ConvertCardToTransferCard(this IWebElement player, IEnumerable<Card> cards)
         {
+            // Remove this line
+            return new TransferCard
+            {
+                PossibleCards = new List<Card>
+                {
+                    cards.FirstOrDefault()!
+                },
+                PlayerCardStatus = PlayerCardStatus.Won,
+                BougthFor = 14000
+            };
+
             var transferCard = new TransferCard();
             var (Name, Rating) = player.GetCardNameAndRating();
             IWebElement? canvas = null;
