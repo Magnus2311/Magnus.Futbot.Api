@@ -21,6 +21,7 @@ namespace Magnus.Futbot.Services
 
         public static ProfileDTO InitProfile(ProfileDTO profileDTO)
         {
+            // Test
             var driverInstance = GetInstance(profileDTO.Email);
             var driver = driverInstance.Driver;
 
