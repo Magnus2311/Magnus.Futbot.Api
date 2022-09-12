@@ -1,4 +1,5 @@
 ﻿using Magnus.Futbot.Common;
+using Magnus.Futbot.Common.Interfaces.Helpers;
 using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.Selenium.Trading;
 using Magnus.Futbot.Services;
@@ -8,12 +9,19 @@ namespace Magnus.Futbot.Selenium.Services.Players
 {
     public class FullPlayersDataService : BaseService
     {
+        private readonly ICardsHelper _cardsHelper;
+
+        public FullPlayersDataService(ICardsHelper cardsHelper)
+        {
+            _cardsHelper = cardsHelper;
+        }
+
         public static ProfileDTO FetchTradingPlayers(ProfileDTO profile)
         {
             return profile;
         }
 
-        public static TradePile GetTransferPile(ProfileDTO profileDTO)
+        public TradePile GetTransferPile(ProfileDTO profileDTO)
         {
             var transferPile = new TradePile
             {
@@ -25,7 +33,7 @@ namespace Magnus.Futbot.Selenium.Services.Players
             return transferPile;
         }
 
-        public static IEnumerable<PlayerCard> GetUnsoldTransferListCards(ProfileDTO profileDTO)
+        public IEnumerable<TransferCard> GetUnsoldTransferListCards(ProfileDTO profileDTO)
         {
             var driver = GetInstance(profileDTO.Email).Driver;
 
@@ -39,28 +47,61 @@ namespace Magnus.Futbot.Selenium.Services.Players
             }
         }
 
-        public static IEnumerable<PlayerCard> GetAvailableTransferListCards(ProfileDTO profileDTO)
+        public IEnumerable<TransferCard> GetAvailableTransferListCards(ProfileDTO profileDTO)
         {
             var driver = GetInstance(profileDTO.Email).Driver;
+            var cards = _cardsHelper.GetAllCards();
 
             var players = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(3) > ul > li"));
 
-            for (int i = 0; i < players.Count; i++)
+            foreach (var player in players)
             {
-                var player = players[i];
+                var transferCard = new TransferCard();
+                var (Name, Rating) = player.ConvertPlayerElementToPlayerCard();
+                IWebElement? canvas = null;
 
-                var canvas = player.FindElement(By.CssSelector($"body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(3) > ul > li:nth-child({i + 1}) > div > div.entityContainer > div.small.player.item.specials.ut-item-loaded > canvas"));
+                var availableCards = cards.Where(c => c.Rating == Rating && c.Name.Contains(Name));
+                if (availableCards.Count() == 1) 
+                    yield return new TransferCard
+                    {
+                        Card = availableCards.FirstOrDefault()!,
+                        PlayerCardStatus = PlayerCardStatus.Won,
+                    };
+
+
+                canvas ??= player.TryFindElement(By.CssSelector("div > div.entityContainer > div.small.player.item.specials.ut-item-loaded > canvas"));
+                if (canvas is not null)
+                {
+                    var currentCards = availableCards.Where(c => c.)
+                }
+
+
+                if (canvas is null)
+                {
+
+                    try
+                    {
+                        canvas = player.FindElement(By.CssSelector("div > div.entityContainer > div.small.player.item.common.ut-item-loaded > canvas"));
+                    }
+                    catch { }
+                }
+
+                if (canvas is null)
+                {
+                    canvas = player.FindElement(By.CssSelector("div > div.entityContainer > div.small.player.item.rare.ut-item-loaded > canvas"));
+
+                }
+
                 // Getting card photo and should check it later for player type
                 // current.PlayerType should be set accordingly
                 var image = driver.ExecuteScript("return arguments[0].toDataURL('image/png').substring(22);", canvas);
-                var currentPlayer = player.ConvertPlayerElementToPlayerCard();
                 currentPlayer.PlayerCardStatus = PlayerCardStatus.Won;
-                currentPlayer.PlayerType = PlayerCardType.TOTW;
+                currentPlayer.PromoType = PlayerCardType.TOTW;
                 yield return currentPlayer;
             }
         }
 
-        public static IEnumerable<PlayerCard> GetActiveTransferListCards(ProfileDTO profileDTO)
+        public IEnumerable<TransferCard> GetActiveTransferListCards(ProfileDTO profileDTO)
         {
             var driver = GetInstance(profileDTO.Email).Driver;
 
@@ -74,13 +115,13 @@ namespace Magnus.Futbot.Selenium.Services.Players
             }
         }
 
-        public static IEnumerable<PlayerCard> GetTransferListCards(ProfileDTO profileDTO)
+        public IEnumerable<TransferCard> GetTransferListCards(ProfileDTO profileDTO)
         {
             var driver = GetInstance(profileDTO.Email).Driver;
             driver.OpenHomePage();
             driver.OpenTransferList();
 
-            var transferList = new List<PlayerCard>();
+            var transferList = new List<TransferCard>();
 
             transferList.AddRange(GetUnsoldTransferListCards(profileDTO));
             transferList.AddRange(GetAvailableTransferListCards(profileDTO));
@@ -89,7 +130,7 @@ namespace Magnus.Futbot.Selenium.Services.Players
             return transferList;
         }
 
-        public static IEnumerable<PlayerCard> GetUnassignedItems(ProfileDTO profileDTO)
+        public static IEnumerable<TransferCard> GetUnassignedItems(ProfileDTO profileDTO)
         {
             var driver = GetInstance(profileDTO.Email).Driver;
             driver.OpenUnassignedItems();
@@ -104,7 +145,7 @@ namespace Magnus.Futbot.Selenium.Services.Players
             }
         }
 
-        public static IEnumerable<PlayerCard> GetTransferTargets(ProfileDTO profileDTO)
+        public static IEnumerable<TransferCard> GetTransferTargets(ProfileDTO profileDTO)
         {
             var driver = GetInstance(profileDTO.Email).Driver;
             driver.OpenTransferTargets();
@@ -115,7 +156,7 @@ namespace Magnus.Futbot.Selenium.Services.Players
             return transferTargets;
         }
 
-        public static IEnumerable<PlayerCard> GetLostTransferTargets(ProfileDTO profileDTO)
+        public static IEnumerable<TransferCard> GetLostTransferTargets(ProfileDTO profileDTO)
         {
             var driver = GetInstance(profileDTO.Email).Driver;
 
@@ -129,7 +170,7 @@ namespace Magnus.Futbot.Selenium.Services.Players
             }
         }
 
-        public static IEnumerable<PlayerCard> GetWonTransferTargets(ProfileDTO profileDTO)
+        public static IEnumerable<TransferCard> GetWonTransferTargets(ProfileDTO profileDTO)
         {
             var driver = GetInstance(profileDTO.Email).Driver;
 
@@ -143,7 +184,7 @@ namespace Magnus.Futbot.Selenium.Services.Players
             }
         }
 
-        public static IEnumerable<PlayerCard> GetActiveTransferTargets(ProfileDTO profileDTO)
+        public static IEnumerable<TransferCard> GetActiveTransferTargets(ProfileDTO profileDTO)
         {
             var driver = GetInstance(profileDTO.Email).Driver;
 

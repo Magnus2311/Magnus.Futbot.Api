@@ -1,18 +1,19 @@
-﻿namespace Magnus.Futbot.Common.Models.Selenium.Trading
+﻿using Magnus.Futbot.Common.Models.Database.Card;
+
+namespace Magnus.Futbot.Common.Models.Selenium.Trading
 {
     public class TradePile
     {
-        public List<PlayerCard> TransferList { get; set; } = new List<PlayerCard>();
-        public List<PlayerCard> UnassignedItems { get; set; } = new List<PlayerCard>();
-        public List<PlayerCard> TransferTargets { get; set; } = new List<PlayerCard>();
-        public List<PlayerCard> ClubItems { get; set; } = new List<PlayerCard>();
+        public List<TransferCard> TransferList { get; set; } = new List<TransferCard>();
+        public List<TransferCard> UnassignedItems { get; set; } = new List<TransferCard>();
+        public List<TransferCard> TransferTargets { get; set; } = new List<TransferCard>();
+        public List<TransferCard> ClubItems { get; set; } = new List<TransferCard>();
     }
 
-    public class PlayerCard
+    public class TransferCard
     {
-        public string Name { get; set; } = string.Empty;
-        public int Rating { get; set; }
-        public PlayerCardStatus PlayerCardStatus {get; set;}
-        public PlayerCardType PlayerType { get; set; }
+        public Card Card { get; set; } = new();
+        public PlayerCardStatus PlayerCardStatus { get; set; }
+        public int BougthFor { get; set; }
     }
 }

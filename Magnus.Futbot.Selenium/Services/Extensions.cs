@@ -1,4 +1,5 @@
-﻿using Magnus.Futbot.Common.Models.Selenium.Trading;
+﻿using Magnus.Futbot.Common.Models.Database.Card;
+using Magnus.Futbot.Common.Models.Selenium.Trading;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 
@@ -91,7 +92,7 @@ namespace Magnus.Futbot.Services
             Thread.Sleep(1000);
         }
 
-        public static PlayerCard ConvertPlayerElementToPlayerCard(this IWebElement player)
+        public static (string Name, int Rating) ConvertPlayerElementToPlayerCard(this IWebElement player)
             => new()
             {
                 Name = player.FindElement(By.ClassName("name")).Text,
@@ -104,6 +105,30 @@ namespace Magnus.Futbot.Services
             if (coinsDiv is not null && int.TryParse(coinsDiv.Text.Replace(",", ""), out var coins)) return coins;
 
             return 0;
+        }
+
+        public static IWebElement? TryFindElement(this IWebDriver driver, By by)
+        {
+            try
+            {
+                return driver.FindElement(by);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public static IWebElement? TryFindElement(this IWebElement element, By by)
+        {
+            try
+            {
+                return element.FindElement(by);
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

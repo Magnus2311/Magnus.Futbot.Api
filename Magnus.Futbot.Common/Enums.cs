@@ -20,8 +20,11 @@
     public enum PromoType
     {
         Bronze,
+        BronzeRare,
         Silver,
+        SilverRare,
         Gold,
+        GoldRare,
         Icon,
         Hero,
         TOTW,
@@ -43,14 +46,5 @@
         Pending,
         Won,
         Outbidded
-    }
-
-    public enum PlayerCardType
-    {
-        Bronze,
-        Silver,
-        Gold,
-        TOTW,
-        // New types should be added
     }
 }
