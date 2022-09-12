@@ -15,13 +15,16 @@ namespace Magnus.Futbot.Api.Services
     {
         private readonly IMapper _mapper;
         private readonly ProfilesRepository _profilesRepository;
+        private readonly FullPlayersDataService _fullPlayersDataService;
 
         public ProfilesService(
             ProfilesRepository profilesRepository,
+            FullPlayersDataService fullPlayersDataService,
             IMapper mapper)
         {
             _mapper = mapper;
             _profilesRepository = profilesRepository;
+            _fullPlayersDataService = fullPlayersDataService;
         }
 
         public async Task<IEnumerable<ProfileDTO>> GetAll(string userId)
@@ -52,7 +55,7 @@ namespace Magnus.Futbot.Api.Services
         {
             var profile = await _profilesRepository.Get(new ObjectId(profileId), new ObjectId(userId));
             var refreshedProfile = InitProfileService.InitProfile(_mapper.Map<ProfileDTO>(profile));
-            refreshedProfile.TradePile = FullPlayersDataService.GetTransferPile(refreshedProfile);
+            refreshedProfile.TradePile = _fullPlayersDataService.GetTransferPile(refreshedProfile);
             await _profilesRepository.Update(_mapper.Map<ProfileDocument>(refreshedProfile));
             return refreshedProfile;
         }

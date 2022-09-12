@@ -12,7 +12,7 @@ namespace Magnus.Futbot.Common.Models.Selenium.Trading
 
     public class TransferCard
     {
-        public Card Card { get; set; } = new();
+        public IEnumerable<Card> PossibleCards { get; set; } = new List<Card>();
         public PlayerCardStatus PlayerCardStatus { get; set; }
         public int BougthFor { get; set; }
     }

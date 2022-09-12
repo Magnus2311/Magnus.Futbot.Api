@@ -14,6 +14,7 @@ namespace Magnus.Futbot.Common.Models.Database.Card
         public string PlayerImage { get; set; } = string.Empty;
         public string BackgroundImage { get; set; } = string.Empty;
         public string Revision { get; set; } = string.Empty;
+        public PromoType PromoType { get; set; }
         public MainData MainData { get; set; } = new MainData();
         public Stats Stats { get; set; } = new Stats();
         public ObjectId Id { get; set; }
