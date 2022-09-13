@@ -129,7 +129,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
                     var bid = int.MaxValue;
                     _ = int.TryParse(bidSpan.Text.Replace(",", ""), out bid);
                     var remainingTime = player.FindElement(By.CssSelector("div > div.auction > div.auction-state > span.time")).Text;
-                    if ((bidSpan.Text == "---" || bid < bidPlayerDTO.Count) && remainingTime.Contains("Seconds"))
+                    if ((bidSpan.Text == "---" || bid < bidPlayerDTO.Price) && remainingTime.Contains("Seconds"))
                     {
                         player.Click();
 
