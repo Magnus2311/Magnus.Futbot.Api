@@ -15,6 +15,7 @@ namespace Magnus.Futbot.Api.Services
         private readonly MovePlayersService _movePlayersService;
         private readonly ProfilesService _profilesService;
         private readonly IHubContext<ProfilesHub, IProfilesClient> _profilesHubContext;
+        private readonly Action<ProfileDTO> _updateProfile;
 
         public TradingService(BidService bidService,
             MovePlayersService movePlayersService,
@@ -25,18 +26,15 @@ namespace Magnus.Futbot.Api.Services
             _movePlayersService = movePlayersService;
             _profilesService = profilesService;
             _profilesHubContext = profilesHubContext;
-
-            UpdateProfile = new Action<ProfileDTO>(
+            _updateProfile = new Action<ProfileDTO>(
                 (profileDTO) => _profilesHubContext.Clients.Users(profileDTO.UserId).OnProfileUpdated(profileDTO));
         }
-
-        private Action<ProfileDTO> UpdateProfile;
 
         public async Task Buy(BuyCardDTO buyCardDTO)
         {
             var profileDTO = await _profilesService.GetByEmail(buyCardDTO.Email);
 
-            profileDTO = _bidService.BidPlayer(profileDTO, buyCardDTO, UpdateProfile);
+            profileDTO = _bidService.BidPlayer(profileDTO, buyCardDTO, _updateProfile);
 
             await _profilesService.UpdateProfile(profileDTO);
         }
@@ -45,7 +43,7 @@ namespace Magnus.Futbot.Api.Services
         {
             var profileDTO = await _profilesService.GetByEmail(email);
 
-            profileDTO = _movePlayersService.SendTransferTargetsToTransferList(profileDTO, UpdateProfile);
+            profileDTO = _movePlayersService.SendTransferTargetsToTransferList(profileDTO, _updateProfile);
 
             await _profilesService.UpdateProfile(profileDTO);
         }
