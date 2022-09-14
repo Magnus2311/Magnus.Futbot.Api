@@ -21,15 +21,11 @@ namespace Magnus.Futbot.Api.Hubs
         public async Task GetCards()
             => await Clients.All.OnCardsLoaded(_cardsCache.Cards);
 
-        public async Task BuyCard(BuyCardDTO buyCardDTO)
-        {
-            await _tradingService.Buy(buyCardDTO);
-        }
+        public Task BuyCard(BuyCardDTO buyCardDTO)
+            => _tradingService.Buy(buyCardDTO);
 
-        public async Task SellCard(SellCardDTO sellCardDTO)
-        {
-
-        }
+        public Task SellCard(SellCardDTO sellCardDTO)
+            => _tradingService.Sell(sellCardDTO);
 
         public Task SendTransferTargetsToTransferList(string email)
             => _tradingService.MoveCardsFromTransferTargetsToTransferList(email);

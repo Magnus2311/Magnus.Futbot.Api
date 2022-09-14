@@ -39,6 +39,15 @@ namespace Magnus.Futbot.Api.Services
             await _profilesService.UpdateProfile(profileDTO);
         }
 
+        public async Task Sell(SellCardDTO sellCardDTO)
+        {
+            var profileDTO = await _profilesService.GetByEmail(sellCardDTO.Email);
+
+            profileDTO = _movePlayersService.SellPlayer(profileDTO, _updateProfile);
+
+            await _profilesService.UpdateProfile(profileDTO);
+        }
+
         public async Task MoveCardsFromTransferTargetsToTransferList(string email)
         {
             var profileDTO = await _profilesService.GetByEmail(email);
