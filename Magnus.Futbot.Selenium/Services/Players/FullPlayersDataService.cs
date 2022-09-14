@@ -1,6 +1,4 @@
-﻿using Magnus.Futbot.Common;
-using Magnus.Futbot.Common.Interfaces.Helpers;
-using Magnus.Futbot.Common.Models.Database.Card;
+﻿using Magnus.Futbot.Common.Interfaces.Helpers;
 using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.Selenium.Trading;
 using Magnus.Futbot.Services;

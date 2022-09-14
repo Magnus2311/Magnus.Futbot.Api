@@ -56,7 +56,8 @@ builder.Services
 // Selenium Services
 builder.Services
     .AddTransient<BidService>()
-    .AddTransient<FullPlayersDataService>();
+    .AddTransient<FullPlayersDataService>()
+    .AddTransient<MovePlayersService>();
 
 // Caches
 builder.Services

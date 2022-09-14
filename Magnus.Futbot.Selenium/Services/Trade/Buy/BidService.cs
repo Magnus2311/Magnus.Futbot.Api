@@ -11,7 +11,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
         private int _wonPlayers;
         private Action<ProfileDTO>? _updateAction;
 
-        public void BidPlayer(ProfileDTO profileDTO, BuyCardDTO bidPlayerDTO, Action<ProfileDTO> updateAction)
+        public ProfileDTO BidPlayer(ProfileDTO profileDTO, BuyCardDTO bidPlayerDTO, Action<ProfileDTO> updateAction)
         {
             _updateAction = updateAction;
             var driver = GetInstance(profileDTO.Email).Driver;
@@ -22,7 +22,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
             }
 
             SearchPlayer(driver, bidPlayerDTO);
-            BidPlayers(driver, bidPlayerDTO, profileDTO);
+            return BidPlayers(driver, bidPlayerDTO, profileDTO);
         }
 
         private static void SearchPlayer(IWebDriver driver, BuyCardDTO bidPlayerDTO)
@@ -70,17 +70,19 @@ namespace Magnus.Futbot.Services.Trade.Buy
             searchBtn?.Click();
         }
 
-        private void BidPlayers(IWebDriver driver, BuyCardDTO bidPlayerDTO, ProfileDTO profileDTO)
+        private ProfileDTO BidPlayers(IWebDriver driver, BuyCardDTO bidPlayerDTO, ProfileDTO profileDTO)
         {
             var endDate = DateTime.Now.AddHours(1);
             do
             {
-                TryBidForPlayers(driver, bidPlayerDTO, profileDTO);
+                profileDTO = TryBidForPlayers(driver, bidPlayerDTO, profileDTO);
             }
             while (_wonPlayers < bidPlayerDTO.Count && endDate > DateTime.Now);
+
+            return profileDTO;
         }
 
-        private void TryBidForPlayers(IWebDriver driver, BuyCardDTO bidPlayerDTO, ProfileDTO profileDTO)
+        private ProfileDTO TryBidForPlayers(IWebDriver driver, BuyCardDTO bidPlayerDTO, ProfileDTO profileDTO)
         {
             try
             {
@@ -96,7 +98,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
                 }
 
                 var winningPlayers = allPlayers.Count(ap => ap.GetAttribute("class").Contains("won") || ap.GetAttribute("class").Contains("highest-bid"));
-                if (winningPlayers + _wonPlayers >= bidPlayerDTO.Count) return;
+                if (winningPlayers + _wonPlayers >= bidPlayerDTO.Count) return profileDTO;
 
                 if (allPlayers.All(p => p.GetAttribute("class").Contains("won") || p.GetAttribute("class").Contains("expired")))
                 {
@@ -171,6 +173,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
                 }
             }
             catch { }
+            return profileDTO;
         }
     }
 }

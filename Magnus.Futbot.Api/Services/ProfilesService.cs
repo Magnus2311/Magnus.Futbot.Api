@@ -59,5 +59,8 @@ namespace Magnus.Futbot.Api.Services
             await _profilesRepository.Update(_mapper.Map<ProfileDocument>(refreshedProfile));
             return refreshedProfile;
         }
+
+        public Task UpdateProfile(ProfileDTO profileDTO)
+            => _profilesRepository.Update(_mapper.Map<ProfileDocument>(profileDTO));
     }
 }
