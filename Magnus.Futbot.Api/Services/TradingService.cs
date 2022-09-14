@@ -1,6 +1,7 @@
 ﻿using Magnus.Futbot.Api.Hubs;
 using Magnus.Futbot.Api.Hubs.Interfaces;
 using Magnus.Futbot.Api.Services.Interfaces;
+using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.DTOs.Trading;
 using Magnus.Futbot.Selenium.Services.Players;
 using Magnus.Futbot.Services.Trade.Buy;
@@ -12,7 +13,6 @@ namespace Magnus.Futbot.Api.Services
     {
         private readonly BidService _bidService;
         private readonly MovePlayersService _movePlayersService;
-
         private readonly ProfilesService _profilesService;
         private readonly IHubContext<ProfilesHub, IProfilesClient> _profilesHubContext;
 
@@ -25,14 +25,18 @@ namespace Magnus.Futbot.Api.Services
             _movePlayersService = movePlayersService;
             _profilesService = profilesService;
             _profilesHubContext = profilesHubContext;
+
+            UpdateProfile = new Action<ProfileDTO>(
+                (profileDTO) => _profilesHubContext.Clients.Users(profileDTO.UserId).OnProfileUpdated(profileDTO));
         }
+
+        private Action<ProfileDTO> UpdateProfile;
 
         public async Task Buy(BuyCardDTO buyCardDTO)
         {
             var profileDTO = await _profilesService.GetByEmail(buyCardDTO.Email);
 
-            profileDTO = _bidService.BidPlayer(profileDTO, buyCardDTO, 
-                (profileDTO) => _profilesHubContext.Clients.Users(profileDTO.UserId).OnProfileUpdated(profileDTO));
+            profileDTO = _bidService.BidPlayer(profileDTO, buyCardDTO, UpdateProfile);
 
             await _profilesService.UpdateProfile(profileDTO);
         }
@@ -41,12 +45,9 @@ namespace Magnus.Futbot.Api.Services
         {
             var profileDTO = await _profilesService.GetByEmail(email);
 
-            profileDTO = _movePlayersService.SendTransferTargetsToTransferList(profileDTO,
-                (profileDTO) => _profilesHubContext.Clients.Users(profileDTO.UserId).OnProfileUpdated(profileDTO));
+            profileDTO = _movePlayersService.SendTransferTargetsToTransferList(profileDTO, UpdateProfile);
 
             await _profilesService.UpdateProfile(profileDTO);
-
-
         }
     }
 }
