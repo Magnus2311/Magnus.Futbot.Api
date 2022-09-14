@@ -25,5 +25,10 @@ namespace Magnus.Futbot.Api.Hubs
         {
             await _tradingService.Buy(buyCardDTO);
         }
+
+        public async Task SellCard(SellCardDTO sellCardDTO)
+        {
+
+        }
     }
 }
