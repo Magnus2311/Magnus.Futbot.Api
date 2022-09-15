@@ -1,5 +1,6 @@
 using Magnus.Futbot.Api.Hubs.Interfaces;
 using Magnus.Futbot.Api.Services;
+using Magnus.Futbot.Common.Models.DTOs.Profiles;
 using Magnus.Futbot.Common.Models.Selenium.Profiles;
 using Microsoft.AspNetCore.SignalR;
 
@@ -43,5 +44,8 @@ namespace Magnus.Futbot.Api.Hubs
             var profileDTO = await _profilesService.RefreshProfile(profileId, userId);
             await Clients.Users(userId).OnProfileUpdated(profileDTO);
         }
+
+        public async Task EditProfile(EditProfileDTO editProfileDTO)
+            => await Clients.Users(Context.UserIdentifier ?? "").OnProfileUpdated(await _profilesService.EditProfile(editProfileDTO));
     }
 }

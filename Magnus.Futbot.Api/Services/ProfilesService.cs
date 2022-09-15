@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Magnus.Futbot.Common;
 using Magnus.Futbot.Common.Models.DTOs;
+using Magnus.Futbot.Common.Models.DTOs.Profiles;
 using Magnus.Futbot.Common.Models.Responses;
 using Magnus.Futbot.Common.Models.Selenium.Profiles;
 using Magnus.Futbot.Database.Models;
@@ -62,5 +63,17 @@ namespace Magnus.Futbot.Api.Services
 
         public Task UpdateProfile(ProfileDTO profileDTO)
             => _profilesRepository.Update(_mapper.Map<ProfileDocument>(profileDTO));
+
+        public async Task<ProfileDTO> EditProfile(EditProfileDTO editProfileDTO)
+        {
+            var profile = (await _profilesRepository.GetByEmail(editProfileDTO.Email)).FirstOrDefault();
+            if (profile is not null)
+            {
+                profile.Password = editProfileDTO.Password;
+                await _profilesRepository.Update(profile);
+            }
+
+            return _mapper.Map<ProfileDTO>(profile);
+        }
     }
 }
