@@ -13,6 +13,7 @@ using Magnus.Futbot.Database.Repositories;
 using Magnus.Futbot.Initializer;
 using Magnus.Futbot.Initializer.Connections;
 using Magnus.Futbot.Selenium.Services.Players;
+using Magnus.Futbot.Selenium.Services.Trade.Sell;
 using Magnus.Futbot.Selenium.Trading.Connections;
 using Magnus.Futbot.Services.Trade.Buy;
 using Microsoft.AspNetCore.SignalR;
@@ -57,7 +58,8 @@ builder.Services
 builder.Services
     .AddTransient<BidService>()
     .AddTransient<FullPlayersDataService>()
-    .AddTransient<MovePlayersService>();
+    .AddTransient<MovePlayersService>()
+    .AddTransient<SellService>();
 
 // Caches
 builder.Services
