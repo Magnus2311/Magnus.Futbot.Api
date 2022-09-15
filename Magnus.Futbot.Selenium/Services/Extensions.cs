@@ -1,5 +1,6 @@
 ﻿using Magnus.Futbot.Common;
 using Magnus.Futbot.Common.Models.Database.Card;
+using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.Selenium.Trading;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
@@ -60,9 +61,9 @@ namespace Magnus.Futbot.Services
             Thread.Sleep(500);
         }
 
-        public static bool OpenUnassignedItems(this IWebDriver driver)
+        public static bool OpenUnassignedItems(this IWebDriver driver, ProfileDTO profileDTO)
         {
-            driver.OpenHomePage();
+            driver.OpenHomePage(profileDTO);
             var unassignedBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div.ut-unassigned-tile-view.tile.col-1-1"));
             if (unassignedBtn is not null
                 && unassignedBtn.Enabled
@@ -90,8 +91,11 @@ namespace Magnus.Futbot.Services
             Thread.Sleep(1000);
         }
 
-        public static void OpenHomePage(this IWebDriver driver)
+        public static void OpenHomePage(this IWebDriver driver, ProfileDTO profileDTO)
         {
+            if (!driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
+                InitProfileService.InitProfile(profileDTO);
+
             var homeBtn = driver.FindElement(By.CssSelector("body > main > section > nav > button.ut-tab-bar-item.icon-home"), 10000);
             homeBtn?.Click();
             Thread.Sleep(1000);

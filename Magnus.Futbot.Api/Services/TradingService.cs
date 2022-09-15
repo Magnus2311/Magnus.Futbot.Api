@@ -60,5 +60,14 @@ namespace Magnus.Futbot.Api.Services
 
             await _profilesService.UpdateProfile(profileDTO);
         }
+
+        public async Task SendUnassignedItemsToTransferList(string email)
+        {
+            var profileDTO = await _profilesService.GetByEmail(email);
+
+            profileDTO = _movePlayersService.SendUnassignedItemsToTransferList(profileDTO, _updateProfile);
+
+            await _profilesService.UpdateProfile(profileDTO);
+        }
     }
 }

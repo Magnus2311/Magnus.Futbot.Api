@@ -29,5 +29,8 @@ namespace Magnus.Futbot.Api.Hubs
 
         public Task SendTransferTargetsToTransferList(string email)
             => _tradingService.MoveCardsFromTransferTargetsToTransferList(email);
+
+        public Task SendUnassignedItemsToTransferList(string email)
+            => _tradingService.SendUnassignedItemsToTransferList(email);
     }
 }

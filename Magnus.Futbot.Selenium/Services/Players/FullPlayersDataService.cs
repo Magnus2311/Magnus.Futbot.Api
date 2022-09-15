@@ -68,7 +68,7 @@ namespace Magnus.Futbot.Selenium.Services.Players
         public IEnumerable<TransferCard> GetTransferListCards(ProfileDTO profileDTO)
         {
             var driver = GetInstance(profileDTO.Email).Driver;
-            driver.OpenHomePage();
+            driver.OpenHomePage(profileDTO);
             driver.OpenTransferList();
 
             var transferList = new List<TransferCard>();
@@ -83,7 +83,7 @@ namespace Magnus.Futbot.Selenium.Services.Players
         public IEnumerable<TransferCard> GetUnassignedItems(ProfileDTO profileDTO)
         {
             var driver = GetInstance(profileDTO.Email).Driver;
-            if (driver.OpenUnassignedItems())
+            if (driver.OpenUnassignedItems(profileDTO))
             {
                 var cards = _cardsHelper.GetAllCards();
 

@@ -13,7 +13,7 @@ namespace Magnus.Futbot.Services
             var activeBids = GetActiveBidsCount(driver);
             var outbidded = GetOutbiddedCount(driver);
 
-            profile.UnassignedCount = GetUnassignedItems(driver);
+            profile.UnassignedCount = GetUnassignedItems(driver, profile);
             profile.Coins = driver.GetCoins();
             profile.TransferListCount = GetTransferListCount(driver);
             profile.ActiveBidsCount = activeBids;
@@ -41,9 +41,9 @@ namespace Magnus.Futbot.Services
             return 0;
         }
 
-        public static int GetUnassignedItems(IWebDriver driver)
+        public static int GetUnassignedItems(IWebDriver driver, ProfileDTO profileDTO)
         {
-            driver.OpenHomePage();
+            driver.OpenHomePage(profileDTO);
             var unassignedItemsSpan = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div.ut-unassigned-tile-view.tile.col-1-1 > div.data-container > span.itemsNumber"), 1000);
             if (unassignedItemsSpan is not null && int.TryParse(unassignedItemsSpan.Text, out var unassignedItemsCount)) return unassignedItemsCount;
 
