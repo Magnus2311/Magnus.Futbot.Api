@@ -4,6 +4,7 @@ using Magnus.Futbot.Api.Services.Interfaces;
 using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.DTOs.Trading;
 using Magnus.Futbot.Selenium.Services.Players;
+using Magnus.Futbot.Selenium.Services.Trade.Sell;
 using Magnus.Futbot.Services.Trade.Buy;
 using Microsoft.AspNetCore.SignalR;
 
@@ -14,17 +15,20 @@ namespace Magnus.Futbot.Api.Services
         private readonly BidService _bidService;
         private readonly MovePlayersService _movePlayersService;
         private readonly ProfilesService _profilesService;
+        private readonly SellService _sellService;
         private readonly IHubContext<ProfilesHub, IProfilesClient> _profilesHubContext;
         private readonly Action<ProfileDTO> _updateProfile;
 
         public TradingService(BidService bidService,
             MovePlayersService movePlayersService,
             ProfilesService profilesService,
+            SellService sellService,
             IHubContext<ProfilesHub, IProfilesClient> profilesHubContext)
         {
             _bidService = bidService;
             _movePlayersService = movePlayersService;
             _profilesService = profilesService;
+            _sellService = sellService;
             _profilesHubContext = profilesHubContext;
             _updateProfile = new Action<ProfileDTO>(
                 (profileDTO) => _profilesHubContext.Clients.Users(profileDTO.UserId).OnProfileUpdated(profileDTO));
@@ -43,7 +47,7 @@ namespace Magnus.Futbot.Api.Services
         {
             var profileDTO = await _profilesService.GetByEmail(sellCardDTO.Email);
 
-            profileDTO = _movePlayersService.SellPlayer(profileDTO, _updateProfile);
+            profileDTO = _sellService.SellPlayer(sellCardDTO, profileDTO, _updateProfile);
 
             await _profilesService.UpdateProfile(profileDTO);
         }
