@@ -41,6 +41,7 @@ namespace Magnus.Futbot.Initializer
                 catch (Exception ex)
                 {
                     _logger.LogError(JsonConvert.SerializeObject(ex));
+                    await Task.Delay(TimeSpan.FromDays(10), stoppingToken);
                 }
             }
         }
