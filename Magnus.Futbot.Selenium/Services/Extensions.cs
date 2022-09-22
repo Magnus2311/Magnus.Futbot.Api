@@ -105,6 +105,7 @@ namespace Magnus.Futbot.Services
         {
             driver.OpenTransfer();
             var searchDiv = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div.tile.col-1-1.ut-tile-transfer-market"), 2000);
+            Thread.Sleep(500);
             if (searchDiv is not null) searchDiv.Click();
             Thread.Sleep(1000);
         }
@@ -118,17 +119,6 @@ namespace Magnus.Futbot.Services
 
         public static TransferCard ConvertCardToTransferCard(this IWebElement player, IEnumerable<Card> cards)
         {
-            // Remove this line
-            return new TransferCard
-            {
-                PossibleCards = new List<Card>
-                {
-                    cards.FirstOrDefault()!
-                },
-                PlayerCardStatus = PlayerCardStatus.Won,
-                BougthFor = 14000
-            };
-
             var transferCard = new TransferCard();
             var (Name, Rating) = player.GetCardNameAndRating();
             IWebElement? canvas = null;

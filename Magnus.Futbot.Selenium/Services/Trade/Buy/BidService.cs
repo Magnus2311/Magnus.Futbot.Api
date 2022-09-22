@@ -86,12 +86,13 @@ namespace Magnus.Futbot.Services.Trade.Buy
         {
             try
             {
-                var nextBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > div > button.flat.pagination.next"));
-                var prevBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > div > button.flat.pagination.prev"));
+                Thread.Sleep(500);
                 var allPlayers = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > ul > li"), 1000);
                 if (allPlayers is null)
                 {
+                    var nextBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > div > button.flat.pagination.next"));
                     nextBtn?.Click();
+                    var prevBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > div > button.flat.pagination.prev"));
                     prevBtn?.Click();
                     Thread.Sleep(1000);
                     allPlayers = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > ul > li"), 1000);
@@ -102,14 +103,20 @@ namespace Magnus.Futbot.Services.Trade.Buy
 
                 if (allPlayers.All(p => p.GetAttribute("class").Contains("won") || p.GetAttribute("class").Contains("expired")))
                 {
+                    if (driver.GetCoins() < bidPlayerDTO.Price) return profileDTO;
+
                     var currentlyWon = allPlayers.Count(p => p.GetAttribute("class").Contains("won"));
                     _wonPlayers += currentlyWon;
                     profileDTO.WonTargetsCount += currentlyWon;
                     profileDTO.Coins = driver.GetCoins();
 
                     _updateAction(profileDTO);
+                    
+                    var nextBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > div > button.flat.pagination.next"));
 
                     nextBtn?.Click(); //outbid
+                    Thread.Sleep(500);
+                    var prevBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > div > button.flat.pagination.prev"));
                     prevBtn?.Click();
                     Thread.Sleep(1000);
                     allPlayers = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > ul > li"), 1000);
@@ -144,21 +151,21 @@ namespace Magnus.Futbot.Services.Trade.Buy
                         var currentPrice = int.MaxValue;
                         _ = int.TryParse(priceInput.Text.Replace(",", ""), out currentPrice);
 
-                        if (currentPrice <= bidPlayerDTO.Price)
+                        if (currentPrice <= bidPlayerDTO.Price && driver.GetCoins() > currentPrice)
                         {
                             var makeBidBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-navigation-container-view.ui-layout-right > div > div > div.DetailPanel > div.bidOptions > button.btn-standard.call-to-action.bidButton"));
                             makeBidBtn?.Click();
 
-                            Thread.Sleep(200);
+                            Thread.Sleep(50);
 
                             try
                             {
-                                var errorMessage = driver.FindElement(By.CssSelector("#NotificationLayer > div"));
+                                var errorMessage = driver.FindElement(By.CssSelector("#NotificationLayer > div > p"));
                                 if (errorMessage is not null)
                                 {
                                     _wonPlayers += allPlayers.Count(ap => ap.GetAttribute("class").Contains("won") || ap.GetAttribute("class").Contains("highest-bid"));
                                     // Should go to Transfer Targets and finish currently bidding items and continue
-                                    driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-bar-view.navbar-style-landscape.currency-purchase > button.ut-navigation-button-control")).Click();
+                                    driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-bar-view.navbar-style-landscape > button.ut-navigation-button-control")).Click();
                                     var searchBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.button-container > button:nth-child(2)"), 1000);
                                     searchBtn?.Click();
                                 }

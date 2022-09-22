@@ -36,5 +36,6 @@ namespace Magnus.Futbot.Common.Models.Database.Card
         public int AssetId { get; internal set; }
         public int ClubId { get; internal set; }
         public int LeagueId { get; internal set; }
+        public int NationId { get; internal set; }
     }
 }
