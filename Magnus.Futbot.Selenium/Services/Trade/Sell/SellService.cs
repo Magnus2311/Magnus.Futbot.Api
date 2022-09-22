@@ -33,11 +33,15 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
                     Thread.Sleep(300);
                     var bidPrice = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section > div > div > div.DetailPanel > div.ut-quick-list-panel-view > div.panelActions.open > div:nth-child(2) > div.ut-numeric-input-spinner-control > input"));
                     bidPrice.Click();
+                    Thread.Sleep(100);
+                    bidPrice.SendKeys(Keys.Backspace);
                     bidPrice.SendKeys($"{sellCard.FromBid}");
                     Thread.Sleep(100);
 
                     var binPrice = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section > div > div > div.DetailPanel > div.ut-quick-list-panel-view > div.panelActions.open > div:nth-child(3) > div.ut-numeric-input-spinner-control > input"));
                     binPrice.Click();
+                    Thread.Sleep(100);
+                    bidPrice.SendKeys(Keys.Backspace);
                     binPrice.SendKeys($"{sellCard.FromBin}");
                     Thread.Sleep(100);
 
