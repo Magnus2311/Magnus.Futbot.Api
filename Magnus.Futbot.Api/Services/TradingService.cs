@@ -4,6 +4,7 @@ using Magnus.Futbot.Api.Services.Interfaces;
 using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.DTOs.Trading;
 using Magnus.Futbot.Selenium.Services.Players;
+using Magnus.Futbot.Selenium.Services.Trade.Buy;
 using Magnus.Futbot.Selenium.Services.Trade.Sell;
 using Magnus.Futbot.Services.Trade.Buy;
 using Microsoft.AspNetCore.SignalR;
@@ -16,6 +17,7 @@ namespace Magnus.Futbot.Api.Services
         private readonly MovePlayersService _movePlayersService;
         private readonly ProfilesService _profilesService;
         private readonly SellService _sellService;
+        private readonly BinService _binService;
         private readonly IHubContext<ProfilesHub, IProfilesClient> _profilesHubContext;
         private readonly Action<ProfileDTO> _updateProfile;
 
@@ -23,12 +25,14 @@ namespace Magnus.Futbot.Api.Services
             MovePlayersService movePlayersService,
             ProfilesService profilesService,
             SellService sellService,
+            BinService binService,
             IHubContext<ProfilesHub, IProfilesClient> profilesHubContext)
         {
             _bidService = bidService;
             _movePlayersService = movePlayersService;
             _profilesService = profilesService;
             _sellService = sellService;
+            _binService = binService;
             _profilesHubContext = profilesHubContext;
             _updateProfile = new Action<ProfileDTO>(
                 (profileDTO) => _profilesHubContext.Clients.Users(profileDTO.UserId).OnProfileUpdated(profileDTO));
@@ -38,7 +42,10 @@ namespace Magnus.Futbot.Api.Services
         {
             var profileDTO = await _profilesService.GetByEmail(buyCardDTO.Email);
 
-            profileDTO = _bidService.BidPlayer(profileDTO, buyCardDTO, _updateProfile);
+            var tknSrc = new CancellationTokenSource();
+
+            if (buyCardDTO.IsBin) await _binService.BinPlayer(profileDTO, buyCardDTO, _updateProfile, tknSrc);
+            else profileDTO = _bidService.BidPlayer(profileDTO, buyCardDTO, _updateProfile);
 
             await _profilesService.UpdateProfile(profileDTO);
         }

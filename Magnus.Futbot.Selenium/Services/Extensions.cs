@@ -195,7 +195,7 @@ namespace Magnus.Futbot.Services
 
         public static int GetCoins(this IWebDriver driver)
         {
-            var coinsDiv = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-bar-view.navbar-style-landscape.currency-purchase > div.view-navbar-currency > div.view-navbar-currency-coins"), 1000);
+            var coinsDiv = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-bar-view.navbar-style-landscape > div.view-navbar-currency > div.view-navbar-currency-coins"), 1000);
             if (coinsDiv is not null && int.TryParse(coinsDiv.Text.Replace(",", ""), out var coins)) return coins;
 
             return 0;

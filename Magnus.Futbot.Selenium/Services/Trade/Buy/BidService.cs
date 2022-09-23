@@ -1,7 +1,6 @@
-﻿using Magnus.Futbot.Common;
-using Magnus.Futbot.Common.Models.DTOs;
+﻿using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.DTOs.Trading;
-using Magnus.Futbot.Selenium.Helpers;
+using Magnus.Futbot.Selenium.Services.Trade.Filters;
 using OpenQA.Selenium;
 
 namespace Magnus.Futbot.Services.Trade.Buy
@@ -10,6 +9,12 @@ namespace Magnus.Futbot.Services.Trade.Buy
     {
         private int _wonPlayers;
         private Action<ProfileDTO>? _updateAction;
+        private readonly FiltersService _filtersService;
+
+        public BidService(FiltersService filtersService)
+        {
+            _filtersService = filtersService;
+        }
 
         public ProfileDTO BidPlayer(ProfileDTO profileDTO, BuyCardDTO bidPlayerDTO, Action<ProfileDTO> updateAction)
         {
@@ -21,100 +26,10 @@ namespace Magnus.Futbot.Services.Trade.Buy
                 LoginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
             }
 
-            SearchPlayer(driver, bidPlayerDTO);
-            return BidPlayers(driver, bidPlayerDTO, profileDTO);
-        }
-
-        private static void SearchPlayer(IWebDriver driver, BuyCardDTO bidPlayerDTO)
-        {
-            driver.OpenSearchTransfer();
-
-            var resetBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.button-container > button:nth-child(1)"), 1000);
-            resetBtn?.Click();
-
-            if (bidPlayerDTO.Card is not null)
-            {
-                var playerNameInput = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.ut-item-search-view > div.inline-list-select.ut-player-search-control > div > div.ut-player-search-control--input-container > input"), 5000);
-                if (playerNameInput is null) return;
-
-                playerNameInput.SendKeys(bidPlayerDTO.Card.Name);
-
-                Thread.Sleep(500);
-            }
-
-            if (bidPlayerDTO.Quality != "Any")
-            {
-                driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.ut-item-search-view > div:nth-child(2)"))
-                    .Click();
-
-                var options = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.ut-item-search-view > div.inline-list-select.ut-search-filter-control.has-default.has-image.is-open > div > ul > li"));
-                options.FirstOrDefault(o => o.Text == bidPlayerDTO.Quality)?.Click();
-            }
-
-            if (bidPlayerDTO.Rarity != "Any")
-            {
-                driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.ut-item-search-view > div:nth-child(3)"))
-                    .Click();
-
-                var options = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.ut-item-search-view > div.inline-list-select.ut-search-filter-control.has-default.has-image.is-open > div > ul > li"));
-                options.FirstOrDefault(o => o.Text == bidPlayerDTO.Rarity)?.Click();
-            }
-
-            if (bidPlayerDTO.Position != "Any")
-            {
-                driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.ut-item-search-view > div:nth-child(4)"))
-                    .Click();
-
-                var options = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.ut-item-search-view > div.inline-list-select.ut-search-filter-control.has-default.has-image.is-open > div > ul > li"));
-                options.FirstOrDefault(o => o.Text == bidPlayerDTO.Position)?.Click();
-            }
-
-            if (bidPlayerDTO.Chemistry != "Any")
-            {
-                driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.ut-item-search-view > div:nth-child(5)"))
-                    .Click();
-
-                var options = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.ut-item-search-view > div.inline-list-select.ut-search-filter-control.has-default.has-image.is-open > div > ul > li"));
-                options.FirstOrDefault(o => o.Text == bidPlayerDTO.Chemistry)?.Click();
-            }
-
-            if (bidPlayerDTO.Nationallity != "Any")
-            {
-                driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.ut-item-search-view > div:nth-child(6)"))
-                    .Click();
-
-                var options = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.ut-item-search-view > div.inline-list-select.ut-search-filter-control.has-default.has-image.is-open > div > ul > li"));
-                options.FirstOrDefault(o => o.Text == bidPlayerDTO.Nationallity)?.Click();
-            }
-
-            if (bidPlayerDTO.League != "Any")
-            {
-                driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.ut-item-search-view > div:nth-child(7)"))
-                    .Click();
-
-                var options = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.ut-item-search-view > div.inline-list-select.ut-search-filter-control.has-default.has-image.is-open > div > ul > li"));
-                options.FirstOrDefault(o => o.Text == bidPlayerDTO.League)?.Click();
-            }
-
-            var searchItems = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.ut-item-search-view > div.inline-list-select.ut-player-search-control.is-open.has-selection.contract-text-input > div > div.inline-list > ul > button"), 1000);
-            if (searchItems is null) return;
-
-            foreach (var item in searchItems)
-            {
-                if (item is null) continue;
-
-                var playerName = item.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.ut-item-search-view > div.inline-list-select.ut-player-search-control.has-selection.contract-text-input.is-open > div > div.inline-list > ul > button > span.btn-text")).Text;
-                _ = int.TryParse(item.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.ut-item-search-view > div.inline-list-select.ut-player-search-control.has-selection.contract-text-input.is-open > div > div.inline-list > ul > button > span.btn-subtext")).Text, out var baseRating);
-
-                if (baseRating == bidPlayerDTO.Card.Rating)
-                {
-                    item.Click();
-                    break;
-                }
-            }
-
+            _filtersService.InsertFilters(profileDTO.Email, bidPlayerDTO);
             var searchBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.button-container > button:nth-child(2)"), 1000);
             searchBtn?.Click();
+            return BidPlayers(driver, bidPlayerDTO, profileDTO);
         }
 
         private ProfileDTO BidPlayers(IWebDriver driver, BuyCardDTO bidPlayerDTO, ProfileDTO profileDTO)
