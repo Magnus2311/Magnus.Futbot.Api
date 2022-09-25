@@ -53,13 +53,23 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
             ProfileDTO profileDTO,
             CancellationTokenSource cancellationTokenSource)
         {
+            if (cancellationTokenSource.Token.IsCancellationRequested) return profileDTO;
+
             await Task.Delay(100, cancellationTokenSource.Token);
             var allPlayers = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > ul > li"), 1000);
             if (allPlayers is null || allPlayers.Count() == 0)
             {
                 Thread.Sleep(1000);
-                var backBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-bar-view.navbar-style-landscape > button.ut-navigation-button-control"));
-                backBtn?.Click();
+                var title = driver.TryFindElement(By.CssSelector("body > main > section > section > div.ut-navigation-bar-view.navbar-style-landscape > h1"))?.Text;
+                if (title == "TRANSFERS")
+                {
+                    cancellationTokenSource.Cancel();
+                }
+                else
+                {
+                    var backBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-bar-view.navbar-style-landscape > button.ut-navigation-button-control"));
+                    backBtn?.Click();
+                }
 
                 var lowerBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.search-prices > div:nth-child(6) > div.ut-numeric-input-spinner-control > button.btn-standard.decrement-value"));
                 lowerBtn?.Click();
@@ -83,8 +93,6 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
             {
                 foreach (var player in allPlayers)
                 {
-                    if (cancellationTokenSource.Token.IsCancellationRequested) return profileDTO;
-
                     Thread.Sleep(100);
                     if (driver.GetCoins() < buyCardDTO.Price) cancellationTokenSource.Cancel();
 
