@@ -1,5 +1,6 @@
 ﻿using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.DTOs.Trading;
+using Magnus.Futbot.Common.Models.Selenium.Actions;
 using Magnus.Futbot.Services;
 using OpenQA.Selenium;
 
@@ -7,9 +8,22 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
 {
     public class SellService : BaseService
     {
-        public ProfileDTO SellPlayer(SellCardDTO sellCard, ProfileDTO profileDTO, Action<ProfileDTO> updateProfile)
+        public void SellPlayer(SellCardDTO sellCard, ProfileDTO profileDTO, Action<ProfileDTO> updateProfile, CancellationTokenSource cancellationTokenSource)
         {
-            var driver = GetInstance(profileDTO.Email).Driver;
+            var driverInstance = GetInstance(profileDTO.Email);
+
+            var tradeAction = new TradeAction(new Action(() =>
+            {
+                TrySellPlayer(driverInstance.Driver, sellCard, profileDTO, updateProfile, cancellationTokenSource);
+            }), false, null, sellCard, cancellationTokenSource);
+
+            driverInstance.AddAction(tradeAction);
+        }
+
+        private void TrySellPlayer(IWebDriver driver, SellCardDTO sellCard, ProfileDTO profileDTO, Action<ProfileDTO> updateProfile, CancellationTokenSource cancellationTokenSource)
+        {
+            if (cancellationTokenSource.IsCancellationRequested) return;
+
             driver.OpenTransferList();
 
             var players = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(3) > ul > li"));
@@ -22,8 +36,8 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
                     var (Name, Rating) = p.GetCardNameAndRating();
                     return sellCard.Card.Name.Contains(Name)
                         && sellCard.Card.Rating == Rating;
-                }).Take(sellCard.Count); 
-                
+                }).Take(sellCard.Count);
+
                 foreach (var player in martchingPlayers)
                 {
                     player.Click();
@@ -54,10 +68,8 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
             }
             catch
             {
-                SellPlayer(sellCard, profileDTO, updateProfile);
+                TrySellPlayer(driver, sellCard, profileDTO, updateProfile, cancellationTokenSource);
             }
-
-            return profileDTO;
         }
     }
 }

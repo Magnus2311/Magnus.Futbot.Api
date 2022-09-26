@@ -1,41 +1,55 @@
 ﻿using System.Collections.Concurrent;
+using Magnus.Futbot.Common.Models.Selenium.Actions;
 using OpenQA.Selenium.Chrome;
 
 namespace Magnus.Futbot.Models
 {
     public class DriverInstance
     {
-        private ConcurrentQueue<Action> _pendingActions { get; set; } = new();
-
         public DriverInstance(ChromeDriver driver)
         {
             Driver = driver;
         }
 
+        private ConcurrentQueue<TradeAction> PendingActions { get; set; } = new();
+
         public ChromeDriver Driver { get; set; }
 
-        public void AddAction(Action action)
+        public void AddAction(TradeAction action)
         {
-            if (!_pendingActions.IsEmpty)
+            if (!PendingActions.IsEmpty)
             {
-                _pendingActions.Enqueue(new Action(() =>
+                PendingActions.Enqueue(new TradeAction(() =>
                 {
-                    action.Invoke();
+                    action.Action.Invoke();
 
-                    if (_pendingActions.TryDequeue(out var nextAction)) nextAction.Invoke();
-                }));
+                    if (PendingActions.TryDequeue(out var nextAction))
+                    {
+                        if (!nextAction.CancellationTokenSource.Token.IsCancellationRequested)
+                        {
+                            nextAction.Action.Invoke();
+                        }
+                    }
+                }, action.IsBuy, action.BuyCardDTO, action.SellCardDTO, action.CancellationTokenSource));
             }
             else
             {
-                var tempAction = new Action(() =>
+                var tempAction = new TradeAction(() =>
                 {
-                    action.Invoke();
+                    action.Action.Invoke();
 
-                    _pendingActions.TryDequeue(out _);
-                    if (_pendingActions.TryDequeue(out var nextAction)) nextAction.Invoke();
-                });
-                _pendingActions.Enqueue(tempAction);
-                tempAction.Invoke();
+                    PendingActions.TryDequeue(out _);
+                    if (PendingActions.TryDequeue(out var nextAction))
+                    {
+                        if (!nextAction.CancellationTokenSource.Token.IsCancellationRequested)
+                        {
+                            nextAction.Action.Invoke();
+                        }
+                    }
+                }, action.IsBuy, action.BuyCardDTO, action.SellCardDTO, action.CancellationTokenSource);
+
+                PendingActions.Enqueue(tempAction);
+                tempAction.Action.Invoke();
             }
         }
     }

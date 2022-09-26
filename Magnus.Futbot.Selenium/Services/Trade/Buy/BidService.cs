@@ -1,5 +1,6 @@
 ﻿using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.DTOs.Trading;
+using Magnus.Futbot.Common.Models.Selenium.Actions;
 using Magnus.Futbot.Selenium.Services.Trade.Filters;
 using OpenQA.Selenium;
 
@@ -16,35 +17,36 @@ namespace Magnus.Futbot.Services.Trade.Buy
             _filtersService = filtersService;
         }
 
-        public ProfileDTO BidPlayer(ProfileDTO profileDTO, BuyCardDTO bidPlayerDTO, Action<ProfileDTO> updateAction)
+        public void BidPlayer(ProfileDTO profileDTO, BuyCardDTO bidPlayerDTO, Action<ProfileDTO> updateAction, CancellationTokenSource cancellationTokenSource)
         {
             _updateAction = updateAction;
-            var driver = GetInstance(profileDTO.Email).Driver;
+            var driverInstance = GetInstance(profileDTO.Email);
 
-            if (!driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
+            var tradeAction = new TradeAction(new Action(() =>
             {
-                LoginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
-            }
+                if (!driverInstance.Driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
+                {
+                    LoginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
+                }
 
-            _filtersService.InsertFilters(profileDTO.Email, bidPlayerDTO);
-            var searchBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.button-container > button:nth-child(2)"), 1000);
-            searchBtn?.Click();
-            return BidPlayers(driver, bidPlayerDTO, profileDTO);
+                _filtersService.InsertFilters(profileDTO.Email, bidPlayerDTO);
+                var searchBtn = driverInstance.Driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.button-container > button:nth-child(2)"), 1000);
+                searchBtn?.Click();
+                TryBidPlayer(driverInstance.Driver, bidPlayerDTO, profileDTO);
+            }), true, bidPlayerDTO, null, cancellationTokenSource);
         }
 
-        private ProfileDTO BidPlayers(IWebDriver driver, BuyCardDTO bidPlayerDTO, ProfileDTO profileDTO)
+        private void TryBidPlayer(IWebDriver driver, BuyCardDTO bidPlayerDTO, ProfileDTO profileDTO)
         {
             var endDate = DateTime.Now.AddHours(1);
             do
             {
-                profileDTO = TryBidForPlayers(driver, bidPlayerDTO, profileDTO);
+                TryBidForPlayers(driver, bidPlayerDTO, profileDTO);
             }
             while (_wonPlayers < bidPlayerDTO.Count && endDate > DateTime.Now);
-
-            return profileDTO;
         }
 
-        private ProfileDTO TryBidForPlayers(IWebDriver driver, BuyCardDTO bidPlayerDTO, ProfileDTO profileDTO)
+        private void TryBidForPlayers(IWebDriver driver, BuyCardDTO bidPlayerDTO, ProfileDTO profileDTO)
         {
             try
             {
@@ -61,11 +63,11 @@ namespace Magnus.Futbot.Services.Trade.Buy
                 }
 
                 var winningPlayers = allPlayers.Count(ap => ap.GetAttribute("class").Contains("won") || ap.GetAttribute("class").Contains("highest-bid"));
-                if (winningPlayers + _wonPlayers >= bidPlayerDTO.Count) return profileDTO;
+                if (winningPlayers + _wonPlayers >= bidPlayerDTO.Count) _updateAction(profileDTO);
 
                 if (allPlayers.All(p => p.GetAttribute("class").Contains("won") || p.GetAttribute("class").Contains("expired")))
                 {
-                    if (driver.GetCoins() < bidPlayerDTO.Price) return profileDTO;
+                    if (driver.GetCoins() < bidPlayerDTO.Price) _updateAction(profileDTO);
 
                     var currentlyWon = allPlayers.Count(p => p.GetAttribute("class").Contains("won"));
                     _wonPlayers += currentlyWon;
@@ -142,7 +144,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
                 }
             }
             catch { }
-            return profileDTO;
+            _updateAction(profileDTO);
         }
     }
 }

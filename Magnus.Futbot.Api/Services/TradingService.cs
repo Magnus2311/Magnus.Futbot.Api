@@ -35,7 +35,11 @@ namespace Magnus.Futbot.Api.Services
             _binService = binService;
             _profilesHubContext = profilesHubContext;
             _updateProfile = new Action<ProfileDTO>(
-                (profileDTO) => _profilesHubContext.Clients.Users(profileDTO.UserId).OnProfileUpdated(profileDTO));
+                async (profileDTO) => 
+                { 
+                    await _profilesHubContext.Clients.Users(profileDTO.UserId).OnProfileUpdated(profileDTO);
+                    await _profilesService.UpdateProfile(profileDTO);
+                });
         }
 
         public async Task Buy(BuyCardDTO buyCardDTO)
@@ -44,10 +48,8 @@ namespace Magnus.Futbot.Api.Services
 
             var tknSrc = new CancellationTokenSource();
 
-            if (buyCardDTO.IsBin) await _binService.BinPlayer(profileDTO, buyCardDTO, _updateProfile, tknSrc);
-            else profileDTO = _bidService.BidPlayer(profileDTO, buyCardDTO, _updateProfile);
-
-            await _profilesService.UpdateProfile(profileDTO);
+            if (buyCardDTO.IsBin) _binService.BinPlayer(profileDTO, buyCardDTO, _updateProfile, tknSrc);
+            else _bidService.BidPlayer(profileDTO, buyCardDTO, _updateProfile, tknSrc);
         }
 
         public async Task Sell(SellCardDTO sellCardDTO)
