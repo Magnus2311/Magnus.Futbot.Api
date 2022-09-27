@@ -68,7 +68,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
             Action<ProfileDTO> updateAction,
             CancellationTokenSource cancellationTokenSource)
         {
-            if (cancellationTokenSource.Token.IsCancellationRequested) return profileDTO;
+            if (cancellationTokenSource.Token.IsCancellationRequested) updateAction(profileDTO);
 
             await Task.Delay(100, cancellationTokenSource.Token);
             var allPlayers = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > ul > li"), 1000);

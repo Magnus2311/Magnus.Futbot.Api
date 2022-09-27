@@ -54,10 +54,11 @@ namespace Magnus.Futbot.Api.Services
 
         public async Task Sell(SellCardDTO sellCardDTO)
         {
+
+            var tknSrc = new CancellationTokenSource();
             var profileDTO = await _profilesService.GetByEmail(sellCardDTO.Email);
 
-            profileDTO = _sellService.SellPlayer(sellCardDTO, profileDTO, _updateProfile);
-
+           _sellService.SellPlayer(sellCardDTO, profileDTO, _updateProfile, tknSrc);
             await _profilesService.UpdateProfile(profileDTO);
         }
 

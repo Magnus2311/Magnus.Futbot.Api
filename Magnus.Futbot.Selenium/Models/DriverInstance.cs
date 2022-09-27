@@ -21,7 +21,14 @@ namespace Magnus.Futbot.Models
             {
                 PendingActions.Enqueue(new TradeAction(() =>
                 {
-                    action.Action.Invoke();
+                    try
+                    {
+                        action.Action.Invoke();
+                    }
+                    catch
+                    {
+
+                    }
 
                     if (PendingActions.TryDequeue(out var nextAction))
                     {
@@ -36,8 +43,14 @@ namespace Magnus.Futbot.Models
             {
                 var tempAction = new TradeAction(() =>
                 {
-                    action.Action.Invoke();
+                    try
+                    {
+                        action.Action.Invoke();
+                    }
+                    catch
+                    {
 
+                    }
                     PendingActions.TryDequeue(out _);
                     if (PendingActions.TryDequeue(out var nextAction))
                     {

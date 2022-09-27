@@ -14,6 +14,10 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
 
             var tradeAction = new TradeAction(new Action(() =>
             {
+                if (cancellationTokenSource.IsCancellationRequested) return;
+
+                driverInstance.Driver.OpenTransferList();
+
                 TrySellPlayer(driverInstance.Driver, sellCard, profileDTO, updateProfile, cancellationTokenSource);
             }), false, null, sellCard, cancellationTokenSource);
 
@@ -22,15 +26,11 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
 
         private void TrySellPlayer(IWebDriver driver, SellCardDTO sellCard, ProfileDTO profileDTO, Action<ProfileDTO> updateProfile, CancellationTokenSource cancellationTokenSource)
         {
-            if (cancellationTokenSource.IsCancellationRequested) return;
-
-            driver.OpenTransferList();
-
-            var players = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(3) > ul > li"));
-            players.ToList().AddRange(driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(2) > ul > li")));
-
             try
             {
+                var players = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(3) > ul > li"));
+                players.ToList().AddRange(driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(2) > ul > li")));
+
                 var martchingPlayers = players.Where((p) =>
                 {
                     var (Name, Rating) = p.GetCardNameAndRating();
@@ -55,7 +55,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
                     var binPrice = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section > div > div > div.DetailPanel > div.ut-quick-list-panel-view > div.panelActions.open > div:nth-child(3) > div.ut-numeric-input-spinner-control > input"));
                     binPrice.Click();
                     Thread.Sleep(100);
-                    bidPrice.SendKeys(Keys.Backspace);
+                    binPrice.SendKeys(Keys.Backspace);
                     binPrice.SendKeys($"{sellCard.FromBin}");
                     Thread.Sleep(100);
 
