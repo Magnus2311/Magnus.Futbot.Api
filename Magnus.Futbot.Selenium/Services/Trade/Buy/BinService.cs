@@ -74,7 +74,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
             var allPlayers = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > ul > li"), 1000);
             if (allPlayers is null || allPlayers.Count() == 0)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(2000);
                 var title = driver.TryFindElement(By.CssSelector("body > main > section > section > div.ut-navigation-bar-view.navbar-style-landscape > h1"))?.Text;
                 if (title == "TRANSFERS")
                 {
@@ -93,7 +93,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
 
                 if (double.TryParse(currentValue.GetAttribute("value"), out var currentPrice))
                 {
-                    if (currentPrice / (double)buyCardDTO.Price < 0.7)
+                    if (currentPrice / (double)buyCardDTO.Price < 0.95)
                     {
                         currentValue.Click();
                         await Task.Delay(100, cancellationTokenSource.Token);
