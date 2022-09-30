@@ -86,6 +86,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
                     backBtn?.Click();
                 }
 
+                await Task.Delay(150, cancellationTokenSource.Token);
                 await ConfigurePrices(driver, buyCardDTO, cancellationTokenSource);
 
                 var searchBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.button-container > button:nth-child(2)"), 1000);
@@ -107,6 +108,17 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
                     binBtn?.Click();
 
                     await Task.Delay(100, cancellationTokenSource.Token);
+
+                    var popupText = driver.TryFindElement(By.CssSelector("body > div.view-modal-container.form-modal > section > div > p"))?.Text;
+                    if (!string.IsNullOrEmpty(popupText))
+                    {
+                        if (popupText == "You cannot get this Item because you have 5 or more Unassigned Items.")
+                        {
+                            cancellationTokenSource.Cancel();
+                            return;
+                        }
+                    }
+
                     var okBtn = driver.FindElement(By.CssSelector("body > div.view-modal-container.form-modal > section > div > div > button:nth-child(1)"));
                     okBtn.Click();
 
@@ -114,9 +126,11 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
                     if (errorMessage is not null)
                     {
                         if (errorMessage.Text == "Bid status changed, auction data will be updated.") continue;
-
-                        Thread.Sleep(15000);
-                        await SetupForBin(driver, profileDTO, buyCardDTO, _updateAction, cancellationTokenSource);
+                        else if (errorMessage.Text != "Player Moved to Transfer List")
+                        {
+                            Thread.Sleep(15000);
+                            await SetupForBin(driver, profileDTO, buyCardDTO, _updateAction, cancellationTokenSource);
+                        }
                     }
 
                     profileDTO.Coins = driver.GetCoins();
