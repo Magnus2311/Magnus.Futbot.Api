@@ -22,7 +22,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
             _updateAction = updateAction;
             var driverInstance = GetInstance(profileDTO.Email);
 
-            var tradeAction = new TradeAction(new Action(() =>
+            var tradeAction = new TradeAction(new Func<Task>(async () =>
             {
                 if (!driverInstance.Driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
                 {
@@ -34,6 +34,8 @@ namespace Magnus.Futbot.Services.Trade.Buy
                 searchBtn?.Click();
                 TryBidPlayer(driverInstance.Driver, bidPlayerDTO, profileDTO);
             }), true, bidPlayerDTO, null, cancellationTokenSource);
+
+            driverInstance.AddAction(tradeAction);
         }
 
         private void TryBidPlayer(IWebDriver driver, BuyCardDTO bidPlayerDTO, ProfileDTO profileDTO)

@@ -5,7 +5,7 @@ namespace Magnus.Futbot.Common.Models.Selenium.Actions
     public class TradeAction
     {
         public TradeAction(
-            Action action, 
+            Func<Task> action, 
             bool isBuy, 
             BuyCardDTO? buyCardDTO, 
             SellCardDTO? sellCardDTO, 
@@ -20,7 +20,7 @@ namespace Magnus.Futbot.Common.Models.Selenium.Actions
         }
 
         public string Id { get; }
-        public Action Action { get; }
+        public Func<Task> Action { get; }
         public bool IsBuy { get; }
         public BuyCardDTO? BuyCardDTO { get; }
         public SellCardDTO? SellCardDTO { get; }

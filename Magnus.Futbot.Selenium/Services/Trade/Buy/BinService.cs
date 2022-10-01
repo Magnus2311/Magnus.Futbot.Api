@@ -27,7 +27,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
             _updateAction = updateAction;
             var driverInstance = GetInstance(profileDTO.Email);
 
-            var tradeAction = new TradeAction(new Action(async () =>
+            var tradeAction = new TradeAction(new Func<Task>(async () =>
             {
                 await SetupForBin(driverInstance.Driver, profileDTO, buyCardDTO, updateAction, cancellationTokenSource);
 

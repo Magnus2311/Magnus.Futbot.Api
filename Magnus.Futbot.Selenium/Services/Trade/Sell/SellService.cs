@@ -12,7 +12,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
         {
             var driverInstance = GetInstance(profileDTO.Email);
 
-            var tradeAction = new TradeAction(new Action(() =>
+            var tradeAction = new TradeAction(new Func<Task>(async () =>
             {
                 if (cancellationTokenSource.IsCancellationRequested) return;
 
