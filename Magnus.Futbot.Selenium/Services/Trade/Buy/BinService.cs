@@ -22,26 +22,28 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
             ProfileDTO profileDTO, 
             BuyCardDTO buyCardDTO, 
             Action<ProfileDTO> updateAction,
-            CancellationTokenSource cancellationTokenSource)
+            CancellationTokenSource cancellationTokenSource,
+            Action? sellAction = null)
         {
             _updateAction = updateAction;
             var driverInstance = GetInstance(profileDTO.Email);
 
             var tradeAction = new TradeAction(new Func<Task>(async () =>
             {
-                await SetupForBin(driverInstance.Driver, profileDTO, buyCardDTO, updateAction, cancellationTokenSource);
+                await SetupForBin(driverInstance.Driver, profileDTO, buyCardDTO, updateAction, cancellationTokenSource, sellAction);
 
             }), true, buyCardDTO, null, cancellationTokenSource);
 
             driverInstance.AddAction(tradeAction);
         }
 
-        public async Task SetupForBin(
+        private async Task SetupForBin(
             IWebDriver driver,
             ProfileDTO profileDTO,
             BuyCardDTO buyCardDTO,
             Action<ProfileDTO> updateAction,
-            CancellationTokenSource cancellationTokenSource)
+            CancellationTokenSource cancellationTokenSource,
+            Action? sellAction)
         {
             if (!driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
                 LoginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
@@ -54,19 +56,22 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
             {
                 try
                 {
-                    await TryBinPlayer(driver, buyCardDTO, profileDTO, updateAction, cancellationTokenSource);
+                    await TryBinPlayer(driver, buyCardDTO, profileDTO, updateAction, cancellationTokenSource, sellAction);
                 }
                 catch
-                { }
+                {
+                    await SetupForBin(driver, profileDTO, buyCardDTO, updateAction, cancellationTokenSource, sellAction);
+                }
             }
         }
 
         public async Task TryBinPlayer(
-            IWebDriver driver, 
-            BuyCardDTO buyCardDTO, 
+            IWebDriver driver,
+            BuyCardDTO buyCardDTO,
             ProfileDTO profileDTO,
             Action<ProfileDTO> updateAction,
-            CancellationTokenSource cancellationTokenSource)
+            CancellationTokenSource cancellationTokenSource,
+            Action? sellAction)
         {
             if (cancellationTokenSource.Token.IsCancellationRequested) updateAction(profileDTO);
 
@@ -129,9 +134,11 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
                         else if (errorMessage.Text != "Player Moved to Transfer List")
                         {
                             Thread.Sleep(15000);
-                            await SetupForBin(driver, profileDTO, buyCardDTO, _updateAction, cancellationTokenSource);
+                            await SetupForBin(driver, profileDTO, buyCardDTO, _updateAction, cancellationTokenSource, sellAction);
                         }
                     }
+
+                    if (sellAction != null) sellAction();
 
                     profileDTO.Coins = driver.GetCoins();
                     profileDTO.WonTargetsCount++;

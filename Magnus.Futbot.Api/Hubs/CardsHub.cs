@@ -24,6 +24,9 @@ namespace Magnus.Futbot.Api.Hubs
         public Task BuyCard(BuyCardDTO buyCardDTO)
             => _tradingService.Buy(buyCardDTO);
 
+        public Task BuyAndSell(BuyCardDTO buyCardDTO, SellCardDTO sellCardDTO)
+            => _tradingService.BuyAndSell(buyCardDTO, sellCardDTO);
+
         public Task SellCard(SellCardDTO sellCardDTO)
             => _tradingService.Sell(sellCardDTO);
 

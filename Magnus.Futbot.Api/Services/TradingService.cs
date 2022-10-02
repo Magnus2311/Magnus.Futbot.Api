@@ -52,6 +52,22 @@ namespace Magnus.Futbot.Api.Services
             else _bidService.BidPlayer(profileDTO, buyCardDTO, _updateProfile, tknSrc);
         }
 
+        public async Task BuyAndSell(BuyCardDTO buyCardDTO, SellCardDTO sellCardDTO)
+        {
+            var profileDTO = await _profilesService.GetByEmail(buyCardDTO.Email);
+
+            var tknSrc = new CancellationTokenSource();
+
+            var sellAction = new Action(() =>
+            {
+                _sellService.SellCurrentPlayer(sellCardDTO, profileDTO, tknSrc);
+            });
+
+
+            if (buyCardDTO.IsBin) _binService.BinPlayer(profileDTO, buyCardDTO, _updateProfile, tknSrc, sellAction);
+            else _bidService.BidPlayer(profileDTO, buyCardDTO, _updateProfile, tknSrc);
+        }
+
         public async Task Sell(SellCardDTO sellCardDTO)
         {
 
