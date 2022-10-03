@@ -1,4 +1,5 @@
 ﻿using Magnus.Futbot.Common.Models.DTOs;
+using Magnus.Futbot.Common.Models.Selenium.Actions;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 
@@ -67,5 +68,8 @@ namespace Magnus.Futbot.Services
 
             return 0;
         }
+
+        public static IEnumerable<TradeAction> GetTradeActionsByProfile(ProfileDTO profileDTO)
+            => GetInstance(profileDTO.Email).PendingActions;
     }
 }

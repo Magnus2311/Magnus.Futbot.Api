@@ -53,6 +53,7 @@ builder.Services
 // Services
 builder.Services
     .AddTransient<ProfilesService>()
+    .AddTransient<ActionsService>()
     .AddTransient<IPlayersService, PlayersService>()
     .AddTransient<ITradingService, TradingService>()
     .AddTransient<ICardsHelper, CardsHelper>();
@@ -99,6 +100,7 @@ app.UseEndpoints(endpoints =>
     endpoints.MapHub<ProfilesHub>("/hubs/profiles");
     endpoints.MapHub<PlayersHub>("/hubs/players");
     endpoints.MapHub<CardsHub>("/hubs/cards");
+    endpoints.MapHub<ActionsHub>("/hubs/actions");
 });
 
 app.Run();

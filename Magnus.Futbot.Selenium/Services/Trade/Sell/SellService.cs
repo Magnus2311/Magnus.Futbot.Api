@@ -12,14 +12,14 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
         {
             var driverInstance = GetInstance(profileDTO.Email);
 
-            var tradeAction = new TradeAction(new Func<Task>(async () =>
+            var tradeAction = new SellCardAction(new Func<Task>(async () =>
             {
                 if (cancellationTokenSource.IsCancellationRequested) return;
 
                 driverInstance.Driver.OpenTransferList();
 
                 TrySellPlayer(driverInstance.Driver, sellCard, profileDTO, updateProfile, cancellationTokenSource);
-            }), false, null, sellCard, cancellationTokenSource);
+            }), cancellationTokenSource, sellCard);
 
             driverInstance.AddAction(tradeAction);
         }
@@ -33,14 +33,16 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
             InsertPriceValuesAndList(driver, sellCard);
         }
 
-        public void RelistPlayers(string email, CancellationTokenSource cancellationTokenSource)
+        public void RelistPlayers(ProfileDTO profileDTO, CancellationTokenSource cancellationTokenSource)
         {
-            var driverInstance = GetInstance(email);
+            var driverInstance = GetInstance(profileDTO.Email);
 
-            var tradeAction = new TradeAction(new Func<Task>(async () =>
+            var tradeAction = new SellCardAction(new Func<Task>(async () =>
             {
                 if (cancellationTokenSource.IsCancellationRequested) return;
+                InitProfileService.InitProfile(profileDTO);
 
+                if (cancellationTokenSource.IsCancellationRequested) return;
                 driverInstance.Driver.OpenTransferList();
 
                 // Clear Sold
@@ -49,7 +51,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
                 driverInstance.Driver.TryFindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(2) > header > button"))?.Click();
                 await Task.Delay(300, cancellationTokenSource.Token);
                 driverInstance.Driver.TryFindElement(By.CssSelector("body > div.view-modal-container.form-modal > section > div > div > button:nth-child(2)"))?.Click();
-            }), false, null, null, cancellationTokenSource);
+            }), cancellationTokenSource, null);
 
             driverInstance.AddAction(tradeAction);
         }

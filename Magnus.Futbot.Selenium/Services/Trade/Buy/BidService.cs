@@ -22,7 +22,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
             _updateAction = updateAction;
             var driverInstance = GetInstance(profileDTO.Email);
 
-            var tradeAction = new TradeAction(new Func<Task>(async () =>
+            var tradeAction = new BuyAction(new Func<Task>(async () =>
             {
                 if (!driverInstance.Driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
                 {
@@ -32,27 +32,44 @@ namespace Magnus.Futbot.Services.Trade.Buy
                 _filtersService.InsertFilters(profileDTO.Email, bidPlayerDTO);
                 var searchBtn = driverInstance.Driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.button-container > button:nth-child(2)"), 1000);
                 searchBtn?.Click();
-                TryBidPlayer(driverInstance.Driver, bidPlayerDTO, profileDTO);
-            }), true, bidPlayerDTO, null, cancellationTokenSource);
+                TryBidPlayer(driverInstance.Driver, bidPlayerDTO, profileDTO, cancellationTokenSource);
+            }), cancellationTokenSource, bidPlayerDTO);
 
             driverInstance.AddAction(tradeAction);
         }
 
-        private void TryBidPlayer(IWebDriver driver, BuyCardDTO bidPlayerDTO, ProfileDTO profileDTO)
+        private void TryBidPlayer(IWebDriver driver, BuyCardDTO bidPlayerDTO, ProfileDTO profileDTO, CancellationTokenSource cancellationTokenSource)
         {
             var endDate = DateTime.Now.AddHours(1);
             do
             {
-                TryBidForPlayers(driver, bidPlayerDTO, profileDTO);
+                TryBidForPlayers(driver, bidPlayerDTO, profileDTO, cancellationTokenSource);
             }
-            while (_wonPlayers < bidPlayerDTO.Count && endDate > DateTime.Now);
+            while (_wonPlayers < bidPlayerDTO.Count && endDate > DateTime.Now && !cancellationTokenSource.IsCancellationRequested);
         }
 
-        private void TryBidForPlayers(IWebDriver driver, BuyCardDTO bidPlayerDTO, ProfileDTO profileDTO)
+        private void TryBidForPlayers(IWebDriver driver, BuyCardDTO bidPlayerDTO, ProfileDTO profileDTO, CancellationTokenSource cancellationTokenSource)
         {
             try
             {
                 Thread.Sleep(500);
+                var popup = driver.TryFindElement(By.CssSelector("body > div.view-modal-container.form-modal > section > div > p"));
+                if (popup?.Text == "Your Transfer Targets list is full. Please try again later, or clear items from your Watched and Active list.")
+                {
+                    driver.TryFindElement(By.CssSelector("body > div.view-modal-container.form-modal > section > div > div > button"))?.Click();
+                    driver.OpenTransferTargets();
+                    var clearExpiredBtn = driver.TryFindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(4) > header > button"));
+                    if (clearExpiredBtn != null)
+                    {
+                        clearExpiredBtn.Click();
+                        Thread.Sleep(200);
+                        _filtersService.InsertFilters(profileDTO.Email, bidPlayerDTO);
+                        var searchBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.button-container > button:nth-child(2)"), 1000);
+                        searchBtn?.Click();
+                    }
+                    else cancellationTokenSource.Cancel();
+                }
+
                 var allPlayers = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > ul > li"), 1000);
                 if (allPlayers is null)
                 {

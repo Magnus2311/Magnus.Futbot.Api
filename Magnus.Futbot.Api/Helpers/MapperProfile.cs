@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Magnus.Futbot.Common.Models.DTOs;
+using Magnus.Futbot.Common.Models.DTOs.Trading.Actions;
+using Magnus.Futbot.Common.Models.Selenium.Actions;
 using Magnus.Futbot.Common.Models.Selenium.Profiles;
 using Magnus.Futbot.Database.Models;
 using Magnus.Futbot.Initializer.Models.Players;
@@ -29,6 +31,8 @@ namespace Magnus.Futbot.Api.Helpers
                 .ForMember(dest => dest.Name, options => options.MapFrom(src => src.c == null ? $"{src.f} {src.l}" : src.c))
                 .ForMember(dest => dest.Rating, options => options.MapFrom(src => src.r))
                 .ForMember(dest => dest.Id, options => options.MapFrom(src => src.id));
+
+            CreateMap<TradeActionDTO, TradeAction>().ReverseMap();
         }
     }
 }
