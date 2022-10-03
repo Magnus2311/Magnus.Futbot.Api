@@ -1,29 +1,27 @@
-﻿using Magnus.Futbot.Common.Models.DTOs.Trading;
+﻿using Magnus.Futbot.Common.Models.Selenium.Actions.Interfaces;
 
 namespace Magnus.Futbot.Common.Models.Selenium.Actions
 {
-    public class TradeAction
+    public abstract class TradeAction : ITradeAction
     {
         public TradeAction(
+            string type, 
+            string description,
             Func<Task> action, 
-            bool isBuy, 
-            BuyCardDTO? buyCardDTO, 
-            SellCardDTO? sellCardDTO, 
             CancellationTokenSource cancellationTokenSource)
         {
             Id = Guid.NewGuid().ToString();
             Action = action;
-            IsBuy = isBuy;
-            BuyCardDTO = buyCardDTO;
-            SellCardDTO = sellCardDTO;
             CancellationTokenSource = cancellationTokenSource;
+            Type = type;
+            Description = description;
         }
 
         public string Id { get; }
         public Func<Task> Action { get; }
-        public bool IsBuy { get; }
-        public BuyCardDTO? BuyCardDTO { get; }
-        public SellCardDTO? SellCardDTO { get; }
         public CancellationTokenSource CancellationTokenSource { get; }
+        public string Type { get; }
+
+        public string Description { get; }
     }
 }
