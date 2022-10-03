@@ -18,6 +18,9 @@ namespace Magnus.Futbot.Database.Repositories
         public async Task<IEnumerable<ProfileDocument>> GetById(ObjectId id)
             => await (await _collection.FindAsync(pd => pd.Id == id)).ToListAsync();
 
+        public async Task<IEnumerable<ProfileDocument>> GetAutoRelistProfiles()
+            => await (await _collection.FindAsync(e => e.AutoRelist == true)).ToListAsync();
+
         public async Task<ProfileDocument> UpdateSubmitCodeStatus(string email, ConfirmationCodeStatusType confirmationCodeStatusType)
         {
             var profile = await (await _collection.FindAsync(pd => pd.Email.ToUpperInvariant() == email.ToUpperInvariant())).FirstOrDefaultAsync();

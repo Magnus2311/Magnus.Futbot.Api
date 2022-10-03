@@ -78,7 +78,6 @@ namespace Magnus.Futbot.Api.Services
 
         public async Task<ProfileDTO> EditProfileAutoRelist(EditProfileAutoListDTO editProfileAutoListDTO)
         {
-
             var profile = (await _profilesRepository.GetById(new ObjectId(editProfileAutoListDTO.ProfileId))).FirstOrDefault();
             if (profile is not null)
             {
@@ -87,6 +86,12 @@ namespace Magnus.Futbot.Api.Services
             }
 
             return _mapper.Map<ProfileDTO>(profile);
+        }
+
+        public async Task<IEnumerable<ProfileDTO>> GetRelistProfiles()
+        {
+            var profiles = await _profilesRepository.GetAutoRelistProfiles();
+            return _mapper.Map<IEnumerable<ProfileDTO>>(profiles);
         }
     }
 }

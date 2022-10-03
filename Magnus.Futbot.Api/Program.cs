@@ -7,6 +7,7 @@ using Magnus.Futbot.Api.Services.Connections;
 using Magnus.Futbot.Api.Services.Connections.SignalR;
 using Magnus.Futbot.Api.Services.Helpers;
 using Magnus.Futbot.Api.Services.Interfaces;
+using Magnus.Futbot.Api.Workers;
 using Magnus.Futbot.Common.Interfaces;
 using Magnus.Futbot.Common.Interfaces.Helpers;
 using Magnus.Futbot.Database.Repositories;
@@ -73,7 +74,8 @@ builder.Services
 // Background workers
 builder
     .Services
-    .AddHostedService<RefreshPlayersWorker>();
+    .AddHostedService<RefreshPlayersWorker>()
+    .AddHostedService<RelistPlayersWorker>();
 
 builder.Services
     .AddSingleton<IUserIdProvider, UserProvider>();

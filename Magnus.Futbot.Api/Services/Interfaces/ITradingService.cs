@@ -9,5 +9,6 @@ namespace Magnus.Futbot.Api.Services.Interfaces
         Task MoveCardsFromTransferTargetsToTransferList(string email);
         Task SendUnassignedItemsToTransferList(string email);
         Task BuyAndSell(BuyCardDTO buyCardDTO, SellCardDTO sellCardDTO);
+        Task RelistPlayers();
     }
 }

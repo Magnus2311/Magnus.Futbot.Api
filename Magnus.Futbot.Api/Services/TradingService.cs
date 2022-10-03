@@ -6,6 +6,7 @@ using Magnus.Futbot.Common.Models.DTOs.Trading;
 using Magnus.Futbot.Selenium.Services.Players;
 using Magnus.Futbot.Selenium.Services.Trade.Buy;
 using Magnus.Futbot.Selenium.Services.Trade.Sell;
+using Magnus.Futbot.Services;
 using Magnus.Futbot.Services.Trade.Buy;
 using Microsoft.AspNetCore.SignalR;
 
@@ -63,14 +64,12 @@ namespace Magnus.Futbot.Api.Services
                 _sellService.SellCurrentPlayer(sellCardDTO, profileDTO, tknSrc);
             });
 
-
             if (buyCardDTO.IsBin) _binService.BinPlayer(profileDTO, buyCardDTO, _updateProfile, tknSrc, sellAction);
             else _bidService.BidPlayer(profileDTO, buyCardDTO, _updateProfile, tknSrc);
         }
 
         public async Task Sell(SellCardDTO sellCardDTO)
         {
-
             var tknSrc = new CancellationTokenSource();
             var profileDTO = await _profilesService.GetByEmail(sellCardDTO.Email);
 
@@ -94,6 +93,17 @@ namespace Magnus.Futbot.Api.Services
             profileDTO = _movePlayersService.SendUnassignedItemsToTransferList(profileDTO, _updateProfile);
 
             await _profilesService.UpdateProfile(profileDTO);
+        }
+
+        public async Task RelistPlayers()
+        {
+            var profiles = await _profilesService.GetRelistProfiles();
+            Parallel.ForEach(profiles, (profile) =>
+            {
+                var tknSrc = new CancellationTokenSource();
+                InitProfileService.InitProfile(profile);
+                _sellService.RelistPlayers(profile.Email, tknSrc);
+            });
         }
     }
 }

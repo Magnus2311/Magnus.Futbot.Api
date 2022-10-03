@@ -33,6 +33,27 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
             InsertPriceValuesAndList(driver, sellCard);
         }
 
+        public void RelistPlayers(string email, CancellationTokenSource cancellationTokenSource)
+        {
+            var driverInstance = GetInstance(email);
+
+            var tradeAction = new TradeAction(new Func<Task>(async () =>
+            {
+                if (cancellationTokenSource.IsCancellationRequested) return;
+
+                driverInstance.Driver.OpenTransferList();
+
+                // Clear Sold
+                driverInstance.Driver.TryFindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(1) > header > button"))?.Click();
+                // Re-list All
+                driverInstance.Driver.TryFindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(2) > header > button"))?.Click();
+                await Task.Delay(300, cancellationTokenSource.Token);
+                driverInstance.Driver.TryFindElement(By.CssSelector("body > div.view-modal-container.form-modal > section > div > div > button:nth-child(2)"))?.Click();
+            }), false, null, null, cancellationTokenSource);
+
+            driverInstance.AddAction(tradeAction);
+        }
+
         private void TrySellPlayer(IWebDriver driver, SellCardDTO sellCard, ProfileDTO profileDTO, Action<ProfileDTO> updateProfile, CancellationTokenSource cancellationTokenSource)
         {
             try
