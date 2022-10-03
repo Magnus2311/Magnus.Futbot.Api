@@ -24,5 +24,6 @@ namespace Magnus.Futbot.Database.Models
         public int UnassignedCount { get; set; }
         public int Outbidded { get; set; }
         public TradePile TradePile { get; set; } = new TradePile();
+        public bool AutoRelist { get; set; }
     }
 }

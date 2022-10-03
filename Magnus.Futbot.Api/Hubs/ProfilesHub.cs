@@ -45,6 +45,12 @@ namespace Magnus.Futbot.Api.Hubs
             await Clients.Users(userId).OnProfileUpdated(profileDTO);
         }
 
+        public async Task SetAutoRelist(EditProfileAutoListDTO editProfileAutoListDTO)
+        {
+            var profileDTO = await _profilesService.EditProfileAutoRelist(editProfileAutoListDTO);
+            await Clients.Users(Context.UserIdentifier ?? "").OnProfileUpdated(profileDTO);
+        }
+
         public async Task EditProfile(EditProfileDTO editProfileDTO)
             => await Clients.Users(Context.UserIdentifier ?? "").OnProfileUpdated(await _profilesService.EditProfile(editProfileDTO));
     }

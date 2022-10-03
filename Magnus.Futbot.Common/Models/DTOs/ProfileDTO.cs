@@ -17,6 +17,7 @@ namespace Magnus.Futbot.Common.Models.DTOs
         public string UserId { get; set; } = string.Empty;
         public string UTSID { get; set; } = string.Empty;
         public TradePile TradePile { get; set; } = new TradePile();
+        public bool AutoRelist { get; set; }
 
         public override int GetHashCode()
             => HashCode.Combine(Email);

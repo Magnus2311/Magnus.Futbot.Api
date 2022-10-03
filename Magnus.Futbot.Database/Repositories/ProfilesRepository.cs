@@ -1,6 +1,7 @@
 ﻿using Magnus.Futbot.Common;
 using Magnus.Futbot.Database.Models;
 using Microsoft.Extensions.Configuration;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Magnus.Futbot.Database.Repositories
@@ -13,6 +14,9 @@ namespace Magnus.Futbot.Database.Repositories
 
         public async Task<IEnumerable<ProfileDocument>> GetByEmail(string email)
             => await (await _collection.FindAsync(pd => pd.Email.ToUpperInvariant() == email.ToUpperInvariant())).ToListAsync();
+
+        public async Task<IEnumerable<ProfileDocument>> GetById(ObjectId id)
+            => await (await _collection.FindAsync(pd => pd.Id == id)).ToListAsync();
 
         public async Task<ProfileDocument> UpdateSubmitCodeStatus(string email, ConfirmationCodeStatusType confirmationCodeStatusType)
         {
