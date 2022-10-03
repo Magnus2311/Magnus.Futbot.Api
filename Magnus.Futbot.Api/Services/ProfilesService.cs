@@ -34,6 +34,9 @@ namespace Magnus.Futbot.Api.Services
         public async Task<ProfileDTO> GetByEmail(string email)
             => _mapper.Map<ProfileDTO>((await _profilesRepository.GetByEmail(email))?.FirstOrDefault());
 
+        public async Task<ProfileDTO> GetById(string profileId)
+            => _mapper.Map<ProfileDTO>((await _profilesRepository.GetById(new ObjectId(profileId)))?.FirstOrDefault());
+
         public async Task<LoginResponseDTO> Add(AddProfileDTO profileDTO)
         {
             if ((await _profilesRepository.GetByEmail(profileDTO.Email)).Any())

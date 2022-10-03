@@ -101,8 +101,7 @@ namespace Magnus.Futbot.Api.Services
             Parallel.ForEach(profiles, (profile) =>
             {
                 var tknSrc = new CancellationTokenSource();
-                InitProfileService.InitProfile(profile);
-                _sellService.RelistPlayers(profile.Email, tknSrc);
+                _sellService.RelistPlayers(profile, tknSrc);
             });
         }
     }
