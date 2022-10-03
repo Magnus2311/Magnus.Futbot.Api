@@ -19,11 +19,11 @@ namespace Magnus.Futbot.Models
         {
             if (!PendingActions.IsEmpty)
             {
-                PendingActions.Enqueue(new TradeAction(() =>
+                PendingActions.Enqueue(new TradeAction(new Func<Task>(async () =>
                 {
                     try
                     {
-                        action.Action.Invoke();
+                        await action.Action.Invoke();
                     }
                     catch
                     {
@@ -34,18 +34,18 @@ namespace Magnus.Futbot.Models
                     {
                         if (!nextAction.CancellationTokenSource.Token.IsCancellationRequested)
                         {
-                            nextAction.Action.Invoke();
+                            await nextAction.Action.Invoke();
                         }
                     }
-                }, action.IsBuy, action.BuyCardDTO, action.SellCardDTO, action.CancellationTokenSource));
+                }), action.IsBuy, action.BuyCardDTO, action.SellCardDTO, action.CancellationTokenSource));
             }
             else
             {
-                var tempAction = new TradeAction(() =>
+                var tempAction = new TradeAction(new Func<Task>(async () =>
                 {
                     try
                     {
-                        action.Action.Invoke();
+                        await action.Action.Invoke();
                     }
                     catch
                     {
@@ -56,10 +56,10 @@ namespace Magnus.Futbot.Models
                     {
                         if (!nextAction.CancellationTokenSource.Token.IsCancellationRequested)
                         {
-                            nextAction.Action.Invoke();
+                            await nextAction.Action.Invoke();
                         }
                     }
-                }, action.IsBuy, action.BuyCardDTO, action.SellCardDTO, action.CancellationTokenSource);
+                }), action.IsBuy, action.BuyCardDTO, action.SellCardDTO, action.CancellationTokenSource);
 
                 PendingActions.Enqueue(tempAction);
                 tempAction.Action.Invoke();

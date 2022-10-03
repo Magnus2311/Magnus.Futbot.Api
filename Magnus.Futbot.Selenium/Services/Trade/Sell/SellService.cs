@@ -12,7 +12,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
         {
             var driverInstance = GetInstance(profileDTO.Email);
 
-            var tradeAction = new TradeAction(new Action(() =>
+            var tradeAction = new TradeAction(new Func<Task>(async () =>
             {
                 if (cancellationTokenSource.IsCancellationRequested) return;
 
@@ -22,6 +22,15 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
             }), false, null, sellCard, cancellationTokenSource);
 
             driverInstance.AddAction(tradeAction);
+        }
+
+        public void SellCurrentPlayer(SellCardDTO sellCard, ProfileDTO profileDTO, CancellationTokenSource cancellationTokenSource)
+        {
+            var driver = GetInstance(profileDTO.Email).Driver;
+
+            if (cancellationTokenSource.IsCancellationRequested) return;
+
+            InsertPriceValuesAndList(driver, sellCard);
         }
 
         private void TrySellPlayer(IWebDriver driver, SellCardDTO sellCard, ProfileDTO profileDTO, Action<ProfileDTO> updateProfile, CancellationTokenSource cancellationTokenSource)
@@ -42,26 +51,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
                 {
                     player.Click();
 
-                    driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section > div > div > div.DetailPanel > div.ut-quick-list-panel-view > div.ut-button-group > button"))
-                        .Click();
-                    Thread.Sleep(300);
-                    var bidPrice = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section > div > div > div.DetailPanel > div.ut-quick-list-panel-view > div.panelActions.open > div:nth-child(2) > div.ut-numeric-input-spinner-control > input"));
-                    bidPrice.Click();
-                    Thread.Sleep(100);
-                    bidPrice.SendKeys(Keys.Backspace);
-                    bidPrice.SendKeys($"{sellCard.FromBid}");
-                    Thread.Sleep(100);
-
-                    var binPrice = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section > div > div > div.DetailPanel > div.ut-quick-list-panel-view > div.panelActions.open > div:nth-child(3) > div.ut-numeric-input-spinner-control > input"));
-                    binPrice.Click();
-                    Thread.Sleep(100);
-                    binPrice.SendKeys(Keys.Backspace);
-                    binPrice.SendKeys($"{sellCard.FromBin}");
-                    Thread.Sleep(100);
-
-                    var listBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section > div > div > div.DetailPanel > div.ut-quick-list-panel-view > div.panelActions.open > button"));
-                    listBtn.Click();
-                    Thread.Sleep(100);
+                    InsertPriceValuesAndList(driver, sellCard);
 
                     updateProfile(profileDTO);
                 }
@@ -70,6 +60,30 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
             {
                 TrySellPlayer(driver, sellCard, profileDTO, updateProfile, cancellationTokenSource);
             }
+        }
+
+        private void InsertPriceValuesAndList(IWebDriver driver, SellCardDTO sellCardDTO)
+        {
+            driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section > div > div > div.DetailPanel > div.ut-quick-list-panel-view > div.ut-button-group > button"))
+                        .Click();
+            Thread.Sleep(300);
+            var bidPrice = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section > div > div > div.DetailPanel > div.ut-quick-list-panel-view > div.panelActions.open > div:nth-child(2) > div.ut-numeric-input-spinner-control > input"));
+            bidPrice.Click();
+            Thread.Sleep(100);
+            bidPrice.SendKeys(Keys.Backspace);
+            bidPrice.SendKeys($"{sellCardDTO.FromBid}");
+            Thread.Sleep(100);
+
+            var binPrice = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section > div > div > div.DetailPanel > div.ut-quick-list-panel-view > div.panelActions.open > div:nth-child(3) > div.ut-numeric-input-spinner-control > input"));
+            binPrice.Click();
+            Thread.Sleep(100);
+            binPrice.SendKeys(Keys.Backspace);
+            binPrice.SendKeys($"{sellCardDTO.FromBin}");
+            Thread.Sleep(100);
+
+            var listBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section > div > div > div.DetailPanel > div.ut-quick-list-panel-view > div.panelActions.open > button"));
+            listBtn.Click();
+            Thread.Sleep(100);
         }
     }
 }

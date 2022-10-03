@@ -22,26 +22,28 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
             ProfileDTO profileDTO, 
             BuyCardDTO buyCardDTO, 
             Action<ProfileDTO> updateAction,
-            CancellationTokenSource cancellationTokenSource)
+            CancellationTokenSource cancellationTokenSource,
+            Action? sellAction = null)
         {
             _updateAction = updateAction;
             var driverInstance = GetInstance(profileDTO.Email);
 
-            var tradeAction = new TradeAction(new Action(async () =>
+            var tradeAction = new TradeAction(new Func<Task>(async () =>
             {
-                await SetupForBin(driverInstance.Driver, profileDTO, buyCardDTO, updateAction, cancellationTokenSource);
+                await SetupForBin(driverInstance.Driver, profileDTO, buyCardDTO, updateAction, cancellationTokenSource, sellAction);
 
             }), true, buyCardDTO, null, cancellationTokenSource);
 
             driverInstance.AddAction(tradeAction);
         }
 
-        public async Task SetupForBin(
+        private async Task SetupForBin(
             IWebDriver driver,
             ProfileDTO profileDTO,
             BuyCardDTO buyCardDTO,
             Action<ProfileDTO> updateAction,
-            CancellationTokenSource cancellationTokenSource)
+            CancellationTokenSource cancellationTokenSource,
+            Action? sellAction)
         {
             if (!driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
                 LoginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
@@ -54,27 +56,30 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
             {
                 try
                 {
-                    await TryBinPlayer(driver, buyCardDTO, profileDTO, updateAction, cancellationTokenSource);
+                    await TryBinPlayer(driver, buyCardDTO, profileDTO, updateAction, cancellationTokenSource, sellAction);
                 }
                 catch
-                { }
+                {
+                    await SetupForBin(driver, profileDTO, buyCardDTO, updateAction, cancellationTokenSource, sellAction);
+                }
             }
         }
 
         public async Task TryBinPlayer(
-            IWebDriver driver, 
-            BuyCardDTO buyCardDTO, 
+            IWebDriver driver,
+            BuyCardDTO buyCardDTO,
             ProfileDTO profileDTO,
             Action<ProfileDTO> updateAction,
-            CancellationTokenSource cancellationTokenSource)
+            CancellationTokenSource cancellationTokenSource,
+            Action? sellAction)
         {
             if (cancellationTokenSource.Token.IsCancellationRequested) updateAction(profileDTO);
 
-            await Task.Delay(100, cancellationTokenSource.Token);
+            await Task.Delay(300, cancellationTokenSource.Token);
             var allPlayers = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > ul > li"), 1000);
             if (allPlayers is null || allPlayers.Count() == 0)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(2000);
                 var title = driver.TryFindElement(By.CssSelector("body > main > section > section > div.ut-navigation-bar-view.navbar-style-landscape > h1"))?.Text;
                 if (title == "TRANSFERS")
                 {
@@ -86,21 +91,9 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
                     backBtn?.Click();
                 }
 
-                var lowerBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.search-prices > div:nth-child(6) > div.ut-numeric-input-spinner-control > button.btn-standard.decrement-value"));
-                lowerBtn?.Click();
+                await Task.Delay(150, cancellationTokenSource.Token);
+                await ConfigurePrices(driver, buyCardDTO, cancellationTokenSource);
 
-                var currentValue = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.search-prices > div:nth-child(6) > div.ut-numeric-input-spinner-control > input"));
-
-                if (double.TryParse(currentValue.GetAttribute("value"), out var currentPrice))
-                {
-                    if (currentPrice / (double)buyCardDTO.Price < 0.7)
-                    {
-                        currentValue.Click();
-                        await Task.Delay(100, cancellationTokenSource.Token);
-                        currentValue.SendKeys($"{buyCardDTO.Price}");
-                    }
-                }
-                
                 var searchBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.button-container > button:nth-child(2)"), 1000);
                 searchBtn?.Click();
             }
@@ -120,6 +113,17 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
                     binBtn?.Click();
 
                     await Task.Delay(100, cancellationTokenSource.Token);
+
+                    var popupText = driver.TryFindElement(By.CssSelector("body > div.view-modal-container.form-modal > section > div > p"))?.Text;
+                    if (!string.IsNullOrEmpty(popupText))
+                    {
+                        if (popupText == "You cannot get this Item because you have 5 or more Unassigned Items.")
+                        {
+                            cancellationTokenSource.Cancel();
+                            return;
+                        }
+                    }
+
                     var okBtn = driver.FindElement(By.CssSelector("body > div.view-modal-container.form-modal > section > div > div > button:nth-child(1)"));
                     okBtn.Click();
 
@@ -127,10 +131,14 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
                     if (errorMessage is not null)
                     {
                         if (errorMessage.Text == "Bid status changed, auction data will be updated.") continue;
-
-                        Thread.Sleep(15000);
-                        await SetupForBin(driver, profileDTO, buyCardDTO, _updateAction, cancellationTokenSource);
+                        else if (errorMessage.Text != "Player Moved to Transfer List")
+                        {
+                            Thread.Sleep(15000);
+                            await SetupForBin(driver, profileDTO, buyCardDTO, _updateAction, cancellationTokenSource, sellAction);
+                        }
                     }
+
+                    if (sellAction != null) sellAction();
 
                     profileDTO.Coins = driver.GetCoins();
                     profileDTO.WonTargetsCount++;
@@ -146,20 +154,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
                 var backBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-bar-view.navbar-style-landscape > button.ut-navigation-button-control"));
                 backBtn?.Click();
 
-                var lowerBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.search-prices > div:nth-child(6) > div.ut-numeric-input-spinner-control > button.btn-standard.decrement-value"));
-                lowerBtn?.Click();
-
-                var currentValue = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.search-prices > div:nth-child(6) > div.ut-numeric-input-spinner-control > input"));
-
-                if (double.TryParse(currentValue.GetAttribute("value"), out var currentPrice))
-                {
-                    if (currentPrice / (double)buyCardDTO.Price < 0.7)
-                    {
-                        currentValue.Click();
-                        await Task.Delay(100, cancellationTokenSource.Token);
-                        currentValue.SendKeys($"{buyCardDTO.Price}");
-                    }
-                }
+                await ConfigurePrices(driver, buyCardDTO, cancellationTokenSource);
 
                 var searchBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.button-container > button:nth-child(2)"), 1000);
                 searchBtn?.Click();
@@ -168,7 +163,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
             updateAction(profileDTO);
         }
 
-        public async Task SetPrice(IWebDriver driver, BuyCardDTO buyCardDTO, CancellationTokenSource cancellationTokenSource)
+        private async Task SetPrice(IWebDriver driver, BuyCardDTO buyCardDTO, CancellationTokenSource cancellationTokenSource)
         {
             var currentValue = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.search-prices > div:nth-child(6) > div.ut-numeric-input-spinner-control > input"));
             currentValue.Click();
@@ -177,6 +172,23 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
 
             var searchBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.button-container > button:nth-child(2)"), 1000);
             searchBtn?.Click();
+        }
+
+        private async Task ConfigurePrices(IWebDriver driver, BuyCardDTO buyCardDTO, CancellationTokenSource cancellationTokenSource)
+        {
+            var minBinPlus = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.search-prices > div:nth-child(5) > div.ut-numeric-input-spinner-control > button.btn-standard.increment-value"));
+            minBinPlus?.Click();
+
+            var minBinPlusValue = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.search-prices > div:nth-child(5) > div.ut-numeric-input-spinner-control > input"));
+            if (double.TryParse(minBinPlusValue.GetAttribute("value"), out var currentPrice))
+            {
+                if (currentPrice > ((double)buyCardDTO.Price * 0.8) || currentPrice > 1000)
+                {
+                    minBinPlusValue.Click();
+                    await Task.Delay(100, cancellationTokenSource.Token);
+                    minBinPlusValue.SendKeys(Keys.Backspace);
+                }
+            }
         }
     }
 }
