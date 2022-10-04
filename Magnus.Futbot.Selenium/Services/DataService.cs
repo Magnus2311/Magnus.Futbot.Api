@@ -70,6 +70,6 @@ namespace Magnus.Futbot.Services
         }
 
         public static IEnumerable<TradeAction> GetTradeActionsByProfile(ProfileDTO profileDTO)
-            => GetInstance(profileDTO.Email).PendingActions;
+            => GetInstance(profileDTO.Email).PendingActions.UnorderedItems.Select(i => i.Element).ToList();
     }
 }
