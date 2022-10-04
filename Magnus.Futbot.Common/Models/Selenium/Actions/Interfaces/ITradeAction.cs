@@ -7,5 +7,6 @@
         CancellationTokenSource CancellationTokenSource { get; }
         string Type { get; }
         string Description { get; }
+        int Priority { get; protected set; }
     }
 }

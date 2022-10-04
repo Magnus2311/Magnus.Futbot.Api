@@ -10,6 +10,7 @@ namespace Magnus.Futbot.Common.Models.Selenium.Actions
             BuyCardDTO? buyCardDTO) : base($"Buy -> {buyCardDTO?.Card?.Name}", $"{buyCardDTO?.Price} - {buyCardDTO?.Count}", action, cancellationTokenSource)
         {
             BuyCardDTO = buyCardDTO;
+            Priority = 1;
         }
 
         public BuyCardDTO? BuyCardDTO { get; }

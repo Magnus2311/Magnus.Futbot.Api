@@ -23,5 +23,6 @@ namespace Magnus.Futbot.Common.Models.Selenium.Actions
         public string Type { get; }
 
         public string Description { get; }
+        public int Priority { get; set; }
     }
 }
