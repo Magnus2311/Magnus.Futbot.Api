@@ -8,7 +8,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
 {
     public class SellService : BaseService
     {
-        public void SellPlayer(SellCardDTO sellCard, ProfileDTO profileDTO, Action<ProfileDTO> updateProfile, CancellationTokenSource cancellationTokenSource)
+        public TradeAction SellPlayer(SellCardDTO sellCard, ProfileDTO profileDTO, Action<ProfileDTO> updateProfile, CancellationTokenSource cancellationTokenSource)
         {
             var driverInstance = GetInstance(profileDTO.Email);
 
@@ -21,7 +21,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
                 await TrySellPlayer(driverInstance.Driver, sellCard, profileDTO, updateProfile, cancellationTokenSource);
             }), cancellationTokenSource, sellCard);
 
-            driverInstance.AddAction(tradeAction);
+            return driverInstance.AddAction(tradeAction);
         }
 
         public async Task SellCurrentPlayer(SellCardDTO sellCard, ProfileDTO profileDTO, CancellationTokenSource cancellationTokenSource)
@@ -33,7 +33,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
             await InsertPriceValuesAndList(driver, sellCard);
         }
 
-        public void RelistPlayers(ProfileDTO profileDTO, CancellationTokenSource cancellationTokenSource)
+        public TradeAction RelistPlayers(ProfileDTO profileDTO, CancellationTokenSource cancellationTokenSource)
         {
             var driverInstance = GetInstance(profileDTO.Email);
 
@@ -53,7 +53,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
                 driverInstance.Driver.TryFindElement(By.CssSelector("body > div.view-modal-container.form-modal > section > div > div > button:nth-child(2)"))?.Click();
             }), cancellationTokenSource, null);
 
-            driverInstance.AddAction(tradeAction);
+            return driverInstance.AddAction(tradeAction);
         }
 
         private async Task TrySellPlayer(IWebDriver driver, SellCardDTO sellCard, ProfileDTO profileDTO, Action<ProfileDTO> updateProfile, CancellationTokenSource cancellationTokenSource)

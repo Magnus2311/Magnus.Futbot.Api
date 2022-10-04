@@ -17,7 +17,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
             _filtersService = filtersService;
         }
 
-        public void BidPlayer(ProfileDTO profileDTO, BuyCardDTO bidPlayerDTO, Action<ProfileDTO> updateAction, CancellationTokenSource cancellationTokenSource)
+        public TradeAction BidPlayer(ProfileDTO profileDTO, BuyCardDTO bidPlayerDTO, Action<ProfileDTO> updateAction, CancellationTokenSource cancellationTokenSource)
         {
             _updateAction = updateAction;
             var driverInstance = GetInstance(profileDTO.Email);
@@ -35,7 +35,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
                 await TryBidPlayer(driverInstance.Driver, bidPlayerDTO, profileDTO, cancellationTokenSource);
             }), cancellationTokenSource, bidPlayerDTO);
 
-            driverInstance.AddAction(tradeAction);
+            return driverInstance.AddAction(tradeAction);
         }
 
         private async Task TryBidPlayer(IWebDriver driver, BuyCardDTO bidPlayerDTO, ProfileDTO profileDTO, CancellationTokenSource cancellationTokenSource)

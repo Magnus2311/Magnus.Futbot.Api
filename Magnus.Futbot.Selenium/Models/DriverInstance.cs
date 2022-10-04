@@ -1,4 +1,5 @@
-﻿using Magnus.Futbot.Common.Models.Selenium.Actions;
+﻿using Magnus.Futbot.Common.Interfaces.Notifiers;
+using Magnus.Futbot.Common.Models.Selenium.Actions;
 using OpenQA.Selenium.Chrome;
 
 namespace Magnus.Futbot.Models
@@ -16,13 +17,13 @@ namespace Magnus.Futbot.Models
 
         public ChromeDriver Driver { get; set; }
 
-        public void AddAction(BuyAction action)
+        public TradeAction AddAction(BuyAction action)
         {
             lock (_locker)
             {
                 if (PendingActions.Count > 0)
                 {
-                    PendingActions.Enqueue(new BuyAction(new Func<Task>(async () =>
+                    var tradeAction = new BuyAction(new Func<Task>(async () =>
                     {
                         try
                         {
@@ -40,11 +41,14 @@ namespace Magnus.Futbot.Models
                                 await nextAction.Action.Invoke();
                             }
                         }
-                    }), action.CancellationTokenSource, action.BuyCardDTO), action.Priority);
+                    }), action.CancellationTokenSource, action.BuyCardDTO);
+
+                    PendingActions.Enqueue(tradeAction, action.Priority);
+                    return tradeAction;
                 }
                 else
                 {
-                    var tempAction = new BuyAction(new Func<Task>(async () =>
+                    var tradeAction = new BuyAction(new Func<Task>(async () =>
                     {
                         try
                         {
@@ -64,19 +68,20 @@ namespace Magnus.Futbot.Models
                         }
                     }), action.CancellationTokenSource, action.BuyCardDTO);
 
-                    PendingActions.Enqueue(tempAction, tempAction.Priority);
-                    tempAction.Action.Invoke();
+                    PendingActions.Enqueue(tradeAction, tradeAction.Priority);
+                    tradeAction.Action.Invoke();
+                    return tradeAction;
                 }
             }
         }
 
-        public void AddAction(SellCardAction action)
+        public TradeAction AddAction(SellCardAction action)
         {
             lock (_locker)
             {
                 if (PendingActions.Count > 0)
                 {
-                    PendingActions.Enqueue(new SellCardAction(new Func<Task>(async () =>
+                    var tempAction = new SellCardAction(new Func<Task>(async () =>
                     {
                         try
                         {
@@ -94,7 +99,9 @@ namespace Magnus.Futbot.Models
                                 await nextAction.Action.Invoke();
                             }
                         }
-                    }), action.CancellationTokenSource, action.SellCardDTO), action.Priority);
+                    }), action.CancellationTokenSource, action.SellCardDTO);
+                    PendingActions.Enqueue(tempAction, action.Priority);
+                    return tempAction;
                 }
                 else
                 {
@@ -120,6 +127,7 @@ namespace Magnus.Futbot.Models
 
                     PendingActions.Enqueue(tempAction, tempAction.Priority);
                     tempAction.Action.Invoke();
+                    return tempAction;
                 }
             }
         }

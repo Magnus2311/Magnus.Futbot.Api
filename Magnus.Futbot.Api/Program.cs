@@ -7,9 +7,11 @@ using Magnus.Futbot.Api.Services.Connections;
 using Magnus.Futbot.Api.Services.Connections.SignalR;
 using Magnus.Futbot.Api.Services.Helpers;
 using Magnus.Futbot.Api.Services.Interfaces;
+using Magnus.Futbot.Api.Services.Notifiers;
 using Magnus.Futbot.Api.Workers;
 using Magnus.Futbot.Common.Interfaces;
 using Magnus.Futbot.Common.Interfaces.Helpers;
+using Magnus.Futbot.Common.Interfaces.Notifiers;
 using Magnus.Futbot.Database.Repositories;
 using Magnus.Futbot.Initializer;
 using Magnus.Futbot.Initializer.Connections;
@@ -56,7 +58,8 @@ builder.Services
     .AddTransient<ActionsService>()
     .AddTransient<IPlayersService, PlayersService>()
     .AddTransient<ITradingService, TradingService>()
-    .AddTransient<ICardsHelper, CardsHelper>();
+    .AddTransient<ICardsHelper, CardsHelper>()
+    .AddTransient<IActionsNotifier, ActionsNotifier>();
 
 // Selenium Services
 builder.Services

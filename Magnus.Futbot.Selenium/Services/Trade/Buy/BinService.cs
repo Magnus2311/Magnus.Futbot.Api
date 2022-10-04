@@ -18,7 +18,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
             _filtersService = filtersService;
         }
 
-        public void BinPlayer(
+        public TradeAction BinPlayer(
             ProfileDTO profileDTO, 
             BuyCardDTO buyCardDTO, 
             Action<ProfileDTO> updateAction,
@@ -34,7 +34,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
 
             }), cancellationTokenSource, buyCardDTO);
 
-            driverInstance.AddAction(tradeAction);
+            return driverInstance.AddAction(tradeAction);
         }
 
         private async Task SetupForBin(
