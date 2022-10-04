@@ -9,7 +9,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
     public class BidService : BaseService
     {
         private int _wonPlayers;
-        private Action<ProfileDTO>? _updateAction;
+        private Action<ProfileDTO> _updateAction;
         private readonly FiltersService _filtersService;
 
         public BidService(FiltersService filtersService)
@@ -32,27 +32,27 @@ namespace Magnus.Futbot.Services.Trade.Buy
                 _filtersService.InsertFilters(profileDTO.Email, bidPlayerDTO);
                 var searchBtn = driverInstance.Driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.button-container > button:nth-child(2)"), 1000);
                 searchBtn?.Click();
-                TryBidPlayer(driverInstance.Driver, bidPlayerDTO, profileDTO, cancellationTokenSource);
+                await TryBidPlayer(driverInstance.Driver, bidPlayerDTO, profileDTO, cancellationTokenSource);
             }), cancellationTokenSource, bidPlayerDTO);
 
             driverInstance.AddAction(tradeAction);
         }
 
-        private void TryBidPlayer(IWebDriver driver, BuyCardDTO bidPlayerDTO, ProfileDTO profileDTO, CancellationTokenSource cancellationTokenSource)
+        private async Task TryBidPlayer(IWebDriver driver, BuyCardDTO bidPlayerDTO, ProfileDTO profileDTO, CancellationTokenSource cancellationTokenSource)
         {
             var endDate = DateTime.Now.AddHours(1);
             do
             {
-                TryBidForPlayers(driver, bidPlayerDTO, profileDTO, cancellationTokenSource);
+                await TryBidForPlayers(driver, bidPlayerDTO, profileDTO, cancellationTokenSource);
             }
             while (_wonPlayers < bidPlayerDTO.Count && endDate > DateTime.Now && !cancellationTokenSource.IsCancellationRequested);
         }
 
-        private void TryBidForPlayers(IWebDriver driver, BuyCardDTO bidPlayerDTO, ProfileDTO profileDTO, CancellationTokenSource cancellationTokenSource)
+        private async Task TryBidForPlayers(IWebDriver driver, BuyCardDTO bidPlayerDTO, ProfileDTO profileDTO, CancellationTokenSource cancellationTokenSource)
         {
             try
             {
-                Thread.Sleep(500);
+                await Task.Delay(500);
                 var popup = driver.TryFindElement(By.CssSelector("body > div.view-modal-container.form-modal > section > div > p"));
                 if (popup?.Text == "Your Transfer Targets list is full. Please try again later, or clear items from your Watched and Active list.")
                 {
@@ -62,7 +62,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
                     if (clearExpiredBtn != null)
                     {
                         clearExpiredBtn.Click();
-                        Thread.Sleep(200);
+                        await Task.Delay(200, cancellationTokenSource.Token);
                         _filtersService.InsertFilters(profileDTO.Email, bidPlayerDTO);
                         var searchBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.button-container > button:nth-child(2)"), 1000);
                         searchBtn?.Click();
@@ -77,7 +77,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
                     nextBtn?.Click();
                     var prevBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > div > button.flat.pagination.prev"));
                     prevBtn?.Click();
-                    Thread.Sleep(1000);
+                    await Task.Delay(1000, cancellationTokenSource.Token);
                     allPlayers = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > ul > li"), 1000);
                 }
 
@@ -98,10 +98,10 @@ namespace Magnus.Futbot.Services.Trade.Buy
                     var nextBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > div > button.flat.pagination.next"));
 
                     nextBtn?.Click(); //outbid
-                    Thread.Sleep(500);
+                    await Task.Delay(500, cancellationTokenSource.Token);
                     var prevBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > div > button.flat.pagination.prev"));
                     prevBtn?.Click();
-                    Thread.Sleep(1000);
+                    await Task.Delay(1000, cancellationTokenSource.Token);
                     allPlayers = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > ul > li"), 1000);
                 }
 

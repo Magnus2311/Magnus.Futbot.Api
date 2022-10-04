@@ -27,7 +27,7 @@ namespace Magnus.Futbot.Services
                 loginBtn.Click();
                 Thread.Sleep(2000);
             }
-            catch (StaleElementReferenceException ex)
+            catch (StaleElementReferenceException)
             {
                 return ProfileStatusType.Logged;
             }

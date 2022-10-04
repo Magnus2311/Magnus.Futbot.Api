@@ -10,7 +10,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
     public class BinService : BaseService
     {
         private int _wonPlayers;
-        private Action<ProfileDTO>? _updateAction;
+        private Action<ProfileDTO> _updateAction;
         private readonly FiltersService _filtersService;
 
         public BinService(FiltersService filtersService)

@@ -88,7 +88,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Filters
                 var playerName = item.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.ut-item-search-view > div.inline-list-select.ut-player-search-control.has-selection.contract-text-input.is-open > div > div.inline-list > ul > button > span.btn-text")).Text;
                 _ = int.TryParse(item.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.ut-item-search-view > div.inline-list-select.ut-player-search-control.has-selection.contract-text-input.is-open > div > div.inline-list > ul > button > span.btn-subtext")).Text, out var baseRating);
 
-                if (baseRating == buyCardDTO.Card.Rating)
+                if (baseRating == buyCardDTO?.Card?.Rating)
                 {
                     item.Click();
                     break;

@@ -18,19 +18,19 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
 
                 driverInstance.Driver.OpenTransferList();
 
-                TrySellPlayer(driverInstance.Driver, sellCard, profileDTO, updateProfile, cancellationTokenSource);
+                await TrySellPlayer(driverInstance.Driver, sellCard, profileDTO, updateProfile, cancellationTokenSource);
             }), cancellationTokenSource, sellCard);
 
             driverInstance.AddAction(tradeAction);
         }
 
-        public void SellCurrentPlayer(SellCardDTO sellCard, ProfileDTO profileDTO, CancellationTokenSource cancellationTokenSource)
+        public async Task SellCurrentPlayer(SellCardDTO sellCard, ProfileDTO profileDTO, CancellationTokenSource cancellationTokenSource)
         {
             var driver = GetInstance(profileDTO.Email).Driver;
 
             if (cancellationTokenSource.IsCancellationRequested) return;
 
-            InsertPriceValuesAndList(driver, sellCard);
+            await InsertPriceValuesAndList(driver, sellCard);
         }
 
         public void RelistPlayers(ProfileDTO profileDTO, CancellationTokenSource cancellationTokenSource)
@@ -56,7 +56,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
             driverInstance.AddAction(tradeAction);
         }
 
-        private void TrySellPlayer(IWebDriver driver, SellCardDTO sellCard, ProfileDTO profileDTO, Action<ProfileDTO> updateProfile, CancellationTokenSource cancellationTokenSource)
+        private async Task TrySellPlayer(IWebDriver driver, SellCardDTO sellCard, ProfileDTO profileDTO, Action<ProfileDTO> updateProfile, CancellationTokenSource cancellationTokenSource)
         {
             try
             {
@@ -74,39 +74,39 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
                 {
                     player.Click();
 
-                    InsertPriceValuesAndList(driver, sellCard);
+                    await InsertPriceValuesAndList(driver, sellCard);
 
                     updateProfile(profileDTO);
                 }
             }
             catch
             {
-                TrySellPlayer(driver, sellCard, profileDTO, updateProfile, cancellationTokenSource);
+                await TrySellPlayer(driver, sellCard, profileDTO, updateProfile, cancellationTokenSource);
             }
         }
 
-        private void InsertPriceValuesAndList(IWebDriver driver, SellCardDTO sellCardDTO)
+        private async Task InsertPriceValuesAndList(IWebDriver driver, SellCardDTO sellCardDTO)
         {
             driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section > div > div > div.DetailPanel > div.ut-quick-list-panel-view > div.ut-button-group > button"))
                         .Click();
-            Thread.Sleep(300);
+            await Task.Delay(300);
             var bidPrice = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section > div > div > div.DetailPanel > div.ut-quick-list-panel-view > div.panelActions.open > div:nth-child(2) > div.ut-numeric-input-spinner-control > input"));
             bidPrice.Click();
-            Thread.Sleep(100);
+            await Task.Delay(200);
             bidPrice.SendKeys(Keys.Backspace);
             bidPrice.SendKeys($"{sellCardDTO.FromBid}");
-            Thread.Sleep(100);
+            await Task.Delay(200);
 
             var binPrice = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section > div > div > div.DetailPanel > div.ut-quick-list-panel-view > div.panelActions.open > div:nth-child(3) > div.ut-numeric-input-spinner-control > input"));
             binPrice.Click();
-            Thread.Sleep(100);
+            await Task.Delay(100);
             binPrice.SendKeys(Keys.Backspace);
             binPrice.SendKeys($"{sellCardDTO.FromBin}");
-            Thread.Sleep(100);
+            await Task.Delay(100);
 
             var listBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section > div > div > div.DetailPanel > div.ut-quick-list-panel-view > div.panelActions.open > button"));
             listBtn.Click();
-            Thread.Sleep(100);
+            await Task.Delay(100);
         }
     }
 }
