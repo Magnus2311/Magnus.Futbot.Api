@@ -44,7 +44,7 @@ namespace Magnus.Futbot.Services
             {
                 profileDTO = DataSeleniumService.GetBasicData(profileDTO);
             }
-
+            driver.ExecuteScript("services.User.maxAllowedAuctions = 100");
             return profileDTO;
         }
     }

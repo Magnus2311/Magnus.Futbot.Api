@@ -23,7 +23,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
             BuyCardDTO buyCardDTO, 
             Action<ProfileDTO> updateAction,
             CancellationTokenSource cancellationTokenSource,
-            Action? sellAction = null)
+            Func<Task>? sellAction)
         {
             _updateAction = updateAction;
             var driverInstance = GetInstance(profileDTO.Email);
@@ -43,7 +43,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
             BuyCardDTO buyCardDTO,
             Action<ProfileDTO> updateAction,
             CancellationTokenSource cancellationTokenSource,
-            Action? sellAction)
+            Func<Task>? sellAction)
         {
             if (!driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
                 LoginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
@@ -71,7 +71,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
             ProfileDTO profileDTO,
             Action<ProfileDTO> updateAction,
             CancellationTokenSource cancellationTokenSource,
-            Action? sellAction)
+            Func<Task>? sellAction)
         {
             if (cancellationTokenSource.Token.IsCancellationRequested) updateAction(profileDTO);
 
@@ -103,11 +103,11 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
                 {
                     if (cancellationTokenSource.Token.IsCancellationRequested) updateAction(profileDTO);
 
-                    Thread.Sleep(100);
+                    Thread.Sleep(300);
                     if (driver.GetCoins() < buyCardDTO.Price) cancellationTokenSource.Cancel();
 
                     player.Click();
-                    await Task.Delay(100, cancellationTokenSource.Token);
+                    await Task.Delay(300, cancellationTokenSource.Token);
 
                     var binBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-navigation-container-view.ui-layout-right > div > div > div.DetailPanel > div.bidOptions > button.btn-standard.buyButton"));
                     binBtn?.Click();
@@ -138,7 +138,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
                         }
                     }
 
-                    if (sellAction != null) sellAction();
+                    await sellAction?.Invoke();
 
                     profileDTO.Coins = driver.GetCoins();
                     profileDTO.WonTargetsCount++;

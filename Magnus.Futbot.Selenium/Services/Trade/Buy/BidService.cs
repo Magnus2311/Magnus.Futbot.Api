@@ -17,7 +17,12 @@ namespace Magnus.Futbot.Services.Trade.Buy
             _filtersService = filtersService;
         }
 
-        public TradeAction BidPlayer(ProfileDTO profileDTO, BuyCardDTO bidPlayerDTO, Action<ProfileDTO> updateAction, CancellationTokenSource cancellationTokenSource)
+        public TradeAction BidPlayer(
+            ProfileDTO profileDTO,
+            BuyCardDTO bidPlayerDTO, 
+            Action<ProfileDTO> updateAction,
+            CancellationTokenSource cancellationTokenSource,
+            Func<Task>? sellAction)
         {
             _updateAction = updateAction;
             var driverInstance = GetInstance(profileDTO.Email);
@@ -32,23 +37,33 @@ namespace Magnus.Futbot.Services.Trade.Buy
                 _filtersService.InsertFilters(profileDTO.Email, bidPlayerDTO);
                 var searchBtn = driverInstance.Driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.button-container > button:nth-child(2)"), 1000);
                 searchBtn?.Click();
-                await TryBidPlayer(driverInstance.Driver, bidPlayerDTO, profileDTO, cancellationTokenSource);
+                await TryBidPlayer(driverInstance.Driver, bidPlayerDTO, profileDTO, cancellationTokenSource, sellAction);
             }), cancellationTokenSource, bidPlayerDTO);
 
             return driverInstance.AddAction(tradeAction);
         }
 
-        private async Task TryBidPlayer(IWebDriver driver, BuyCardDTO bidPlayerDTO, ProfileDTO profileDTO, CancellationTokenSource cancellationTokenSource)
+        private async Task TryBidPlayer(
+            IWebDriver driver,
+            BuyCardDTO bidPlayerDTO, 
+            ProfileDTO profileDTO, 
+            CancellationTokenSource cancellationTokenSource,
+            Func<Task>? sellAction)
         {
             var endDate = DateTime.Now.AddHours(1);
             do
             {
-                await TryBidForPlayers(driver, bidPlayerDTO, profileDTO, cancellationTokenSource);
+                await TryBidForPlayers(driver, bidPlayerDTO, profileDTO, cancellationTokenSource, sellAction);
             }
             while (_wonPlayers < bidPlayerDTO.Count && endDate > DateTime.Now && !cancellationTokenSource.IsCancellationRequested);
         }
 
-        private async Task TryBidForPlayers(IWebDriver driver, BuyCardDTO bidPlayerDTO, ProfileDTO profileDTO, CancellationTokenSource cancellationTokenSource)
+        private async Task TryBidForPlayers(
+            IWebDriver driver, 
+            BuyCardDTO bidPlayerDTO, 
+            ProfileDTO profileDTO,
+            CancellationTokenSource cancellationTokenSource,
+            Func<Task>? sellAction)
         {
             try
             {
@@ -87,6 +102,13 @@ namespace Magnus.Futbot.Services.Trade.Buy
                 if (allPlayers.All(p => p.GetAttribute("class").Contains("won") || p.GetAttribute("class").Contains("expired")))
                 {
                     if (driver.GetCoins() < bidPlayerDTO.Price) _updateAction(profileDTO);
+
+                    var wonPlayers = allPlayers.Where(p => p.GetAttribute("class").Contains("won"));
+                    foreach (var player in wonPlayers)
+                    {
+                        player.Click();
+                        await sellAction?.Invoke();
+                    }
 
                     var currentlyWon = allPlayers.Count(p => p.GetAttribute("class").Contains("won"));
                     _wonPlayers += currentlyWon;

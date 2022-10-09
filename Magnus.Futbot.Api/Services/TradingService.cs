@@ -1,4 +1,5 @@
-﻿using Magnus.Futbot.Api.Hubs;
+﻿using AutoMapper;
+using Magnus.Futbot.Api.Hubs;
 using Magnus.Futbot.Api.Hubs.Interfaces;
 using Magnus.Futbot.Api.Services.Interfaces;
 using Magnus.Futbot.Common.Interfaces.Notifiers;
@@ -22,6 +23,7 @@ namespace Magnus.Futbot.Api.Services
         private readonly BinService _binService;
         private readonly IHubContext<ProfilesHub, IProfilesClient> _profilesHubContext;
         private readonly IActionsNotifier _actionsNotifier;
+        private readonly IMapper _mapper;
         private readonly Action<ProfileDTO> _updateProfile;
 
         public TradingService(BidService bidService,
@@ -30,7 +32,8 @@ namespace Magnus.Futbot.Api.Services
             SellService sellService,
             BinService binService,
             IHubContext<ProfilesHub, IProfilesClient> profilesHubContext,
-            IActionsNotifier actionsNotifier)
+            IActionsNotifier actionsNotifier,
+            IMapper mapper)
         {
             _bidService = bidService;
             _movePlayersService = movePlayersService;
@@ -39,6 +42,7 @@ namespace Magnus.Futbot.Api.Services
             _binService = binService;
             _profilesHubContext = profilesHubContext;
             _actionsNotifier = actionsNotifier;
+            _mapper = mapper;
             _updateProfile = new Action<ProfileDTO>(
                 async (profileDTO) => 
                 { 
@@ -54,26 +58,29 @@ namespace Magnus.Futbot.Api.Services
             var tknSrc = new CancellationTokenSource();
 
             TradeAction tradeAction;
-            if (buyCardDTO.IsBin) tradeAction = _binService.BinPlayer(profileDTO, buyCardDTO, _updateProfile, tknSrc);
-            else tradeAction = _bidService.BidPlayer(profileDTO, buyCardDTO, _updateProfile, tknSrc);
+            if (buyCardDTO.IsBin) tradeAction = _binService.BinPlayer(profileDTO, buyCardDTO, _updateProfile, tknSrc, null);
+            else tradeAction = _bidService.BidPlayer(profileDTO, buyCardDTO, _updateProfile, tknSrc, null);
 
             await _actionsNotifier.AddAction(profileDTO, tradeAction);
         }
 
-        public async Task BuyAndSell(BuyCardDTO buyCardDTO, SellCardDTO sellCardDTO)
+        public async Task BuyAndSell(BuyAndSellCardDTO buyAndSellCardDTO)
         {
+            var buyCardDTO = _mapper.Map<BuyCardDTO>(buyAndSellCardDTO);
+            var sellCardDTO = _mapper.Map<SellCardDTO>(buyAndSellCardDTO);
+
             var profileDTO = await _profilesService.GetByEmail(buyCardDTO.Email);
 
             var tknSrc = new CancellationTokenSource();
 
-            var sellAction = new Action(async () =>
+            var sellAction = new Func<Task>(async () =>
             {
                 await _sellService.SellCurrentPlayer(sellCardDTO, profileDTO, tknSrc);
             });
 
             TradeAction tradeAction;
             if (buyCardDTO.IsBin) tradeAction = _binService.BinPlayer(profileDTO, buyCardDTO, _updateProfile, tknSrc, sellAction);
-            else tradeAction = _bidService.BidPlayer(profileDTO, buyCardDTO, _updateProfile, tknSrc);
+            else tradeAction = _bidService.BidPlayer(profileDTO, buyCardDTO, _updateProfile, tknSrc, sellAction);
 
             await _actionsNotifier.AddAction(profileDTO, tradeAction);
         }

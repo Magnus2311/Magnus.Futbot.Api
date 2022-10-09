@@ -17,10 +17,22 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Filters
             if (buyCardDTO.Card is not null)
             {
                 var playerNameInput = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.ut-item-search-view > div.inline-list-select.ut-player-search-control > div > div.ut-player-search-control--input-container > input"), 5000);
-                if (playerNameInput is null) return;
+                if (playerNameInput is null)
+                {
+                    Console.WriteLine("Name input ccanot be found!");
+                    return;
+                }
 
                 playerNameInput.SendKeys(buyCardDTO.Card.Name);
+                Thread.Sleep(1500);
+                var playerRow = driver.TryFindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.ut-item-search-view > div.inline-list-select.ut-player-search-control.has-selection.contract-text-input.is-open > div > div.inline-list > ul > button"));
+                if (playerRow is null)
+                {
+                    Console.WriteLine("Player row is null!");
+                    return;
+                }
 
+                playerRow.Click();
                 Thread.Sleep(500);
             }
 
