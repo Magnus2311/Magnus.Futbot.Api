@@ -75,8 +75,8 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
         {
             if (cancellationTokenSource.Token.IsCancellationRequested) updateAction(profileDTO);
 
-            await Task.Delay(300, cancellationTokenSource.Token);
-            var allPlayers = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > ul > li"), 1000);
+            Thread.Sleep(300);
+            var allPlayers = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > ul > li"), TimeSpan.FromSeconds(2));
             if (allPlayers is null || allPlayers.Count() == 0)
             {
                 Thread.Sleep(2000);
