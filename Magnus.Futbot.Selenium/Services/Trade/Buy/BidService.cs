@@ -150,6 +150,17 @@ namespace Magnus.Futbot.Services.Trade.Buy
                     {
                         player.Click();
 
+                        if (bidPlayerDTO.Card is not null)
+                        {
+                            var playerName = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > ul > li:nth-child(1) > div > div.entityContainer > div.name"));
+                            if (playerName?.Text != bidPlayerDTO.Card.Name)
+                            {
+                                _filtersService.InsertFilters(profileDTO.Email, bidPlayerDTO);
+                                var searchBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.button-container > button:nth-child(2)"), 1000);
+                                searchBtn?.Click();
+                            }
+                        }
+
                         var priceInput = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-navigation-container-view.ui-layout-right > div > div > div.DetailPanel > div.bidOptions > div > input"), 1000);
                         if (priceInput is null) continue;
 
