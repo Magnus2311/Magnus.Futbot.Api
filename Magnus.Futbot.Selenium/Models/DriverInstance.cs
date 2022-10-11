@@ -131,5 +131,62 @@ namespace Magnus.Futbot.Models
                 }
             }
         }
+
+        public TradeAction AddAction(MoveAction action)
+        {
+            lock (_locker)
+            {
+                if (PendingActions.Count > 0)
+                {
+                    var tempAction = new MoveAction(new Func<Task>(async () =>
+                    {
+                        try
+                        {
+                            await action.Action.Invoke();
+                        }
+                        catch
+                        {
+
+                        }
+
+                        if (PendingActions.TryDequeue(out var nextAction, out _))
+                        {
+                            if (!nextAction.CancellationTokenSource.Token.IsCancellationRequested)
+                            {
+                                await nextAction.Action.Invoke();
+                            }
+                        }
+                    }), action.CancellationTokenSource, action.Description);
+                    PendingActions.Enqueue(tempAction, action.Priority);
+                    return tempAction;
+                }
+                else
+                {
+                    var tempAction = new MoveAction(new Func<Task>(async () =>
+                    {
+                        try
+                        {
+                            await action.Action.Invoke();
+                        }
+                        catch
+                        {
+
+                        }
+                        PendingActions.TryDequeue(out _, out _);
+                        if (PendingActions.TryDequeue(out var nextAction, out _))
+                        {
+                            if (!nextAction.CancellationTokenSource.Token.IsCancellationRequested)
+                            {
+                                await nextAction.Action.Invoke();
+                            }
+                        }
+                    }), action.CancellationTokenSource, action.Description);
+
+                    PendingActions.Enqueue(tempAction, tempAction.Priority);
+                    tempAction.Action.Invoke();
+                    return tempAction;
+                }
+            }
+        }
     }
 }

@@ -104,7 +104,7 @@ namespace Magnus.Futbot.Services
             Thread.Sleep(500);
         }
 
-        public static bool OpenUnassignedItems(this IWebDriver driver, ProfileDTO profileDTO)
+        public static async Task<bool> OpenUnassignedItems(this IWebDriver driver, ProfileDTO profileDTO)
         {
             driver.OpenHomePage(profileDTO);
             var unassignedBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div.ut-unassigned-tile-view.tile.col-1-1"));
@@ -113,18 +113,18 @@ namespace Magnus.Futbot.Services
                 && unassignedBtn.Displayed)
             {
                 unassignedBtn.Click();
-                Thread.Sleep(500);
+                await Task.Delay(500);
                 return true;
             }
 
             return false;
         }
 
-        public static void OpenTransferTargets(this IWebDriver driver)
+        public static async Task OpenTransferTargets(this IWebDriver driver)
         {
             driver.OpenTransfer();
             driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div.tile.col-1-2.ut-tile-transfer-targets")).Click();
-            Thread.Sleep(1000);
+            await Task.Delay(1000);
         }
 
         public static void OpenTransferList(this IWebDriver driver)
