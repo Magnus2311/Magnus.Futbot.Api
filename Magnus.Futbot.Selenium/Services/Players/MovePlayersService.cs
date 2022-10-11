@@ -11,7 +11,7 @@ namespace Magnus.Futbot.Selenium.Services.Players
             var driver = GetInstance(profileDTO.Email).Driver;
             driver.OpenTransferTargets();
 
-            var players = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(3) > ul > li.listFUTItem.has-auction-data.won.selected > div > div.entityContainer > div.player-stats-data-component > ul > li"));
+            var players = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(3) > ul > li"));
             foreach (var player in players)
             {
                 player.Click();

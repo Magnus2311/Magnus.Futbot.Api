@@ -1,8 +1,10 @@
 ﻿using Magnus.Futbot.Api.Caches;
 using Magnus.Futbot.Api.Hubs.Interfaces;
 using Magnus.Futbot.Api.Services.Interfaces;
+using Magnus.Futbot.Common.Models.Database.Card;
 using Magnus.Futbot.Common.Models.DTOs.Trading;
 using Microsoft.AspNetCore.SignalR;
+using MongoDB.Bson;
 
 namespace Magnus.Futbot.Api.Hubs
 {
@@ -20,6 +22,9 @@ namespace Magnus.Futbot.Api.Hubs
 
         public async Task GetCards(string name)
             => await Clients.Client(Context.ConnectionId).OnCardsLoaded(_cardsCache.Cards.Where(c => c.Name.ToUpperInvariant().Contains(name.ToUpperInvariant())).Take(20));
+        
+        public Card? GetCardById(string cardId)
+            => _cardsCache?.Cards?.FirstOrDefault(c => c.Id == new ObjectId(cardId));
 
         public Task BuyCard(BuyCardDTO buyCardDTO)
             => _tradingService.Buy(buyCardDTO);
