@@ -46,9 +46,9 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
             Func<Task>? sellAction)
         {
             if (!driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
-                LoginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
+                await LoginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
 
-            _filtersService.InsertFilters(profileDTO.Email, buyCardDTO);
+            await _filtersService.InsertFilters(profileDTO.Email, buyCardDTO);
 
             await SetPrice(driver, buyCardDTO, cancellationTokenSource);
 

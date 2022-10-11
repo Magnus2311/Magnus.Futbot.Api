@@ -25,7 +25,7 @@ namespace Magnus.Futbot.Selenium.Services.Players
             var transferPile = new TradePile
             {
                 TransferTargets = (await GetTransferTargets(profileDTO)).ToList(),
-                TransferList = GetTransferListCards(profileDTO).ToList(),
+                TransferList = (await GetTransferListCards(profileDTO)).ToList(),
                 UnassignedItems = (await GetUnassignedItems(profileDTO)).ToList()
             };
 
@@ -65,11 +65,11 @@ namespace Magnus.Futbot.Selenium.Services.Players
                 yield return player.ConvertCardToTransferCard(cards);
         }
 
-        public IEnumerable<TransferCard> GetTransferListCards(ProfileDTO profileDTO)
+        public async Task<IEnumerable<TransferCard>> GetTransferListCards(ProfileDTO profileDTO)
         {
             var driver = GetInstance(profileDTO.Email).Driver;
-            driver.OpenHomePage(profileDTO);
-            driver.OpenTransferList();
+            await driver.OpenHomePage(profileDTO);
+            await driver.OpenTransferList();
 
             var transferList = new List<TransferCard>();
 

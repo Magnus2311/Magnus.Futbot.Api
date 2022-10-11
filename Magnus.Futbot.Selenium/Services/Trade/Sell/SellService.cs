@@ -16,7 +16,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
             {
                 if (cancellationTokenSource.IsCancellationRequested) return;
 
-                driverInstance.Driver.OpenTransferList();
+                await driverInstance.Driver.OpenTransferList();
 
                 await TrySellPlayer(driverInstance.Driver, sellCard, profileDTO, updateProfile, cancellationTokenSource);
             }), cancellationTokenSource, sellCard);
@@ -40,10 +40,10 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
             var tradeAction = new SellCardAction(new Func<Task>(async () =>
             {
                 if (cancellationTokenSource.IsCancellationRequested) return;
-                InitProfileService.InitProfile(profileDTO);
+                await InitProfileService.InitProfile(profileDTO);
 
                 if (cancellationTokenSource.IsCancellationRequested) return;
-                driverInstance.Driver.OpenTransferList();
+                await driverInstance.Driver.OpenTransferList();
 
                 // Clear Sold
                 driverInstance.Driver.TryFindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(1) > header > button"))?.Click();
@@ -60,8 +60,10 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
         {
             try
             {
-                var players = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(3) > ul > li"));
-                players.ToList().AddRange(driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(2) > ul > li")));
+                var players = new List<IWebElement>();
+
+                players.AddRange(driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(3) > ul > li")));
+                players.AddRange(driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(2) > ul > li")));                
 
                 var martchingPlayers = players.Where((p) =>
                 {
@@ -97,14 +99,6 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
             bidPrice.SendKeys(Keys.Backspace);
             await Task.Delay(300);
             bidPrice.SendKeys($"{sellCardDTO.FromBid}");
-            if (bidPrice.Text != $"{sellCardDTO.FromBid}")
-            {
-                bidPrice.Click();
-                await Task.Delay(300);
-                bidPrice.SendKeys(Keys.Backspace);
-                await Task.Delay(300);
-                bidPrice.SendKeys($"{sellCardDTO.FromBid}");
-            }
 
             await Task.Delay(200);
 
@@ -114,14 +108,6 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
             binPrice.SendKeys(Keys.Backspace);
             await Task.Delay(300);
             binPrice.SendKeys($"{sellCardDTO.FromBin}");
-            if (binPrice.Text != $"{sellCardDTO.FromBid}")
-            {
-                binPrice.Click();
-                await Task.Delay(300);
-                binPrice.SendKeys(Keys.Backspace);
-                await Task.Delay(300);
-                binPrice.SendKeys($"{sellCardDTO.FromBid}");
-            }
             await Task.Delay(300);
 
             var listBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section > div > div > div.DetailPanel > div.ut-quick-list-panel-view > div.panelActions.open > button"));

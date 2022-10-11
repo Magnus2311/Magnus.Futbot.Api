@@ -16,7 +16,7 @@ namespace Magnus.Futbot.Selenium.Services.Players
             { 
                 if (!driverInstance.Driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
                 {
-                    LoginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
+                    await LoginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
                 }
 
                 await driverInstance.Driver.OpenTransferTargets();
@@ -51,7 +51,7 @@ namespace Magnus.Futbot.Selenium.Services.Players
             {
                 if (!driverInstance.Driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
                 {
-                    LoginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
+                    await LoginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
                 }
 
                 await driverInstance.Driver.OpenUnassignedItems(profileDTO);
