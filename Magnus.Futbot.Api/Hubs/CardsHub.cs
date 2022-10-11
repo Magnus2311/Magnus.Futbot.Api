@@ -19,7 +19,7 @@ namespace Magnus.Futbot.Api.Hubs
         }
 
         public async Task GetCards(string name)
-            => await Clients.All.OnCardsLoaded(_cardsCache.Cards.Where(c => c.Name.ToUpperInvariant().Contains(name.ToUpperInvariant())).Take(20));
+            => await Clients.Client(Context.ConnectionId).OnCardsLoaded(_cardsCache.Cards.Where(c => c.Name.ToUpperInvariant().Contains(name.ToUpperInvariant())).Take(20));
 
         public Task BuyCard(BuyCardDTO buyCardDTO)
             => _tradingService.Buy(buyCardDTO);
