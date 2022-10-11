@@ -43,7 +43,7 @@ namespace Magnus.Futbot.Api.Services
                 return new LoginResponseDTO(ProfileStatusType.AlreadyAdded, _mapper.Map<ProfileDTO>(profileDTO));
             await _profilesRepository.Add(_mapper.Map<ProfileDocument>(profileDTO));
 
-            var response = InitProfileService.InitProfile(profileDTO);
+            var response = await InitProfileService.InitProfile(profileDTO);
             await _profilesRepository.Update(_mapper.Map<ProfileDocument>(response));
 
             return new LoginResponseDTO(response.Status, _mapper.Map<ProfileDTO>(profileDTO));
@@ -51,14 +51,14 @@ namespace Magnus.Futbot.Api.Services
 
         public async Task<ProfileDTO> SubmitCode(SubmitCodeDTO submitCodeDTO)
         {
-            var response = LoginSeleniumService.SubmitCode(submitCodeDTO);
+            var response = await LoginSeleniumService.SubmitCode(submitCodeDTO);
             return _mapper.Map<ProfileDTO>(await _profilesRepository.UpdateSubmitCodeStatus(submitCodeDTO.Email, response));
         }
 
         public async Task<ProfileDTO> RefreshProfile(string profileId, string userId)
         {
             var profile = await _profilesRepository.Get(new ObjectId(profileId), new ObjectId(userId));
-            var refreshedProfile = InitProfileService.InitProfile(_mapper.Map<ProfileDTO>(profile));
+            var refreshedProfile = await InitProfileService.InitProfile(_mapper.Map<ProfileDTO>(profile));
             refreshedProfile.TradePile = await _fullPlayersDataService.GetTransferPile(refreshedProfile);
             await _profilesRepository.Update(_mapper.Map<ProfileDocument>(refreshedProfile));
             return refreshedProfile;

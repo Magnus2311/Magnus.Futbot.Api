@@ -6,12 +6,11 @@ namespace Magnus.Futbot.Services
 {
     public class LoginSeleniumService : BaseService
     {
-        public static ProfileStatusType Login(string username, string password)
+        public static async Task<ProfileStatusType> Login(string username, string password)
         {
             var driverInstance = GetInstance(username);
             var driver = driverInstance.Driver;
             driverInstance.Driver.Navigate().GoToUrl("https://www.ea.com/fifa/ultimate-team/web-app/");
-            Thread.Sleep(4000);
             IWebElement? loginBtn = null;
             try
             {
@@ -19,13 +18,13 @@ namespace Magnus.Futbot.Services
                 {
                     try
                     {
-                        loginBtn = driver.FindElement(By.CssSelector("#Login > div > div > button.btn-standard.call-to-action"));
+                        loginBtn = driver.FindElement(By.CssSelector("#Login > div > div > button.btn-standard.call-to-action"), TimeSpan.FromSeconds(10));
                     }
                     catch { }
                 }
                 while (!(loginBtn != null && loginBtn.Displayed && loginBtn.Enabled));
                 loginBtn.Click();
-                Thread.Sleep(2000);
+                await Task.Delay(2000);
             }
             catch (StaleElementReferenceException)
             {
@@ -43,12 +42,11 @@ namespace Magnus.Futbot.Services
 
             IWebElement signInButton = driver.FindElement(By.CssSelector("#logInBtn"));
             signInButton.Click();
-            Thread.Sleep(1500);
 
             IWebElement? wrongCredentials = null;
             try
             {
-                wrongCredentials = driver.FindElement(By.CssSelector("#online-general-error > p"));
+                wrongCredentials = driver.FindElement(By.CssSelector("#online-general-error > p"), TimeSpan.FromSeconds(2));
             }
             catch { }
 
@@ -72,7 +70,7 @@ namespace Magnus.Futbot.Services
             return ProfileStatusType.Logged;
         }
 
-        public static ConfirmationCodeStatusType SubmitCode(SubmitCodeDTO submitCodeDTO)
+        public static async Task<ConfirmationCodeStatusType> SubmitCode(SubmitCodeDTO submitCodeDTO)
         {
             var driver = GetInstance(submitCodeDTO.Email).Driver;
 
@@ -80,7 +78,7 @@ namespace Magnus.Futbot.Services
             if (codeInput != null)
             {
                 codeInput.SendKeys(submitCodeDTO.Code);
-                Thread.Sleep(500);
+                await Task.Delay(500);
 
                 var rememberDeviceCheck = driver.FindElement(By.CssSelector("#trustThisDevice"));
                 if (rememberDeviceCheck != null && !rememberDeviceCheck.Selected)
@@ -88,7 +86,7 @@ namespace Magnus.Futbot.Services
 
                 var signInBtn = driver.FindElement(By.CssSelector("#btnSubmit"));
                 signInBtn?.Click();
-                Thread.Sleep(1500);
+                await Task.Delay(1500);
 
                 try
                 {

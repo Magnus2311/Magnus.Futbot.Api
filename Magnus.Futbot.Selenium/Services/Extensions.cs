@@ -95,13 +95,13 @@ namespace Magnus.Futbot.Services
             return driver.FindElements(by);
         }
 
-        public static void OpenTransfer(this IWebDriver driver)
+        public static async Task OpenTransfer(this IWebDriver driver)
         {
             if (!driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
                 driver.Navigate().GoToUrl("https://www.ea.com/fifa/ultimate-team/web-app/");
 
             driver.FindElement(By.CssSelector("body > main > section > nav > button.ut-tab-bar-item.icon-transfer")).Click();
-            Thread.Sleep(500);
+            await Task.Delay(500);
         }
 
         public static async Task<bool> OpenUnassignedItems(this IWebDriver driver, ProfileDTO profileDTO)
@@ -127,30 +127,30 @@ namespace Magnus.Futbot.Services
             await Task.Delay(1000);
         }
 
-        public static void OpenTransferList(this IWebDriver driver)
+        public static async Task OpenTransferList(this IWebDriver driver)
         {
-            driver.OpenTransfer();
+            await driver.OpenTransfer();
             driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div.tile.col-1-2.ut-tile-transfer-list")).Click();
-            Thread.Sleep(1000);
+            await Task.Delay(1000);
         }
 
-        public static void OpenHomePage(this IWebDriver driver, ProfileDTO profileDTO)
+        public static async Task OpenHomePage(this IWebDriver driver, ProfileDTO profileDTO)
         {
             if (!driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
                 InitProfileService.InitProfile(profileDTO);
 
             var homeBtn = driver.FindElement(By.CssSelector("body > main > section > nav > button.ut-tab-bar-item.icon-home"), 10000);
             homeBtn?.Click();
-            Thread.Sleep(1000);
+            await Task.Delay(1000);
         }
 
-        public static void OpenSearchTransfer(this IWebDriver driver)
+        public static async Task OpenSearchTransfer(this IWebDriver driver)
         {
-            driver.OpenTransfer();
+            await driver.OpenTransfer();
             var searchDiv = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div.tile.col-1-1.ut-tile-transfer-market"), 2000);
-            Thread.Sleep(500);
+            await Task.Delay(500);
             if (searchDiv is not null) searchDiv.Click();
-            Thread.Sleep(1000);
+            await Task.Delay(1000);
         }
 
         public static (string Name, int Rating) GetCardNameAndRating(this IWebElement player)

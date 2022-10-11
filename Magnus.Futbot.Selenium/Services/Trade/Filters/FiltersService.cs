@@ -6,10 +6,10 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Filters
 {
     public class FiltersService : BaseService
     {
-        public void InsertFilters(string email, BuyCardDTO buyCardDTO)
+        public async Task InsertFilters(string email, BuyCardDTO buyCardDTO)
         {
             var driver = GetInstance(email).Driver;
-            driver.OpenSearchTransfer();
+            await driver.OpenSearchTransfer();
 
             var resetBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.button-container > button:nth-child(1)"), 1000);
             resetBtn?.Click();
@@ -24,18 +24,18 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Filters
                 }
 
                 playerNameInput.SendKeys(buyCardDTO.Card.Name);
-                Thread.Sleep(1500);
+                await Task.Delay(300);
                 var playerRow = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.ut-item-search-view > div.inline-list-select.ut-player-search-control.has-selection.contract-text-input.is-open > div > div.inline-list > ul > button"), TimeSpan.FromSeconds(10));
                 if (playerRow is null)
                 {
                     Console.WriteLine("Player row is null!");
-                    InsertFilters(email, buyCardDTO);
+                    await InsertFilters(email, buyCardDTO);
                 }
                 else
                 {
                     playerRow.Click();
                 }
-                Thread.Sleep(500);
+                await Task.Delay(500);
             }
 
             if (buyCardDTO.Quality != "Any")

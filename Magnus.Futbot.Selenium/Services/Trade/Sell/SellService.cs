@@ -87,6 +87,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
 
         private async Task InsertPriceValuesAndList(IWebDriver driver, SellCardDTO sellCardDTO)
         {
+            await Task.Delay(300);
             driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section > div > div > div.DetailPanel > div.ut-quick-list-panel-view > div.ut-button-group > button"))
                         .Click();
             await Task.Delay(300);
@@ -94,15 +95,34 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
             bidPrice.Click();
             await Task.Delay(200);
             bidPrice.SendKeys(Keys.Backspace);
+            await Task.Delay(300);
             bidPrice.SendKeys($"{sellCardDTO.FromBid}");
+            if (bidPrice.Text != $"{sellCardDTO.FromBid}")
+            {
+                bidPrice.Click();
+                await Task.Delay(300);
+                bidPrice.SendKeys(Keys.Backspace);
+                await Task.Delay(300);
+                bidPrice.SendKeys($"{sellCardDTO.FromBid}");
+            }
+
             await Task.Delay(200);
 
             var binPrice = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section > div > div > div.DetailPanel > div.ut-quick-list-panel-view > div.panelActions.open > div:nth-child(3) > div.ut-numeric-input-spinner-control > input"));
             binPrice.Click();
-            await Task.Delay(100);
+            await Task.Delay(300);
             binPrice.SendKeys(Keys.Backspace);
+            await Task.Delay(300);
             binPrice.SendKeys($"{sellCardDTO.FromBin}");
-            await Task.Delay(100);
+            if (binPrice.Text != $"{sellCardDTO.FromBid}")
+            {
+                binPrice.Click();
+                await Task.Delay(300);
+                binPrice.SendKeys(Keys.Backspace);
+                await Task.Delay(300);
+                binPrice.SendKeys($"{sellCardDTO.FromBid}");
+            }
+            await Task.Delay(300);
 
             var listBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section > div > div > div.DetailPanel > div.ut-quick-list-panel-view > div.panelActions.open > button"));
             listBtn.Click();

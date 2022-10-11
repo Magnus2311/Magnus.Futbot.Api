@@ -75,11 +75,11 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
         {
             if (cancellationTokenSource.Token.IsCancellationRequested) updateAction(profileDTO);
 
-            Thread.Sleep(300);
+            await Task.Delay(300);
             var allPlayers = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > ul > li"), TimeSpan.FromSeconds(2));
             if (allPlayers is null || allPlayers.Count() == 0)
             {
-                Thread.Sleep(2000);
+                await Task.Delay(2000);
                 var title = driver.TryFindElement(By.CssSelector("body > main > section > section > div.ut-navigation-bar-view.navbar-style-landscape > h1"))?.Text;
                 if (title == "TRANSFERS")
                 {
@@ -103,7 +103,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
                 {
                     if (cancellationTokenSource.Token.IsCancellationRequested) updateAction(profileDTO);
 
-                    Thread.Sleep(300);
+                    await Task.Delay(300, cancellationTokenSource.Token);
                     if (driver.GetCoins() < buyCardDTO.Price) cancellationTokenSource.Cancel();
 
                     player.Click();
@@ -133,7 +133,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
                         if (errorMessage.Text == "Bid status changed, auction data will be updated.") continue;
                         else if (errorMessage.Text != "Player Moved to Transfer List")
                         {
-                            Thread.Sleep(15000);
+                            await Task.Delay(15000, cancellationTokenSource.Token);
                             await SetupForBin(driver, profileDTO, buyCardDTO, _updateAction, cancellationTokenSource, sellAction);
                         }
                     }
@@ -145,12 +145,12 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
                     _updateAction(profileDTO);
                     _wonPlayers++;
 
-                    Thread.Sleep(500);
+                    await Task.Delay(300, cancellationTokenSource.Token);
                     driver.TryFindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-navigation-container-view.ui-layout-right > div > div > div.DetailPanel > div.ut-button-group > button:nth-child(8)"))
                         ?.Click();
                 }
 
-                Thread.Sleep(1000);
+                await Task.Delay(300, cancellationTokenSource.Token);
                 var backBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-bar-view.navbar-style-landscape > button.ut-navigation-button-control"));
                 backBtn?.Click();
 

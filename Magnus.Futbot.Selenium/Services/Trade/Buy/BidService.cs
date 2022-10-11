@@ -172,7 +172,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
                             var makeBidBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-navigation-container-view.ui-layout-right > div > div > div.DetailPanel > div.bidOptions > button.btn-standard.call-to-action.bidButton"));
                             makeBidBtn?.Click();
 
-                            Thread.Sleep(50);
+                            await Task.Delay(2000);
 
                             try
                             {
