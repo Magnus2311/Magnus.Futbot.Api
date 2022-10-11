@@ -59,7 +59,7 @@ namespace Magnus.Futbot.Api.Services
         {
             var profile = await _profilesRepository.Get(new ObjectId(profileId), new ObjectId(userId));
             var refreshedProfile = InitProfileService.InitProfile(_mapper.Map<ProfileDTO>(profile));
-            refreshedProfile.TradePile = _fullPlayersDataService.GetTransferPile(refreshedProfile);
+            refreshedProfile.TradePile = await _fullPlayersDataService.GetTransferPile(refreshedProfile);
             await _profilesRepository.Update(_mapper.Map<ProfileDocument>(refreshedProfile));
             return refreshedProfile;
         }

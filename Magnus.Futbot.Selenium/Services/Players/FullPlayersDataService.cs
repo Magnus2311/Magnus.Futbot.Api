@@ -20,13 +20,13 @@ namespace Magnus.Futbot.Selenium.Services.Players
             return profile;
         }
 
-        public TradePile GetTransferPile(ProfileDTO profileDTO)
+        public async Task<TradePile> GetTransferPile(ProfileDTO profileDTO)
         {
             var transferPile = new TradePile
             {
-                TransferTargets = GetTransferTargets(profileDTO).ToList(),
+                TransferTargets = (await GetTransferTargets(profileDTO)).ToList(),
                 TransferList = GetTransferListCards(profileDTO).ToList(),
-                UnassignedItems = GetUnassignedItems(profileDTO).ToList()
+                UnassignedItems = (await GetUnassignedItems(profileDTO)).ToList()
             };
 
             return transferPile;
@@ -80,24 +80,28 @@ namespace Magnus.Futbot.Selenium.Services.Players
             return transferList;
         }
 
-        public IEnumerable<TransferCard> GetUnassignedItems(ProfileDTO profileDTO)
+        public async Task<IEnumerable<TransferCard>> GetUnassignedItems(ProfileDTO profileDTO)
         {
+            var outputCards = new List<TransferCard>();
+
             var driver = GetInstance(profileDTO.Email).Driver;
-            if (driver.OpenUnassignedItems(profileDTO))
+            if (await driver.OpenUnassignedItems(profileDTO))
             {
                 var cards = _cardsHelper.GetAllCards();
 
                 var players = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-unassigned-view.ui-layout-left > section > ul > li"));
 
                 foreach (var player in players)
-                    yield return player.ConvertCardToTransferCard(cards);
+                    outputCards.Add(player.ConvertCardToTransferCard(cards));
             }
+
+            return outputCards;
         }
 
-        public IEnumerable<TransferCard> GetTransferTargets(ProfileDTO profileDTO)
+        public async Task<IEnumerable<TransferCard>> GetTransferTargets(ProfileDTO profileDTO)
         {
             var driver = GetInstance(profileDTO.Email).Driver;
-            driver.OpenTransferTargets();
+            await driver.OpenTransferTargets();
             var transferTargets = new List<TransferCard>();
             transferTargets.AddRange(GetLostTransferTargets(profileDTO));
             transferTargets.AddRange(GetWonTransferTargets(profileDTO));
