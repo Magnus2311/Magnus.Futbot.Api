@@ -11,25 +11,9 @@ namespace Magnus.Futbot.Services
             var driverInstance = GetInstance(username);
             var driver = driverInstance.Driver;
             driverInstance.Driver.Navigate().GoToUrl("https://www.ea.com/fifa/ultimate-team/web-app/");
-            IWebElement? loginBtn = null;
-            try
-            {
-                do
-                {
-                    try
-                    {
-                        loginBtn = driver.FindElement(By.CssSelector("#Login > div > div > button.btn-standard.call-to-action"), TimeSpan.FromSeconds(10));
-                    }
-                    catch { }
-                }
-                while (!(loginBtn != null && loginBtn.Displayed && loginBtn.Enabled));
-                loginBtn.Click();
-                await Task.Delay(2000);
-            }
-            catch (StaleElementReferenceException)
-            {
-                return ProfileStatusType.Logged;
-            }
+            IWebElement? loginBtn = driver.FindElement(By.CssSelector("#Login > div > div > button.btn-standard.call-to-action"), TimeSpan.FromSeconds(20));
+            if (loginBtn is null) return ProfileStatusType.Logged;
+            else loginBtn?.Click();
 
             IWebElement emailInput = driver.FindElement(By.CssSelector("#email"));
             emailInput.SendKeys(username);
