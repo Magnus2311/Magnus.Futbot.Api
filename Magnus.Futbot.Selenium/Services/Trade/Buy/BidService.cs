@@ -96,6 +96,13 @@ namespace Magnus.Futbot.Services.Trade.Buy
                     allPlayers = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > ul > li"), 1000);
                 }
 
+                var wonPlayers = allPlayers.Where(p => p.GetAttribute("class").Contains("won"));
+                foreach (var player in wonPlayers)
+                {
+                    player.Click();
+                    await sellAction?.Invoke();
+                }
+
                 var winningPlayers = allPlayers.Count(ap => ap.GetAttribute("class").Contains("won") || ap.GetAttribute("class").Contains("highest-bid"));
                 if (winningPlayers + _wonPlayers >= bidPlayerDTO.Count) _updateAction(profileDTO);
 
@@ -103,14 +110,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
                 {
                     if (driver.GetCoins() < bidPlayerDTO.Price) _updateAction(profileDTO);
 
-                    var wonPlayers = allPlayers.Where(p => p.GetAttribute("class").Contains("won"));
-                    foreach (var player in wonPlayers)
-                    {
-                        player.Click();
-                        await sellAction?.Invoke();
-                    }
-
-                    var currentlyWon = allPlayers.Count(p => p.GetAttribute("class").Contains("won"));
+                    var currentlyWon = wonPlayers.Count();
                     _wonPlayers += currentlyWon;
                     profileDTO.WonTargetsCount += currentlyWon;
                     profileDTO.Coins = driver.GetCoins();
