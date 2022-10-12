@@ -8,6 +8,9 @@ namespace Magnus.Futbot.Common.Models.Database.Card
         public string Name { get; set; } = string.Empty;
         public int Rating { get; set; }
         public string FullName { get; internal set; } = string.Empty;
+        public string ClubLogo { get; set; } = string.Empty;
+        public string LeagueLogo { get; set; } = string.Empty;
+        public string NationLogo { get; set; } = string.Empty;
         public string Club { get; internal set; } = string.Empty;
         public string Nation { get; internal set; } = string.Empty;
         public string League { get; internal set; } = string.Empty;

@@ -19,8 +19,8 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
         }
 
         public TradeAction BinPlayer(
-            ProfileDTO profileDTO, 
-            BuyCardDTO buyCardDTO, 
+            ProfileDTO profileDTO,
+            BuyCardDTO buyCardDTO,
             Action<ProfileDTO> updateAction,
             CancellationTokenSource cancellationTokenSource,
             Func<Task>? sellAction)
@@ -134,30 +134,44 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
                         else if (errorMessage.Text != "Player Moved to Transfer List")
                         {
                             await Task.Delay(15000, cancellationTokenSource.Token);
-                            await SetupForBin(driver, profileDTO, buyCardDTO, _updateAction, cancellationTokenSource, sellAction);
+
+                            if (sellAction is not null)
+                            {
+                                profileDTO = await SellWonPlayers(driver, sellAction, profileDTO);
+                                _updateAction(profileDTO);
+                            }
+
+                            var backBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-bar-view.navbar-style-landscape > button.ut-navigation-button-control"));
+                            backBtn?.Click();
+
+                            await ConfigurePrices(driver, buyCardDTO, cancellationTokenSource);
+
+                            var searchBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.button-container > button:nth-child(2)"), 1000);
+                            searchBtn?.Click();
+
+                            return;
                         }
                     }
 
-                    await sellAction?.Invoke();
-
-                    profileDTO.Coins = driver.GetCoins();
-                    profileDTO.WonTargetsCount++;
-                    _updateAction(profileDTO);
-                    _wonPlayers++;
-
-                    await Task.Delay(300, cancellationTokenSource.Token);
+                     await Task.Delay(300, cancellationTokenSource.Token);
                     driver.TryFindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-navigation-container-view.ui-layout-right > div > div > div.DetailPanel > div.ut-button-group > button:nth-child(8)"))
                         ?.Click();
                 }
+                {
+                    if (sellAction is not null)
+                    {
+                        profileDTO = await SellWonPlayers(driver, sellAction, profileDTO);
+                        _updateAction(profileDTO);
+                    }
+                    await Task.Delay(300, cancellationTokenSource.Token);
+                    var backBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-bar-view.navbar-style-landscape > button.ut-navigation-button-control"));
+                    backBtn?.Click();
 
-                await Task.Delay(300, cancellationTokenSource.Token);
-                var backBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-bar-view.navbar-style-landscape > button.ut-navigation-button-control"));
-                backBtn?.Click();
+                    await ConfigurePrices(driver, buyCardDTO, cancellationTokenSource);
 
-                await ConfigurePrices(driver, buyCardDTO, cancellationTokenSource);
-
-                var searchBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.button-container > button:nth-child(2)"), 1000);
-                searchBtn?.Click();
+                    var searchBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.button-container > button:nth-child(2)"), 1000);
+                    searchBtn?.Click();
+                }
             }
 
             updateAction(profileDTO);
@@ -182,13 +196,28 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
             var minBinPlusValue = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.search-prices > div:nth-child(5) > div.ut-numeric-input-spinner-control > input"));
             if (double.TryParse(minBinPlusValue.GetAttribute("value"), out var currentPrice))
             {
-                if (currentPrice > ((double)buyCardDTO.Price * 0.8) || currentPrice > 1000)
+                if (currentPrice > ((double)buyCardDTO.Price * 0.8) || currentPrice > 500)
                 {
                     minBinPlusValue.Click();
                     await Task.Delay(100, cancellationTokenSource.Token);
                     minBinPlusValue.SendKeys(Keys.Backspace);
                 }
             }
+        }
+
+        private async Task<ProfileDTO> SellWonPlayers(IWebDriver driver, Func<Task> sellAction, ProfileDTO profileDTO)
+        {
+            var wonPlayers = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > ul > li"), TimeSpan.FromSeconds(2)).Where(p => p.GetAttribute("class").Contains("won"));
+            foreach (var player in wonPlayers)
+            {
+                player.Click();
+                await sellAction.Invoke();
+
+                profileDTO.Coins = driver.GetCoins();
+                profileDTO.WonTargetsCount++;
+                _wonPlayers++;
+            }
+            return profileDTO;
         }
     }
 }

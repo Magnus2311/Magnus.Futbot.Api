@@ -17,6 +17,7 @@
     <ProjectReference Include="..\Magnus.Futbot.Database\Magnus.Futbot.Database.csproj" />
     <ProjectReference Include="..\Magnus.Futbot.Initializer\Magnus.Futbot.Initializer.csproj" />
     <ProjectReference Include="..\Magnus.Futbot.Selenium\Magnus.Futbot.Selenium.csproj" />
+    <ProjectReference Include="..\Magnus.Futbot.Storage\Magnus.Futbot.Storage.csproj" />
   </ItemGroup>
 
 </Project>

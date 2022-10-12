@@ -21,6 +21,7 @@ using Magnus.Futbot.Selenium.Services.Trade.Filters;
 using Magnus.Futbot.Selenium.Services.Trade.Sell;
 using Magnus.Futbot.Selenium.Trading.Connections;
 using Magnus.Futbot.Services.Trade.Buy;
+using Magnus.Futbot.Storage;
 using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -76,10 +77,13 @@ builder.Services
     .AddSingleton<CardsCache>();
 
 // Background workers
-builder
-    .Services
+builder.Services
     .AddHostedService<RefreshPlayersWorker>()
     .AddHostedService<RelistPlayersWorker>();
+
+// Azure
+builder.Services
+    .AddSingleton<AzureStorage>();
 
 builder.Services
     .AddSingleton<IUserIdProvider, UserProvider>();

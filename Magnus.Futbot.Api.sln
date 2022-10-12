@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Magnus.Futbot.Initializer",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Magnus.Futbot.Selenium", "Magnus.Futbot.Selenium\Magnus.Futbot.Selenium.csproj", "{61F9C713-B984-4A2D-938C-2C52075DECE8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Magnus.Futbot.Storage", "Magnus.Futbot.Storage\Magnus.Futbot.Storage.csproj", "{8240A91C-5C43-4DC1-B209-CF1C9F8639AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{61F9C713-B984-4A2D-938C-2C52075DECE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61F9C713-B984-4A2D-938C-2C52075DECE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61F9C713-B984-4A2D-938C-2C52075DECE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8240A91C-5C43-4DC1-B209-CF1C9F8639AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8240A91C-5C43-4DC1-B209-CF1C9F8639AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8240A91C-5C43-4DC1-B209-CF1C9F8639AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8240A91C-5C43-4DC1-B209-CF1C9F8639AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
