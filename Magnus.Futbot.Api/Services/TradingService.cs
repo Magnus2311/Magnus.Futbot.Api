@@ -75,7 +75,7 @@ namespace Magnus.Futbot.Api.Services
 
             var sellAction = new Func<Task>(async () =>
             {
-                await _sellService.SellCurrentPlayer(sellCardDTO, profileDTO, tknSrc);
+                await _sellService.SellCurrentPlayer(sellCardDTO, profileDTO, _updateProfile, tknSrc);
             });
 
             TradeAction tradeAction;
