@@ -7,7 +7,7 @@ namespace Magnus.Futbot.Common.Models.Selenium.Actions
         public SellCardAction(
             Func<Task> action,
             CancellationTokenSource cancellationTokenSource,
-            SellCardDTO? sellCardDTO) : base($"Sell -> {sellCardDTO?.Card?.Name}", $"From Bid: {sellCardDTO?.FromBid} - From bin: {sellCardDTO?.FromBin}", action, cancellationTokenSource)
+            SellCardDTO? sellCardDTO) : base($"Sell", $"{sellCardDTO?.Card?.Name} From Bid: {sellCardDTO?.FromBid} - From bin: {sellCardDTO?.FromBin}", action, cancellationTokenSource)
         {
             SellCardDTO = sellCardDTO;
             Priority = 2;
