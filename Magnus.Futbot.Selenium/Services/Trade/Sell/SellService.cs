@@ -14,7 +14,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
         {
             var driverInstance = GetInstance(profileDTO.Email);
 
-            var tradeAction = new SellCardAction(new Func<Task>(async () =>
+            var tradeAction = new SellAction(profileDTO.Id, new Func<Task>(async () =>
             {
                 if (cancellationTokenSource.IsCancellationRequested) return;
 
@@ -30,7 +30,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
         {
             var driverInstance = GetInstance(profileDTO.Email);
 
-            var tradeAction = new SellCardAction(new Func<Task>(async () =>
+            var tradeAction = new SellAction(profileDTO.Id, new Func<Task>(async () =>
             {
                 if (cancellationTokenSource.IsCancellationRequested) return;
 
@@ -55,7 +55,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
         {
             var driverInstance = GetInstance(profileDTO.Email);
 
-            var tradeAction = new SellCardAction(new Func<Task>(async () =>
+            var tradeAction = new MoveAction(profileDTO.Id, new Func<Task>(async () =>
             {
                 if (cancellationTokenSource.IsCancellationRequested) return;
                 await InitProfileService.InitProfile(profileDTO);
@@ -69,7 +69,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
                 driverInstance.Driver.TryFindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > div > section:nth-child(2) > header > button"))?.Click();
                 await Task.Delay(300, cancellationTokenSource.Token);
                 driverInstance.Driver.TryFindElement(By.CssSelector("body > div.view-modal-container.form-modal > section > div > div > button:nth-child(2)"))?.Click();
-            }), cancellationTokenSource, null);
+            }), cancellationTokenSource, "Relisting expired Cards");
 
             return driverInstance.AddAction(tradeAction);
         }

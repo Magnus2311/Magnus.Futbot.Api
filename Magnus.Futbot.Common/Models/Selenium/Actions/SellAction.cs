@@ -2,12 +2,13 @@
 
 namespace Magnus.Futbot.Common.Models.Selenium.Actions
 {
-    public class SellCardAction : TradeAction
+    public class SellAction : TradeAction
     {
-        public SellCardAction(
+        public SellAction(
+            string profileId,
             Func<Task> action,
             CancellationTokenSource cancellationTokenSource,
-            SellCardDTO? sellCardDTO) : base($"Sell", $"{sellCardDTO?.Card?.Name} From Bid: {sellCardDTO?.FromBid} - From bin: {sellCardDTO?.FromBin}", action, cancellationTokenSource)
+            SellCardDTO? sellCardDTO) : base(TradeActionType.Sell, $"{sellCardDTO?.Card?.Name} From Bid: {sellCardDTO?.FromBid} - From bin: {sellCardDTO?.FromBin}", profileId, action, cancellationTokenSource)
         {
             SellCardDTO = sellCardDTO;
             Priority = 2;

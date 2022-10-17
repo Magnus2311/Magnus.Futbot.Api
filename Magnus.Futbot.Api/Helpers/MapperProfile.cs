@@ -5,6 +5,7 @@ using Magnus.Futbot.Common.Models.DTOs.Trading.Actions;
 using Magnus.Futbot.Common.Models.Selenium.Actions;
 using Magnus.Futbot.Common.Models.Selenium.Profiles;
 using Magnus.Futbot.Database.Models;
+using Magnus.Futbot.Database.Models.Actions;
 using Magnus.Futbot.Initializer.Models.Players;
 using MongoDB.Bson;
 
@@ -37,6 +38,25 @@ namespace Magnus.Futbot.Api.Helpers
             CreateMap<BuyAndSellCardDTO, SellCardDTO>().ReverseMap();
 
             CreateMap<TradeActionDTO, TradeAction>().ReverseMap();
+
+            CreateMap<BuyAction, BuyActionEntity>()
+                .ForMember(dest => dest.Id, options => options.MapFrom(src => string.IsNullOrEmpty(src.Id) ? new ObjectId() : new ObjectId(src.Id)))
+                .ForMember(dest => dest.ProfileId, options => options.MapFrom(src => string.IsNullOrEmpty(src.ProfileId) ? new ObjectId() : new ObjectId(src.ProfileId)))
+                .ReverseMap()
+                .ForMember(dest => dest.Id, options => options.MapFrom(src => src.Id.ToString()))
+                .ForMember(dest => dest.ProfileId, options => options.MapFrom(src => src.ProfileId.ToString()));
+            CreateMap<SellAction, SellActionEntity>()
+                .ForMember(dest => dest.Id, options => options.MapFrom(src => string.IsNullOrEmpty(src.Id) ? new ObjectId() : new ObjectId(src.Id)))
+                .ForMember(dest => dest.ProfileId, options => options.MapFrom(src => string.IsNullOrEmpty(src.ProfileId) ? new ObjectId() : new ObjectId(src.ProfileId)))
+                .ReverseMap()
+                .ForMember(dest => dest.Id, options => options.MapFrom(src => src.Id.ToString()))
+                .ForMember(dest => dest.ProfileId, options => options.MapFrom(src => src.ProfileId.ToString()));
+            CreateMap<MoveAction, MoveActionEntity>()
+                .ForMember(dest => dest.Id, options => options.MapFrom(src => string.IsNullOrEmpty(src.Id) ? new ObjectId() : new ObjectId(src.Id)))
+                .ForMember(dest => dest.ProfileId, options => options.MapFrom(src => string.IsNullOrEmpty(src.ProfileId) ? new ObjectId() : new ObjectId(src.ProfileId)))
+                .ReverseMap()
+                .ForMember(dest => dest.Id, options => options.MapFrom(src => src.Id.ToString()))
+                .ForMember(dest => dest.ProfileId, options => options.MapFrom(src => src.ProfileId.ToString()));
         }
     }
 }

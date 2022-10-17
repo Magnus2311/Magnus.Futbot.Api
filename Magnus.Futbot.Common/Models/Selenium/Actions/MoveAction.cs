@@ -3,9 +3,10 @@
     public class MoveAction : TradeAction
     {
         public MoveAction(
+            string profileId,
             Func<Task> action,
             CancellationTokenSource cancellationTokenSource,
-            string description) : base("Move action", $"{description}", action, cancellationTokenSource)
+            string description) : base(TradeActionType.Move, $"{description}", profileId, action, cancellationTokenSource)
         {
             Priority = 3;
         }

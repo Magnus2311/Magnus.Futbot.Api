@@ -12,7 +12,7 @@ namespace Magnus.Futbot.Selenium.Services.Players
             var driverInstance = GetInstance(profileDTO.Email);
             var tknSrc = new CancellationTokenSource();
 
-            var moveAction = new MoveAction(new Func<Task>(async () =>
+            var moveAction = new MoveAction(profileDTO.Id, new Func<Task>(async () =>
             { 
                 if (!driverInstance.Driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
                 {
@@ -47,7 +47,7 @@ namespace Magnus.Futbot.Selenium.Services.Players
             var driverInstance = GetInstance(profileDTO.Email);
             var tknSrc = new CancellationTokenSource();
 
-            var moveAction = new MoveAction(new Func<Task>(async () =>
+            var moveAction = new MoveAction(profileDTO.Id, new Func<Task>(async () =>
             {
                 if (!driverInstance.Driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
                 {

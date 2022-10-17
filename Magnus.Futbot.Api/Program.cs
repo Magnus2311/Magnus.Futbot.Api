@@ -13,6 +13,7 @@ using Magnus.Futbot.Common.Interfaces;
 using Magnus.Futbot.Common.Interfaces.Helpers;
 using Magnus.Futbot.Common.Interfaces.Notifiers;
 using Magnus.Futbot.Database.Repositories;
+using Magnus.Futbot.Database.Repositories.Actions;
 using Magnus.Futbot.Initializer;
 using Magnus.Futbot.Initializer.Connections;
 using Magnus.Futbot.Selenium.Services.Players;
@@ -43,7 +44,10 @@ builder.Services
 builder.Services
     .AddTransient<ProfilesRepository>()
     .AddTransient<PlayersRepository>()
-    .AddTransient<CardsRepository>();
+    .AddTransient<CardsRepository>()
+    .AddTransient<MoveActionRepository>()
+    .AddTransient<BuyActionRepository>()
+    .AddTransient<SellActionRepository>();
 
 // Http Clients
 builder.Services

@@ -5,8 +5,9 @@ namespace Magnus.Futbot.Common.Models.Selenium.Actions
     public abstract class TradeAction : ITradeAction
     {
         public TradeAction(
-            string type, 
+            TradeActionType type, 
             string description,
+            string profileId,
             Func<Task> action, 
             CancellationTokenSource cancellationTokenSource)
         {
@@ -15,14 +16,17 @@ namespace Magnus.Futbot.Common.Models.Selenium.Actions
             CancellationTokenSource = cancellationTokenSource;
             Type = type;
             Description = description;
+            ProfileId = profileId;
         }
 
         public string Id { get; }
         public Func<Task> Action { get; }
         public CancellationTokenSource CancellationTokenSource { get; }
-        public string Type { get; }
+        public TradeActionType Type { get; }
 
         public string Description { get; }
         public int Priority { get; set; }
+
+        public string ProfileId { get; set; }
     }
 }

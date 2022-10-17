@@ -1,5 +1,6 @@
 ﻿using Magnus.Futbot.Api.Hubs.Interfaces;
 using Magnus.Futbot.Api.Services;
+using Magnus.Futbot.Common;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Magnus.Futbot.Api.Hubs
@@ -18,13 +19,13 @@ namespace Magnus.Futbot.Api.Hubs
             var actions = await _actionsService.GetPendingActionsByProfileId(profileId);
 
             var userId = Context.UserIdentifier ?? "";
-            await Clients.All.OnActionsLoaded(actions);
+            await Clients.Users(userId).OnActionsLoaded(actions);
         }
 
-        public async Task CancelActionById(string profileId, string actionId)
+        public async Task CancelActionById(string actionId, TradeActionType tradeActionType)
         {
-            await _actionsService.CancelActionById(profileId, actionId);
             var userId = Context.UserIdentifier ?? "";
+            await _actionsService.CancelActionById(actionId, tradeActionType, userId);;
             await Clients.Users(userId).OnActionCanceled(actionId);
         }
     }

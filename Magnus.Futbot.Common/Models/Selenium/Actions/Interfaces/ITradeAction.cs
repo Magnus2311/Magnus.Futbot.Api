@@ -5,7 +5,7 @@
         public string Id { get; }
         Func<Task> Action { get; }
         CancellationTokenSource CancellationTokenSource { get; }
-        string Type { get; }
+        TradeActionType Type { get; }
         string Description { get; }
         int Priority { get; protected set; }
     }

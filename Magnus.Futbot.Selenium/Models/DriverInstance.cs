@@ -1,5 +1,4 @@
-﻿using Magnus.Futbot.Common.Interfaces.Notifiers;
-using Magnus.Futbot.Common.Models.Selenium.Actions;
+﻿using Magnus.Futbot.Common.Models.Selenium.Actions;
 using OpenQA.Selenium.Chrome;
 
 namespace Magnus.Futbot.Models
@@ -23,7 +22,7 @@ namespace Magnus.Futbot.Models
             {
                 if (PendingActions.Count > 0)
                 {
-                    var tradeAction = new BuyAction(new Func<Task>(async () =>
+                    var tradeAction = new BuyAction(action.ProfileId, new Func<Task>(async () =>
                     {
                         try
                         {
@@ -48,7 +47,7 @@ namespace Magnus.Futbot.Models
                 }
                 else
                 {
-                    var tradeAction = new BuyAction(new Func<Task>(async () =>
+                    var tradeAction = new BuyAction(action.ProfileId, new Func<Task>(async () =>
                     {
                         try
                         {
@@ -75,13 +74,13 @@ namespace Magnus.Futbot.Models
             }
         }
 
-        public TradeAction AddAction(SellCardAction action)
+        public TradeAction AddAction(SellAction action)
         {
             lock (_locker)
             {
                 if (PendingActions.Count > 0)
                 {
-                    var tempAction = new SellCardAction(new Func<Task>(async () =>
+                    var tempAction = new SellAction(action.ProfileId, new Func<Task>(async () =>
                     {
                         try
                         {
@@ -105,7 +104,7 @@ namespace Magnus.Futbot.Models
                 }
                 else
                 {
-                    var tempAction = new SellCardAction(new Func<Task>(async () =>
+                    var tempAction = new SellAction(action.ProfileId, new Func<Task>(async () =>
                     {
                         try
                         {
@@ -138,7 +137,7 @@ namespace Magnus.Futbot.Models
             {
                 if (PendingActions.Count > 0)
                 {
-                    var tempAction = new MoveAction(new Func<Task>(async () =>
+                    var tempAction = new MoveAction(action.ProfileId, new Func<Task>(async () =>
                     {
                         try
                         {
@@ -162,7 +161,7 @@ namespace Magnus.Futbot.Models
                 }
                 else
                 {
-                    var tempAction = new MoveAction(new Func<Task>(async () =>
+                    var tempAction = new MoveAction(action.ProfileId, new Func<Task>(async () =>
                     {
                         try
                         {

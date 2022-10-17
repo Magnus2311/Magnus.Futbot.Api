@@ -30,7 +30,6 @@ namespace Magnus.Futbot.Database.Repositories
             var entity = await (await _collection.FindAsync(e => e.Id == id)).FirstOrDefaultAsync();
             entity.IsDeleted = true;
             await _collection.ReplaceOneAsync(Builders<TEntity>.Filter.Eq(e => e.Id, entity.Id), entity);
-
         }
 
         public async Task<TEntity> Recover(ObjectId id)

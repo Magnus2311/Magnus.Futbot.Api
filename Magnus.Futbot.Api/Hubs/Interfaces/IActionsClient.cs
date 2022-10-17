@@ -1,4 +1,5 @@
 ﻿using Magnus.Futbot.Common.Models.DTOs.Trading.Actions;
+using Magnus.Futbot.Common.Models.Selenium.Actions;
 
 namespace Magnus.Futbot.Api.Hubs.Interfaces
 {
@@ -6,6 +7,6 @@ namespace Magnus.Futbot.Api.Hubs.Interfaces
     {
         Task OnActionAdded(TradeActionDTO actiom);
         Task OnActionCanceled(string actionId);
-        Task OnActionsLoaded(IEnumerable<TradeActionDTO> actions);
+        Task OnActionsLoaded(TradeActions actions);
     }
 }

@@ -47,4 +47,11 @@
         Won,
         Outbidded
     }
+
+    public enum TradeActionType
+    {
+        Buy,
+        Sell,
+        Move
+    }
 }

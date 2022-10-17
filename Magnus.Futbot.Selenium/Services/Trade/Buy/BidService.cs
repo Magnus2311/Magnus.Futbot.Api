@@ -27,7 +27,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
             _updateAction = updateAction;
             var driverInstance = GetInstance(profileDTO.Email);
 
-            var tradeAction = new BuyAction(new Func<Task>(async () =>
+            var tradeAction = new BuyAction(profileDTO.Id, new Func<Task>(async () =>
             {
                 if (!driverInstance.Driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
                 {
