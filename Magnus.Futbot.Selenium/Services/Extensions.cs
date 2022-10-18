@@ -136,9 +136,6 @@ namespace Magnus.Futbot.Services
 
         public static async Task OpenHomePage(this IWebDriver driver, ProfileDTO profileDTO)
         {
-            if (!driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
-                await InitProfileService.InitProfile(profileDTO);
-
             var homeBtn = driver.FindElement(By.CssSelector("body > main > section > nav > button.ut-tab-bar-item.icon-home"), 10000);
             homeBtn?.Click();
             await Task.Delay(1000);

@@ -1,4 +1,5 @@
-﻿using Magnus.Futbot.Common.Models.DTOs;
+﻿using Magnus.Futbot.Common.Interfaces.Services;
+using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.Selenium.Actions;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -7,7 +8,11 @@ namespace Magnus.Futbot.Services
 {
     public class DataSeleniumService : BaseService
     {
-        public static async Task<ProfileDTO> GetBasicData(ProfileDTO profile)
+        public DataSeleniumService(IActionsService actionsService) : base(actionsService)
+        {
+        }
+
+        public async Task<ProfileDTO> GetBasicData(ProfileDTO profile)
         {
             var driver = GetInstance(profile.Email).Driver;
 
@@ -69,7 +74,7 @@ namespace Magnus.Futbot.Services
             return 0;
         }
 
-        public static IEnumerable<TradeAction> GetTradeActionsByProfile(ProfileDTO profileDTO)
+        public IEnumerable<TradeAction> GetTradeActionsByProfile(ProfileDTO profileDTO)
             => GetInstance(profileDTO.Email).PendingActions.UnorderedItems.Select(i => i.Element).ToList();
     }
 }

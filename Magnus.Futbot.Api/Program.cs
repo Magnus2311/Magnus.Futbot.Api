@@ -9,9 +9,9 @@ using Magnus.Futbot.Api.Services.Helpers;
 using Magnus.Futbot.Api.Services.Interfaces;
 using Magnus.Futbot.Api.Services.Notifiers;
 using Magnus.Futbot.Api.Workers;
-using Magnus.Futbot.Common.Interfaces;
 using Magnus.Futbot.Common.Interfaces.Helpers;
 using Magnus.Futbot.Common.Interfaces.Notifiers;
+using Magnus.Futbot.Common.Interfaces.Services;
 using Magnus.Futbot.Database.Repositories;
 using Magnus.Futbot.Database.Repositories.Actions;
 using Magnus.Futbot.Initializer;
@@ -21,6 +21,7 @@ using Magnus.Futbot.Selenium.Services.Trade.Buy;
 using Magnus.Futbot.Selenium.Services.Trade.Filters;
 using Magnus.Futbot.Selenium.Services.Trade.Sell;
 using Magnus.Futbot.Selenium.Trading.Connections;
+using Magnus.Futbot.Services;
 using Magnus.Futbot.Services.Trade.Buy;
 using Magnus.Futbot.Storage;
 using Microsoft.AspNetCore.SignalR;
@@ -60,7 +61,7 @@ builder.Services
 // Services
 builder.Services
     .AddTransient<ProfilesService>()
-    .AddTransient<ActionsService>()
+    .AddTransient<IActionsService, ActionsService>()
     .AddTransient<IPlayersService, PlayersService>()
     .AddTransient<ITradingService, TradingService>()
     .AddTransient<ICardsHelper, CardsHelper>()
@@ -73,7 +74,10 @@ builder.Services
     .AddTransient<MovePlayersService>()
     .AddTransient<SellService>()
     .AddTransient<FiltersService>()
-    .AddTransient<BinService>();
+    .AddTransient<BinService>()
+    .AddTransient<DataSeleniumService>()
+    .AddTransient<InitProfileService>()
+    .AddTransient<LoginSeleniumService>();
 
 // Caches
 builder.Services

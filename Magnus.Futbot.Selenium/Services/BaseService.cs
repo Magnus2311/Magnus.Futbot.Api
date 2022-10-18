@@ -1,4 +1,5 @@
-﻿using Magnus.Futbot.Models;
+﻿using Magnus.Futbot.Common.Interfaces.Services;
+using Magnus.Futbot.Models;
 using OpenQA.Selenium.Chrome;
 using System.Collections.Concurrent;
 
@@ -7,8 +8,14 @@ namespace Magnus.Futbot.Services
     public abstract class BaseService
     {
         private static readonly ConcurrentDictionary<string, DriverInstance> _chromeDrivers = new();
+        private readonly IActionsService _actionsService;
 
-        public static DriverInstance GetInstance(string username)
+        public BaseService(IActionsService actionsService)
+        {
+            _actionsService = actionsService;
+        }
+
+        public DriverInstance GetInstance(string username)
         {
             var chromeOptions = new ChromeOptions();
             chromeOptions.AddArguments("--disable-backgrounding-occluded-windows");
@@ -23,7 +30,7 @@ namespace Magnus.Futbot.Services
                 catch
                 {
                     var tempDriver = new ChromeDriver(chromeOptions);
-                    var tempDriverInstsance = new DriverInstance(tempDriver);
+                    var tempDriverInstsance = new DriverInstance(tempDriver, _actionsService);
                     _chromeDrivers[username] = tempDriverInstsance;
                 }
 
@@ -31,7 +38,7 @@ namespace Magnus.Futbot.Services
             }
 
             var chromeDriver = new ChromeDriver(chromeOptions);
-            var driverInstsance = new DriverInstance(chromeDriver);
+            var driverInstsance = new DriverInstance(chromeDriver, _actionsService);
             _chromeDrivers.TryAdd(username, driverInstsance);
             return driverInstsance;
         }

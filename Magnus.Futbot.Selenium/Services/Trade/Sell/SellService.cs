@@ -1,7 +1,7 @@
-﻿using Magnus.Futbot.Common.Models.DTOs;
+﻿using Magnus.Futbot.Common.Interfaces.Services;
+using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.DTOs.Trading;
 using Magnus.Futbot.Common.Models.Selenium.Actions;
-using Magnus.Futbot.Models;
 using Magnus.Futbot.Services;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -10,6 +10,15 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
 {
     public class SellService : BaseService
     {
+        private readonly InitProfileService _initProfileService;
+
+        public SellService(
+            IActionsService actionsService,
+            InitProfileService initProfileService) : base(actionsService)
+        {
+            _initProfileService = initProfileService;
+        }
+
         public TradeAction SellPlayer(SellCardDTO sellCard, ProfileDTO profileDTO, Action<ProfileDTO> updateProfile, CancellationTokenSource cancellationTokenSource)
         {
             var driverInstance = GetInstance(profileDTO.Email);
@@ -58,7 +67,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
             var tradeAction = new MoveAction(profileDTO.Id, new Func<Task>(async () =>
             {
                 if (cancellationTokenSource.IsCancellationRequested) return;
-                await InitProfileService.InitProfile(profileDTO);
+                await _initProfileService.InitProfile(profileDTO);
 
                 if (cancellationTokenSource.IsCancellationRequested) return;
                 await driverInstance.Driver.OpenTransferList();

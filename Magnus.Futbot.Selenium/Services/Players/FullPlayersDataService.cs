@@ -1,4 +1,5 @@
 ﻿using Magnus.Futbot.Common.Interfaces.Helpers;
+using Magnus.Futbot.Common.Interfaces.Services;
 using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.Selenium.Trading;
 using Magnus.Futbot.Services;
@@ -10,7 +11,9 @@ namespace Magnus.Futbot.Selenium.Services.Players
     {
         private readonly ICardsHelper _cardsHelper;
 
-        public FullPlayersDataService(ICardsHelper cardsHelper)
+        public FullPlayersDataService(
+            IActionsService actionsService,
+            ICardsHelper cardsHelper) : base(actionsService)
         {
             _cardsHelper = cardsHelper;
         }

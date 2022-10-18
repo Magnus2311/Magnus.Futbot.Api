@@ -1,17 +1,16 @@
 ﻿using Magnus.Futbot.Api.Hubs.Interfaces;
-using Magnus.Futbot.Api.Services;
 using Magnus.Futbot.Common;
+using Magnus.Futbot.Common.Interfaces.Services;
 using Magnus.Futbot.Common.Models.DTOs.Trading.Actions;
-using Magnus.Futbot.Common.Models.Selenium.Actions;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Magnus.Futbot.Api.Hubs
 {
     public class ActionsHub : Hub<IActionsClient>
     {
-        private readonly ActionsService _actionsService;
+        private readonly IActionsService _actionsService;
 
-        public ActionsHub(ActionsService actionsService)
+        public ActionsHub(IActionsService actionsService)
         {
             _actionsService = actionsService;
         }

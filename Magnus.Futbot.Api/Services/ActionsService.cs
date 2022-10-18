@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Magnus.Futbot.Common;
+using Magnus.Futbot.Common.Interfaces.Services;
 using Magnus.Futbot.Common.Models.DTOs.Trading.Actions;
 using Magnus.Futbot.Common.Models.Selenium.Actions;
 using Magnus.Futbot.Database.Repositories.Actions;
@@ -7,7 +8,7 @@ using MongoDB.Bson;
 
 namespace Magnus.Futbot.Api.Services
 {
-    public class ActionsService
+    public class ActionsService : IActionsService
     {
         private readonly BuyActionRepository _buyActionRepository;
         private readonly SellActionRepository _sellActionRepository;
@@ -73,6 +74,22 @@ namespace Magnus.Futbot.Api.Services
             await _buyActionRepository.DeactivateAllActions();
             await _sellActionRepository.DeactivateAllActions();
             await _moveActionRepository.DeactivateAllActions();
+        }
+
+        public async Task DeactivateAction(string actionId, TradeActionType actionType)
+        {
+            switch (actionType)
+            {
+                case TradeActionType.Buy:
+                    await _buyActionRepository.DeactivateById(new ObjectId(actionId));
+                    break;
+                case TradeActionType.Sell:
+                    await _sellActionRepository.DeactivateById(new ObjectId(actionId));
+                    break;
+                case TradeActionType.Move:
+                    await _moveActionRepository.DeactivateById(new ObjectId(actionId));
+                    break;
+            }
         }
     }
 }

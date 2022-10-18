@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Magnus.Futbot.Common.Interfaces;
+using Magnus.Futbot.Common.Interfaces.Services;
 using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Database.Models;
 using Magnus.Futbot.Database.Repositories;

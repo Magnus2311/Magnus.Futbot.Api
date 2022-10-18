@@ -17,15 +17,21 @@ namespace Magnus.Futbot.Api.Services
         private readonly IMapper _mapper;
         private readonly ProfilesRepository _profilesRepository;
         private readonly FullPlayersDataService _fullPlayersDataService;
+        private readonly InitProfileService _initProfileService;
+        private readonly LoginSeleniumService _loginSeleniumService;
 
         public ProfilesService(
             ProfilesRepository profilesRepository,
             FullPlayersDataService fullPlayersDataService,
+            InitProfileService initProfileService,
+            LoginSeleniumService loginSeleniumService,
             IMapper mapper)
         {
             _mapper = mapper;
             _profilesRepository = profilesRepository;
             _fullPlayersDataService = fullPlayersDataService;
+            _initProfileService = initProfileService;
+            _loginSeleniumService = loginSeleniumService;
         }
 
         public async Task<IEnumerable<ProfileDTO>> GetAll(string userId)
@@ -43,7 +49,7 @@ namespace Magnus.Futbot.Api.Services
                 return new LoginResponseDTO(ProfileStatusType.AlreadyAdded, _mapper.Map<ProfileDTO>(profileDTO));
             await _profilesRepository.Add(_mapper.Map<ProfileDocument>(profileDTO));
 
-            var response = await InitProfileService.InitProfile(profileDTO);
+            var response = await _initProfileService.InitProfile(profileDTO);
             await _profilesRepository.Update(_mapper.Map<ProfileDocument>(response));
 
             return new LoginResponseDTO(response.Status, _mapper.Map<ProfileDTO>(profileDTO));
@@ -51,14 +57,14 @@ namespace Magnus.Futbot.Api.Services
 
         public async Task<ProfileDTO> SubmitCode(SubmitCodeDTO submitCodeDTO)
         {
-            var response = await LoginSeleniumService.SubmitCode(submitCodeDTO);
+            var response = await _loginSeleniumService.SubmitCode(submitCodeDTO);
             return _mapper.Map<ProfileDTO>(await _profilesRepository.UpdateSubmitCodeStatus(submitCodeDTO.Email, response));
         }
 
         public async Task<ProfileDTO> RefreshProfile(string profileId, string userId)
         {
             var profile = await _profilesRepository.Get(new ObjectId(profileId), new ObjectId(userId));
-            var refreshedProfile = await InitProfileService.InitProfile(_mapper.Map<ProfileDTO>(profile));
+            var refreshedProfile = await _initProfileService.InitProfile(_mapper.Map<ProfileDTO>(profile));
             refreshedProfile.TradePile = await _fullPlayersDataService.GetTransferPile(refreshedProfile);
             await _profilesRepository.Update(_mapper.Map<ProfileDocument>(refreshedProfile));
             return refreshedProfile;

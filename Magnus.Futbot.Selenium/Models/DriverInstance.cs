@@ -1,4 +1,6 @@
-﻿using Magnus.Futbot.Common.Models.Selenium.Actions;
+﻿using Magnus.Futbot.Common;
+using Magnus.Futbot.Common.Interfaces.Services;
+using Magnus.Futbot.Common.Models.Selenium.Actions;
 using OpenQA.Selenium.Chrome;
 
 namespace Magnus.Futbot.Models
@@ -6,10 +8,14 @@ namespace Magnus.Futbot.Models
     public class DriverInstance
     {
         private readonly object _locker = new();
+        private readonly IActionsService _actionsService;
 
-        public DriverInstance(ChromeDriver driver)
+        public DriverInstance(
+            ChromeDriver driver,
+            IActionsService actionsService)
         {
             Driver = driver;
+            _actionsService = actionsService;
         }
 
         public PriorityQueue<TradeAction, int> PendingActions { get; set; } = new();
@@ -38,6 +44,7 @@ namespace Magnus.Futbot.Models
                             if (!nextAction.CancellationTokenSource.Token.IsCancellationRequested)
                             {
                                 await nextAction.Action.Invoke();
+                                await _actionsService.DeactivateAction(nextAction.Id, TradeActionType.Buy);
                             }
                         }
                     }), action.CancellationTokenSource, action.BuyCardDTO);
@@ -68,7 +75,11 @@ namespace Magnus.Futbot.Models
                     }), action.CancellationTokenSource, action.BuyCardDTO);
 
                     PendingActions.Enqueue(tradeAction, tradeAction.Priority);
-                    tradeAction.Action.Invoke();
+                    Task.Run(async () =>
+                    {
+                        await tradeAction.Action.Invoke();
+                        await _actionsService.DeactivateAction(tradeAction.Id, TradeActionType.Buy);
+                    });
                     return tradeAction;
                 }
             }
@@ -96,6 +107,7 @@ namespace Magnus.Futbot.Models
                             if (!nextAction.CancellationTokenSource.Token.IsCancellationRequested)
                             {
                                 await nextAction.Action.Invoke();
+                                await _actionsService.DeactivateAction(nextAction.Id, TradeActionType.Sell);
                             }
                         }
                     }), action.CancellationTokenSource, action.SellCardDTO);
@@ -125,7 +137,11 @@ namespace Magnus.Futbot.Models
                     }), action.CancellationTokenSource, action.SellCardDTO);
 
                     PendingActions.Enqueue(tempAction, tempAction.Priority);
-                    tempAction.Action.Invoke();
+                    Task.Run(async () =>
+                    {
+                        await tempAction.Action.Invoke();
+                        await _actionsService.DeactivateAction(tempAction.Id, TradeActionType.Sell);
+                    });
                     return tempAction;
                 }
             }
@@ -153,6 +169,7 @@ namespace Magnus.Futbot.Models
                             if (!nextAction.CancellationTokenSource.Token.IsCancellationRequested)
                             {
                                 await nextAction.Action.Invoke();
+                                await _actionsService.DeactivateAction(nextAction.Id, TradeActionType.Move);
                             }
                         }
                     }), action.CancellationTokenSource, action.Description);
@@ -182,7 +199,11 @@ namespace Magnus.Futbot.Models
                     }), action.CancellationTokenSource, action.Description);
 
                     PendingActions.Enqueue(tempAction, tempAction.Priority);
-                    tempAction.Action.Invoke();
+                    Task.Run(async () =>
+                    {
+                        await tempAction.Action.Invoke();
+                        await _actionsService.DeactivateAction(tempAction.Id, TradeActionType.Move);
+                    });
                     return tempAction;
                 }
             }

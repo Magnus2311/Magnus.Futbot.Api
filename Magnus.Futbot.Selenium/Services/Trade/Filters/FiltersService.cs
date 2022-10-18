@@ -1,4 +1,5 @@
-﻿using Magnus.Futbot.Common.Models.DTOs.Trading;
+﻿using Magnus.Futbot.Common.Interfaces.Services;
+using Magnus.Futbot.Common.Models.DTOs.Trading;
 using Magnus.Futbot.Services;
 using OpenQA.Selenium;
 
@@ -6,6 +7,10 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Filters
 {
     public class FiltersService : BaseService
     {
+        public FiltersService(IActionsService actionsService) : base(actionsService)
+        {
+        }
+
         public async Task InsertFilters(string email, BuyCardDTO buyCardDTO)
         {
             var driver = GetInstance(email).Driver;

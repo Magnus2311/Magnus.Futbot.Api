@@ -1,6 +1,6 @@
 ﻿using Magnus.Futbot.Common.Models.DTOs;
 
-namespace Magnus.Futbot.Common.Interfaces
+namespace Magnus.Futbot.Common.Interfaces.Services
 {
     public interface IPlayersService
     {

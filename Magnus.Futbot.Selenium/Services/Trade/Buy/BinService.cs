@@ -1,4 +1,5 @@
-﻿using Magnus.Futbot.Common.Models.DTOs;
+﻿using Magnus.Futbot.Common.Interfaces.Services;
+using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.DTOs.Trading;
 using Magnus.Futbot.Common.Models.Selenium.Actions;
 using Magnus.Futbot.Selenium.Services.Trade.Filters;
@@ -12,10 +13,15 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
         private int _wonPlayers;
         private Action<ProfileDTO> _updateAction;
         private readonly FiltersService _filtersService;
+        private readonly LoginSeleniumService _loginSeleniumService;
 
-        public BinService(FiltersService filtersService)
+        public BinService(
+            IActionsService actionsService,
+            FiltersService filtersService,
+            LoginSeleniumService loginSeleniumService) : base(actionsService)
         {
             _filtersService = filtersService;
+            _loginSeleniumService = loginSeleniumService;
         }
 
         public TradeAction BinPlayer(
@@ -46,7 +52,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
             Func<Task>? sellAction)
         {
             if (!driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
-                await LoginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
+                await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
 
             await _filtersService.InsertFilters(profileDTO.Email, buyCardDTO);
 

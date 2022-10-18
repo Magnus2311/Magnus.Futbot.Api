@@ -1,4 +1,5 @@
 ﻿using Magnus.Futbot.Common;
+using Magnus.Futbot.Common.Interfaces.Services;
 using Magnus.Futbot.Common.Models.Selenium.Profiles;
 using OpenQA.Selenium;
 
@@ -6,7 +7,11 @@ namespace Magnus.Futbot.Services
 {
     public class LoginSeleniumService : BaseService
     {
-        public static async Task<ProfileStatusType> Login(string username, string password)
+        public LoginSeleniumService(IActionsService actionsService) : base(actionsService)
+        {
+        }
+
+        public async Task<ProfileStatusType> Login(string username, string password)
         {
             var driverInstance = GetInstance(username);
             var driver = driverInstance.Driver;
@@ -54,7 +59,7 @@ namespace Magnus.Futbot.Services
             return ProfileStatusType.Logged;
         }
 
-        public static async Task<ConfirmationCodeStatusType> SubmitCode(SubmitCodeDTO submitCodeDTO)
+        public async Task<ConfirmationCodeStatusType> SubmitCode(SubmitCodeDTO submitCodeDTO)
         {
             var driver = GetInstance(submitCodeDTO.Email).Driver;
 

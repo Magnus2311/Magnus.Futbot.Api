@@ -1,4 +1,5 @@
-﻿using Magnus.Futbot.Common.Models.DTOs;
+﻿using Magnus.Futbot.Common.Interfaces.Services;
+using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.Selenium.Actions;
 using Magnus.Futbot.Services;
 using OpenQA.Selenium;
@@ -7,6 +8,15 @@ namespace Magnus.Futbot.Selenium.Services.Players
 {
     public class MovePlayersService : BaseService
     {
+        private readonly LoginSeleniumService _loginSeleniumService;
+
+        public MovePlayersService(
+            IActionsService actionsService,
+            LoginSeleniumService loginSeleniumService) : base(actionsService)
+        {
+            _loginSeleniumService = loginSeleniumService;
+        }
+
         public void SendTransferTargetsToTransferList(ProfileDTO profileDTO, Action<ProfileDTO> updateProfile)
         {
             var driverInstance = GetInstance(profileDTO.Email);
@@ -16,7 +26,7 @@ namespace Magnus.Futbot.Selenium.Services.Players
             { 
                 if (!driverInstance.Driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
                 {
-                    await LoginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
+                    await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
                 }
 
                 await driverInstance.Driver.OpenTransferTargets();
@@ -51,7 +61,7 @@ namespace Magnus.Futbot.Selenium.Services.Players
             {
                 if (!driverInstance.Driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
                 {
-                    await LoginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
+                    await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
                 }
 
                 await driverInstance.Driver.OpenUnassignedItems(profileDTO);

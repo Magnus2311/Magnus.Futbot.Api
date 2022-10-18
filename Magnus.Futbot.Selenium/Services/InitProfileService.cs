@@ -1,4 +1,5 @@
 ﻿using Magnus.Futbot.Common;
+using Magnus.Futbot.Common.Interfaces.Services;
 using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.Selenium.Profiles;
 using OpenQA.Selenium;
@@ -7,7 +8,19 @@ namespace Magnus.Futbot.Services
 {
     public class InitProfileService : BaseService
     {
-        public static async Task<ProfileDTO> InitProfile(AddProfileDTO profile)
+        private readonly DataSeleniumService _dataSeleniumService;
+        private readonly LoginSeleniumService _loginSeleniumService;
+
+        public InitProfileService(
+            IActionsService actionsService,
+            DataSeleniumService dataSeleniumService,
+            LoginSeleniumService loginSeleniumService) : base(actionsService)
+        {
+            _dataSeleniumService = dataSeleniumService;
+            _loginSeleniumService = loginSeleniumService;
+        }
+
+        public async Task<ProfileDTO> InitProfile(AddProfileDTO profile)
         {
             var profileDTO = new ProfileDTO()
             {
@@ -19,7 +32,7 @@ namespace Magnus.Futbot.Services
             return await InitProfile(profileDTO);
         }
 
-        public static async Task<ProfileDTO> InitProfile(ProfileDTO profileDTO)
+        public async Task<ProfileDTO> InitProfile(ProfileDTO profileDTO)
         {
             var driverInstance = GetInstance(profileDTO.Email);
             var driver = driverInstance.Driver;
@@ -34,7 +47,7 @@ namespace Magnus.Futbot.Services
             var emailInput = driver.FindElement(By.CssSelector("#email"), 1000);
             if (emailInput is not null)
             {
-                profileDTO.Status = await LoginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
+                profileDTO.Status = await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
             }
 
             var transferBtn = driver.FindElement(By.CssSelector("body > main > section > nav > button.ut-tab-bar-item.icon-transfer"), 10000);
@@ -42,7 +55,7 @@ namespace Magnus.Futbot.Services
 
             if (profileDTO.Status == ProfileStatusType.Logged)
             {
-                profileDTO = await DataSeleniumService.GetBasicData(profileDTO);
+                profileDTO = await _dataSeleniumService.GetBasicData(profileDTO);
             }
             driver.ExecuteScript("services.User.maxAllowedAuctions = 100");
             return profileDTO;
