@@ -1,5 +1,4 @@
-﻿using Magnus.Futbot.Common.Models.Database.Interfaces;
-using Magnus.Futbot.Common.Models.DTOs.Trading;
+﻿using Magnus.Futbot.Common.Models.DTOs.Trading;
 using MongoDB.Bson;
 
 namespace Magnus.Futbot.Database.Models.Actions
@@ -14,5 +13,6 @@ namespace Magnus.Futbot.Database.Models.Actions
         public BuyCardDTO BuyCardDTO { get; set; } = new();
         public int Priority { get; set; }
         public string Description { get; set; } = string.Empty;
+        public CancellationTokenSource? CancellationTokenSource { get; set; }
     }
 }

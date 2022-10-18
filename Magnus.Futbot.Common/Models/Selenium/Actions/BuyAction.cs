@@ -4,6 +4,11 @@ namespace Magnus.Futbot.Common.Models.Selenium.Actions
 {
     public class BuyAction : TradeAction
     {
+        public BuyAction()
+        {
+
+        }
+
         public BuyAction(
             string profileId,
             Func<Task> action, 
@@ -14,6 +19,6 @@ namespace Magnus.Futbot.Common.Models.Selenium.Actions
             Priority = 1;
         }
 
-        public BuyCardDTO? BuyCardDTO { get; }
+        public BuyCardDTO? BuyCardDTO { get; set; }
     }
 }

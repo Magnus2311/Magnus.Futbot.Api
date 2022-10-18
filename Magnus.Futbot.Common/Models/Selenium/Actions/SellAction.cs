@@ -4,6 +4,11 @@ namespace Magnus.Futbot.Common.Models.Selenium.Actions
 {
     public class SellAction : TradeAction
     {
+        public SellAction()
+        {
+
+        }
+
         public SellAction(
             string profileId,
             Func<Task> action,

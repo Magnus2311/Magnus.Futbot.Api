@@ -23,7 +23,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Filters
                     return;
                 }
 
-                playerNameInput.SendKeys(buyCardDTO.Card.Name);
+                playerNameInput.SendKeys(buyCardDTO.Card.FullName);
                 await Task.Delay(300);
                 var playerRow = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div.ut-pinned-list-container.ut-content-container > div > div.ut-pinned-list > div.ut-item-search-view > div.inline-list-select.ut-player-search-control.has-selection.contract-text-input.is-open > div > div.inline-list > ul > button"), TimeSpan.FromSeconds(10));
                 if (playerRow is null)

@@ -2,6 +2,11 @@
 {
     public class MoveAction : TradeAction
     {
+        public MoveAction()
+        {
+
+        }
+
         public MoveAction(
             string profileId,
             Func<Task> action,

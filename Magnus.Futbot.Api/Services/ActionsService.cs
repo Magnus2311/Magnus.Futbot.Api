@@ -31,6 +31,8 @@ namespace Magnus.Futbot.Api.Services
 
         public async Task<TradeActions> GetPendingActionsByProfileId(string profileId)
         {
+            var biyAction = await _buyActionRepository.GetActionsByProfileId(new ObjectId(profileId));
+
             var actions = new TradeActions
             {
                 BuyActions = _mapper.Map<IEnumerable<BuyAction>>(await _buyActionRepository.GetActionsByProfileId(new ObjectId(profileId))),
