@@ -1,6 +1,8 @@
 ﻿using Magnus.Futbot.Api.Hubs.Interfaces;
 using Magnus.Futbot.Api.Services;
 using Magnus.Futbot.Common;
+using Magnus.Futbot.Common.Models.DTOs.Trading.Actions;
+using Magnus.Futbot.Common.Models.Selenium.Actions;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Magnus.Futbot.Api.Hubs
@@ -14,13 +16,8 @@ namespace Magnus.Futbot.Api.Hubs
             _actionsService = actionsService;
         }
 
-        public async Task GetAllActionsByProfileId(string profileId)
-        {
-            var actions = await _actionsService.GetPendingActionsByProfileId(profileId);
-
-            var userId = Context.UserIdentifier ?? "";
-            await Clients.Users(userId).OnActionsLoaded(actions);
-        }
+        public Task<TradeActionsDTO> GetAllActionsByProfileId(string profileId)
+            => _actionsService.GetPendingActionsByProfileId(profileId);
 
         public async Task CancelActionById(string actionId, TradeActionType tradeActionType)
         {

@@ -57,6 +57,11 @@ namespace Magnus.Futbot.Api.Helpers
                 .ReverseMap()
                 .ForMember(dest => dest.Id, options => options.MapFrom(src => src.Id.ToString()))
                 .ForMember(dest => dest.ProfileId, options => options.MapFrom(src => src.ProfileId.ToString()));
+
+            CreateMap<TradeActionsDTO, TradeActions>().ReverseMap();
+            CreateMap<BuyActionDTO, BuyAction>().ReverseMap();
+            CreateMap<SellActionDTO, SellAction>().ReverseMap();
+            CreateMap<MoveActionDTO, MoveAction>().ReverseMap();
         }
     }
 }

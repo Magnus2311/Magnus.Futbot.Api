@@ -1,8 +1,10 @@
 ﻿using Magnus.Futbot.Common.Models.DTOs.Trading;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Magnus.Futbot.Database.Models.Actions
 {
+    [BsonIgnoreExtraElements]
     public class BuyActionEntity
     {
         public ObjectId Id {get; set; } = ObjectId.Empty;

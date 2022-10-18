@@ -17,6 +17,12 @@ namespace Magnus.Futbot.Database.Repositories.Actions
         public async Task<IEnumerable<BuyActionEntity>> GetActionsByProfileId(ObjectId profileId)
             => await (await _collection.FindAsync(e => !e.IsDeleted && e.ProfileId == profileId)).ToListAsync();
 
+        public async Task<IEnumerable<BuyActionEntity>> GetAllActive()
+            => await (await _collection.FindAsync(e => !e.IsDeleted)).ToListAsync();
+
+        public Task DeactivateAllActions()
+            => _collection.UpdateManyAsync(Builders<BuyActionEntity>.Filter.Empty, Builders<BuyActionEntity>.Update.Inc(e => e.IsDeleted, true));
+
         public Task Add(IEnumerable<BuyActionEntity> entities)
             => _collection.InsertManyAsync(entities);
 

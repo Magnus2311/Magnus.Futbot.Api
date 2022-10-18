@@ -32,5 +32,8 @@ namespace Magnus.Futbot.Database.Repositories.Actions
 
         public async Task<SellActionEntity> GetById(ObjectId actionId)
             => await (await _collection.FindAsync(e => !e.IsDeleted && e.Id == actionId)).FirstOrDefaultAsync();
+
+        public Task DeactivateAllActions()
+            => _collection.UpdateManyAsync(Builders<SellActionEntity>.Filter.Empty, Builders<SellActionEntity>.Update.Inc(e => e.IsDeleted, true));
     }
 }

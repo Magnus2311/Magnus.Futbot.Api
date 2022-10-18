@@ -3,43 +3,37 @@ using Magnus.Futbot.Common;
 using Magnus.Futbot.Common.Models.DTOs.Trading.Actions;
 using Magnus.Futbot.Common.Models.Selenium.Actions;
 using Magnus.Futbot.Database.Repositories.Actions;
-using Magnus.Futbot.Services;
 using MongoDB.Bson;
 
 namespace Magnus.Futbot.Api.Services
 {
     public class ActionsService
     {
-        private readonly ProfilesService _profilesService;
         private readonly BuyActionRepository _buyActionRepository;
         private readonly SellActionRepository _sellActionRepository;
         private readonly MoveActionRepository _moveActionRepository;
         private readonly IMapper _mapper;
 
-        public ActionsService(ProfilesService profilesService,
-            BuyActionRepository buyActionRepository,
+        public ActionsService(BuyActionRepository buyActionRepository,
             SellActionRepository sellActionRepository,
             MoveActionRepository moveActionRepository,
             IMapper mapper)
         {
-            _profilesService = profilesService;
             _buyActionRepository = buyActionRepository;
             _sellActionRepository = sellActionRepository;
             _moveActionRepository = moveActionRepository;
             _mapper = mapper;
         }
 
-        public async Task<TradeActions> GetPendingActionsByProfileId(string profileId)
+        public async Task<TradeActionsDTO> GetPendingActionsByProfileId(string profileId)
         {
-            var biyAction = await _buyActionRepository.GetActionsByProfileId(new ObjectId(profileId));
-
             var actions = new TradeActions
             {
                 BuyActions = _mapper.Map<IEnumerable<BuyAction>>(await _buyActionRepository.GetActionsByProfileId(new ObjectId(profileId))),
                 SellActions = _mapper.Map<IEnumerable<SellAction>>(await _sellActionRepository.GetActionsByProfileId(new ObjectId(profileId))),
                 MoveActions = _mapper.Map<IEnumerable<MoveAction>>(await _moveActionRepository.GetActionsByProfileId(new ObjectId(profileId)))
             };
-            return actions;
+            return _mapper.Map<TradeActionsDTO>(actions);
         }
 
         public async Task CancelActionById(string actionId, TradeActionType actionType, string userId)
@@ -72,6 +66,13 @@ namespace Magnus.Futbot.Api.Services
                     action?.CancellationTokenSource.Cancel();
                     break;
             }
+        }
+
+        public async Task DeactivateAllActionsOnStartUp()
+        {
+            await _buyActionRepository.DeactivateAllActions();
+            await _sellActionRepository.DeactivateAllActions();
+            await _moveActionRepository.DeactivateAllActions();
         }
     }
 }
