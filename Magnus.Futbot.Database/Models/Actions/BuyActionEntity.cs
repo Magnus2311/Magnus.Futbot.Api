@@ -1,20 +1,21 @@
 ﻿using Magnus.Futbot.Common.Models.DTOs.Trading;
+using Magnus.Futbot.Database.Models.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Magnus.Futbot.Database.Models.Actions
 {
     [BsonIgnoreExtraElements]
-    public class BuyActionEntity
+    public class BuyActionEntity : IActionEntity
     {
         public ObjectId Id {get; set; } = ObjectId.Empty;
         public bool IsDeleted { get; set; }
         public DateTime UpdatedDate { get; set; } = DateTime.Now;
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         public ObjectId ProfileId { get; set; }
-        public BuyCardDTO BuyCardDTO { get; set; } = new();
         public int Priority { get; set; }
         public string Description { get; set; } = string.Empty;
+        public BuyCardDTO BuyCardDTO { get; set; } = new();
         public CancellationTokenSource? CancellationTokenSource { get; set; }
     }
 }
