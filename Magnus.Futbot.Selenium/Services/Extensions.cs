@@ -248,7 +248,9 @@ namespace Magnus.Futbot.Services
         {
             try
             {
-                return driver.FindElement(by);
+                var currentElement = driver.FindElement(by);
+                if (currentElement is not null && currentElement.Enabled && currentElement.Displayed) return currentElement;
+                else return null;
             }
             catch
             {
@@ -260,7 +262,9 @@ namespace Magnus.Futbot.Services
         {
             try
             {
-                return element.FindElement(by);
+                var currentElement = element.FindElement(by);
+                if (currentElement is not null && currentElement.Enabled && currentElement.Displayed) return currentElement;
+                else return null;
             }
             catch
             {
