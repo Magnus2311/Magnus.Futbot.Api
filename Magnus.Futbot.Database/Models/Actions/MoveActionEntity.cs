@@ -1,11 +1,11 @@
-﻿using Magnus.Futbot.Common.Models.Database.Interfaces;
+﻿using Magnus.Futbot.Database.Models.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Magnus.Futbot.Database.Models.Actions
 {
     [BsonIgnoreExtraElements]
-    public class MoveActionEntity
+    public class MoveActionEntity : IActionEntity
     {
         public ObjectId Id {get; set; } = ObjectId.Empty;
         public bool IsDeleted { get; set; }

@@ -1,4 +1,5 @@
 ﻿using Magnus.Futbot.Api.Hubs.Interfaces;
+using Magnus.Futbot.Api.Services;
 using Magnus.Futbot.Common;
 using Magnus.Futbot.Common.Interfaces.Services;
 using Magnus.Futbot.Common.Models.DTOs.Trading.Actions;
@@ -9,19 +10,24 @@ namespace Magnus.Futbot.Api.Hubs
     public class ActionsHub : Hub<IActionsClient>
     {
         private readonly IActionsService _actionsService;
+        private readonly ActionsDeactivator _actionDeactivator;
 
-        public ActionsHub(IActionsService actionsService)
+        public ActionsHub(
+            IActionsService actionsService,
+            ActionsDeactivator actionDeactivator)
         {
             _actionsService = actionsService;
+            _actionDeactivator = actionDeactivator;
         }
 
         public Task<TradeActionsDTO> GetAllActionsByProfileId(string profileId)
             => _actionsService.GetPendingActionsByProfileId(profileId);
 
-        public async Task CancelActionById(string actionId, TradeActionType tradeActionType)
+        public async Task CancelActionById(string profileId, string actionId, TradeActionType tradeActionType)
         {
             var userId = Context.UserIdentifier ?? "";
-            await _actionsService.CancelActionById(actionId, tradeActionType, userId);;
+            await _actionsService.DeleteActionById(actionId, tradeActionType, userId);
+            await _actionDeactivator.DeactivateAction(profileId, actionId);
             await Clients.Users(userId).OnActionCanceled(actionId);
         }
     }

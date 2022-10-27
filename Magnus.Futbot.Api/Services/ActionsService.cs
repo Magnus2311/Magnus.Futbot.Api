@@ -37,34 +37,24 @@ namespace Magnus.Futbot.Api.Services
             return _mapper.Map<TradeActionsDTO>(actions);
         }
 
-        public async Task CancelActionById(string actionId, TradeActionType actionType, string userId)
+        public async Task DeleteActionById(string actionId, TradeActionType actionType, string userId)
         {
-            TradeAction action;
             switch (actionType)
             {
                 case TradeActionType.Buy:
                     var buyActionEntity = await _buyActionRepository.GetById(new ObjectId(actionId));
                     buyActionEntity.IsDeleted = true;
                     await _buyActionRepository.Update(buyActionEntity);
-
-                    action = _mapper.Map<BuyAction>(buyActionEntity);
-                    action?.CancellationTokenSource.Cancel();
                     break;
                 case TradeActionType.Sell:
                     var sellActionEntity = await _sellActionRepository.GetById(new ObjectId(actionId));
                     sellActionEntity.IsDeleted = true;
                     await _sellActionRepository.Update(sellActionEntity);
-
-                    action = _mapper.Map<SellAction>(sellActionEntity);
-                    action?.CancellationTokenSource.Cancel();
                     break;
                 case TradeActionType.Move:
                     var moveActionEntity = await _moveActionRepository.GetById(new ObjectId(actionId));
                     moveActionEntity.IsDeleted = true;
                     await _moveActionRepository.Update(moveActionEntity);
-
-                    action = _mapper.Map<MoveAction>(moveActionEntity);
-                    action?.CancellationTokenSource.Cancel();
                     break;
             }
         }

@@ -65,7 +65,8 @@ builder.Services
     .AddTransient<IPlayersService, PlayersService>()
     .AddTransient<ITradingService, TradingService>()
     .AddTransient<ICardsHelper, CardsHelper>()
-    .AddTransient<IActionsNotifier, ActionsNotifier>();
+    .AddTransient<IActionsNotifier, ActionsNotifier>()
+    .AddTransient<ActionsDeactivator>();
 
 // Selenium Services
 builder.Services
