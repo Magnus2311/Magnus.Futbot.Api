@@ -30,5 +30,12 @@ namespace Magnus.Futbot.Api.Hubs
             await _actionDeactivator.DeactivateAction(profileId, actionId);
             await Clients.Users(userId).OnActionCanceled(actionId);
         }
+
+        public async Task PauseAction(string email, string selectedDuration)
+        {
+            var userId = Context.UserIdentifier ?? "";
+            var action = await _actionsService.PauseProfile(email, selectedDuration, userId); ;
+            await Clients.Users(userId).OnActionAdded(action);
+        }
     }
 }

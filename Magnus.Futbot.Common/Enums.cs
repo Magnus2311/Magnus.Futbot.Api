@@ -52,6 +52,7 @@
     {
         Buy,
         Sell,
-        Move
+        Move,
+        Pause
     }
 }

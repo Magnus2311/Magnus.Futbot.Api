@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Magnus.Futbot.Common;
+using Magnus.Futbot.Common.Interfaces.Notifiers;
 using Magnus.Futbot.Common.Interfaces.Services;
 using Magnus.Futbot.Common.Models.DTOs.Trading.Actions;
 using Magnus.Futbot.Common.Models.Selenium.Actions;
+using Magnus.Futbot.Database.Models.Actions;
 using Magnus.Futbot.Database.Repositories.Actions;
 using MongoDB.Bson;
 
@@ -13,16 +15,25 @@ namespace Magnus.Futbot.Api.Services
         private readonly BuyActionRepository _buyActionRepository;
         private readonly SellActionRepository _sellActionRepository;
         private readonly MoveActionRepository _moveActionRepository;
+        private readonly PauseActionRepository _pauseActionRepository;
+        private readonly ProfilesService _profilesService;
+        private readonly IActionsNotifier _actionsNotifier;
         private readonly IMapper _mapper;
 
         public ActionsService(BuyActionRepository buyActionRepository,
             SellActionRepository sellActionRepository,
             MoveActionRepository moveActionRepository,
+            PauseActionRepository pauseActionRepository,
+            ProfilesService profilesService,
+            IActionsNotifier actionsNotifier,
             IMapper mapper)
         {
             _buyActionRepository = buyActionRepository;
             _sellActionRepository = sellActionRepository;
             _moveActionRepository = moveActionRepository;
+            _pauseActionRepository = pauseActionRepository;
+            _profilesService = profilesService;
+            _actionsNotifier = actionsNotifier;
             _mapper = mapper;
         }
 
@@ -32,7 +43,8 @@ namespace Magnus.Futbot.Api.Services
             {
                 BuyActions = _mapper.Map<IEnumerable<BuyAction>>(await _buyActionRepository.GetActionsByProfileId(new ObjectId(profileId))),
                 SellActions = _mapper.Map<IEnumerable<SellAction>>(await _sellActionRepository.GetActionsByProfileId(new ObjectId(profileId))),
-                MoveActions = _mapper.Map<IEnumerable<MoveAction>>(await _moveActionRepository.GetActionsByProfileId(new ObjectId(profileId)))
+                MoveActions = _mapper.Map<IEnumerable<MoveAction>>(await _moveActionRepository.GetActionsByProfileId(new ObjectId(profileId))),
+                PauseActions = _mapper.Map<IEnumerable<PauseAction>>(await _pauseActionRepository.GetActionsByProfileId(new ObjectId(profileId))),
             };
             return _mapper.Map<TradeActionsDTO>(actions);
         }
@@ -80,6 +92,22 @@ namespace Magnus.Futbot.Api.Services
                     await _moveActionRepository.DeactivateById(new ObjectId(actionId));
                     break;
             }
+        }
+
+        public async Task PauseProfile(string email, string selectedDuration, string userId)
+        {
+            var profileDTO = await _profilesService.GetByEmail(email);
+            if (profileDTO.UserId != userId) return;
+
+            var tknSrc = new CancellationTokenSource();
+
+            TradeAction tradeAction = new MoveAction(profileDTO.Id, new Func<Task>(async () =>
+            {
+
+            }), tknSrc, $"Pause for {selectedDuration}");
+
+            await _pauseActionRepository.Add(_mapper.Map<PauseActionEntity>(tradeAction));
+            await _actionsNotifier.AddAction(profileDTO, tradeAction);
         }
     }
 }

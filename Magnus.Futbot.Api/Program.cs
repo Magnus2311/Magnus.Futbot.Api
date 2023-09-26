@@ -48,7 +48,8 @@ builder.Services
     .AddTransient<CardsRepository>()
     .AddTransient<MoveActionRepository>()
     .AddTransient<BuyActionRepository>()
-    .AddTransient<SellActionRepository>();
+    .AddTransient<SellActionRepository>()
+    .AddTransient<PauseActionRepository>();
 
 // Http Clients
 builder.Services

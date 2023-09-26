@@ -5,5 +5,6 @@
         public List<BuyActionDTO> BuyActions { get; set; } = new();
         public List<SellActionDTO> SellActions { get; set; } = new();
         public List<MoveActionDTO> MoveActions { get; set; } = new();
+        public List<PauseActionDTO> PauseActions { get; set; } = new();
     }
 }
