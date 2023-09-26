@@ -163,7 +163,7 @@ namespace Magnus.Futbot.Services
             var (Name, Rating) = player.GetCardNameAndRating();
             IWebElement? canvas = null;
 
-            var availableCards = cards.Where(c => c.Rating == Rating && c.Name.Contains(Name));
+            var availableCards = cards.Where(c => c.OverallRating == Rating && c.Name.Contains(Name));
             if (availableCards.Count() == 1)
                 return new TransferCard
                 {
@@ -175,17 +175,9 @@ namespace Magnus.Futbot.Services
             canvas ??= player.TryFindElement(By.CssSelector("div > div.entityContainer > div.small.player.item.specials.ut-item-loaded > canvas"));
             if (canvas is not null)
             {
-                var currentCards = availableCards.Where(c =>
-                    c.PromoType != PromoType.Bronze
-                    && c.PromoType != PromoType.BronzeRare
-                    && c.PromoType != PromoType.Silver
-                    && c.PromoType != PromoType.SilverRare
-                    && c.PromoType != PromoType.Gold
-                    && c.PromoType != PromoType.GoldRare);
-
                 return new TransferCard
                 {
-                    PossibleCards = currentCards,
+                    PossibleCards = availableCards,
                     PlayerCardStatus = PlayerCardStatus.Won,
                 };
             }
@@ -193,14 +185,9 @@ namespace Magnus.Futbot.Services
             canvas ??= player.TryFindElement(By.CssSelector("div > div.entityContainer > div.small.player.item.common.ut-item-loaded > canvas"));
             if (canvas is not null)
             {
-                var currentCards = availableCards.Where(c =>
-                     c.PromoType == PromoType.Bronze
-                     || c.PromoType == PromoType.Silver
-                     || c.PromoType == PromoType.Gold);
-
                 return new TransferCard
                 {
-                    PossibleCards = currentCards,
+                    PossibleCards = availableCards,
                     PlayerCardStatus = PlayerCardStatus.Won,
                 };
             }
@@ -208,14 +195,9 @@ namespace Magnus.Futbot.Services
             canvas ??= player.TryFindElement(By.CssSelector("div > div.entityContainer > div.small.player.item.rare.ut-item-loaded > canvas"));
             if (canvas is not null)
             {
-                var currentCards = availableCards.Where(c =>
-                     c.PromoType == PromoType.BronzeRare
-                     || c.PromoType == PromoType.SilverRare
-                     || c.PromoType == PromoType.GoldRare);
-
                 return new TransferCard
                 {
-                    PossibleCards = currentCards,
+                    PossibleCards = availableCards,
                     PlayerCardStatus = PlayerCardStatus.Won,
                 };
             }
@@ -226,8 +208,8 @@ namespace Magnus.Futbot.Services
                 {
                     new Card()
                     {
-                        Name = Name,
-                        Rating = Rating
+                        FirstName = Name,
+                        OverallRating = Rating
                     }
                 }
             };

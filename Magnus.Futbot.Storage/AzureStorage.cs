@@ -15,6 +15,17 @@ namespace Magnus.Futbot.Storage
 
         public async Task<string> UploadImage(Stream file, string saveAsFileName, string containerName)
         {
+            var path = $"C:\\futbot\\images\\{containerName}";
+
+            Directory.CreateDirectory(path);
+
+            using var fileStream = File.Create($"{path}\\{saveAsFileName}");
+            file.Seek(0, SeekOrigin.Begin);
+            file.CopyTo(fileStream);
+
+            return $"{containerName}\\{saveAsFileName}";
+
+
             var connectionString = _configuration["AzureStorageConnectionString"];
             var container = new BlobContainerClient(connectionString, containerName);
 
@@ -35,6 +46,8 @@ namespace Magnus.Futbot.Storage
 
         public async Task<List<string>> GetImagesByContainerName(string containerName)
         {
+            return new List<string>();
+
             var connectionString = _configuration["AzureStorageConnectionString"];
             var container = new BlobContainerClient(connectionString, containerName);
             var blobs = new List<string>();

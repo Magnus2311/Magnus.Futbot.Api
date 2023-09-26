@@ -96,7 +96,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
                 {
                     var (Name, Rating) = p.GetCardNameAndRating();
                     return sellCard.Card.Name.Contains(Name)
-                        && sellCard.Card.Rating == Rating;
+                        && sellCard.Card.OverallRating == Rating;
                 }).Take(sellCard.Count);
 
                 foreach (var player in martchingPlayers)
@@ -128,7 +128,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Sell
                 {
                     var (Name, Rating) = p.GetCardNameAndRating();
                     return sellCard.Card.Name.Contains(Name)
-                        && sellCard.Card.Rating == Rating;
+                        && sellCard.Card.OverallRating == Rating;
                 }).Take(sellCard.Count);
 
                 foreach (var player in martchingPlayers)

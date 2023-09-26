@@ -36,7 +36,7 @@ namespace Magnus.Futbot.Api.Caches
                 Cards.Add(card);
 
                 // Should be optimised somehow
-                Cards = new ConcurrentBag<Card>(Cards.OrderByDescending(c => c.Rating));
+                Cards = new ConcurrentBag<Card>(Cards.OrderByDescending(c => c.OverallRating));
                 await _cardsConnection.AddCard(card);
             }
         }

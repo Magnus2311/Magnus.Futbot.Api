@@ -1,25 +1,47 @@
 ﻿using Magnus.Futbot.Common.Models.Database.Interfaces;
 using MongoDB.Bson;
+using System.Text.Json.Serialization;
 
 namespace Magnus.Futbot.Common.Models.Database.Card
 {
     public class Card : IEntity
     {
-        public string Name { get; set; } = string.Empty;
-        public int Rating { get; set; }
-        public string FullName { get; internal set; } = string.Empty;
-        public string ClubLogo { get; set; } = string.Empty;
-        public string LeagueLogo { get; set; } = string.Empty;
-        public string NationLogo { get; set; } = string.Empty;
-        public string Club { get; internal set; } = string.Empty;
-        public string Nation { get; internal set; } = string.Empty;
-        public string League { get; internal set; } = string.Empty;
-        public string PlayerImage { get; set; } = string.Empty;
-        public string BackgroundImage { get; set; } = string.Empty;
-        public string Revision { get; set; } = string.Empty;
-        public PromoType PromoType { get; set; }
-        public MainData MainData { get; set; } = new MainData();
-        public Stats Stats { get; set; } = new Stats();
+        public int EAId { get; set; }
+        public int Rank { get; set; }
+        public int OverallRating { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string CommonName { get; set; }
+        public string Name => FirstName + " " + LastName;
+        public string Birthdate { get; set; }
+        public int Height { get; set; }
+        public int SkillMoves { get; set; }
+        public int WeakFootAbility { get; set; }
+        public int AttackingWorkRate { get; set; }
+        public int DefensiveWorkRate { get; set; }
+        public int PreferredFoot { get; set; }
+        public string LeagueName { get; set; }
+        public int Weight { get; set; }
+        public string AvatarUrl { get; set; }
+        public string ShieldUrl { get; set; }
+
+        [JsonPropertyName("alternatePositions")]
+        public List<AlternatePosition> AlternatePositions { get; set; }
+
+        [JsonPropertyName("playStyle")]
+        public List<PlayStyle> PlayStyles { get; set; }
+
+        public PlayStylePlus PlayStylePlus { get; set; }
+
+        public Gender Gender { get; set; }
+
+        public Nationality Nationality { get; set; }
+
+        public Team Team { get; set; }
+
+        public Position Position { get; set; }
+
+        public Stats Stats { get; set; }
         public ObjectId Id { get; set; }
         public string CardId
         {
@@ -40,5 +62,117 @@ namespace Magnus.Futbot.Common.Models.Database.Card
         public int ClubId { get; internal set; }
         public int LeagueId { get; internal set; }
         public int NationId { get; internal set; }
+
+        
+    }
+
+    public class AlternatePosition
+    {
+        public int Id { get; set; }
+        public string Label { get; set; }
+
+        [JsonPropertyName("shortLabel")]
+        public string ShortLabel { get; set; }
+    }
+
+    public class PlayStyle
+    {
+        public int Id { get; set; }
+        public string Label { get; set; }
+
+        [JsonPropertyName("imageUrl")]
+        public string ImageUrl { get; set; }
+    }
+
+    public class PlayStylePlus
+    {
+        // Define properties for PlayStylePlus
+    }
+
+    public class Gender
+    {
+        public int Id { get; set; }
+        public string Label { get; set; }
+    }
+
+    public class Nationality
+    {
+        public int Id { get; set; }
+        public string Label { get; set; }
+
+        [JsonPropertyName("imageUrl")]
+        public string ImageUrl { get; set; }
+    }
+
+    public class Team
+    {
+        public int Id { get; set; }
+        public string Label { get; set; }
+
+        [JsonPropertyName("imageUrl")]
+        public string ImageUrl { get; set; }
+
+        [JsonPropertyName("isPopular")]
+        public bool IsPopular { get; set; }
+    }
+
+    public class Position
+    {
+        public int Id { get; set; }
+
+        [JsonPropertyName("shortLabel")]
+        public string ShortLabel { get; set; }
+
+        public string Label { get; set; }
+    }
+
+    public class Stats
+    {
+        public Stat Acceleration { get; set; }
+        public Stat Aggression { get; set; }
+        public Stat Agility { get; set; }
+        public Stat Balance { get; set; }
+        public Stat BallControl { get; set; }
+        public Stat Composure { get; set; }
+        public Stat Crossing { get; set; }
+        public Stat Curve { get; set; }
+        public Stat Def { get; set; }
+        public Stat DefensiveAwareness { get; set; }
+        public Stat Dri { get; set; }
+        public Stat Dribbling { get; set; }
+        public Stat Finishing { get; set; }
+        public Stat FreeKickAccuracy { get; set; }
+        public Stat GkDiving { get; set; }
+        public Stat GkHandling { get; set; }
+        public Stat GkKicking { get; set; }
+        public Stat GkPositioning { get; set; }
+        public Stat GkReflexes { get; set; }
+        public Stat HeadingAccuracy { get; set; }
+        public Stat Interceptions { get; set; }
+        public Stat Jumping { get; set; }
+        public Stat LongPassing { get; set; }
+        public Stat LongShots { get; set; }
+        public Stat Pac { get; set; }
+        public Stat Pas { get; set; }
+        public Stat Penalties { get; set; }
+        public Stat Phy { get; set; }
+        public Stat Positioning { get; set; }
+        public Stat Reactions { get; set; }
+        public Stat Sho { get; set; }
+        public Stat ShortPassing { get; set; }
+        public Stat ShotPower { get; set; }
+        public Stat SlidingTackle { get; set; }
+        public Stat SprintSpeed { get; set; }
+        public Stat Stamina { get; set; }
+        public Stat StandingTackle { get; set; }
+        public Stat Strength { get; set; }
+        public Stat Vision { get; set; }
+        public Stat Volleys { get; set; }
+    }
+
+    public class Stat
+    {
+        public int Value { get; set; }
+        public int Diff { get; set; }
     }
 }
