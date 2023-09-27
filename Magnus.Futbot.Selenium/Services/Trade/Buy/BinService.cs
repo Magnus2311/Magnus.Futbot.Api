@@ -2,6 +2,7 @@
 using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.DTOs.Trading;
 using Magnus.Futbot.Common.Models.Selenium.Actions;
+using Magnus.Futbot.Selenium.Services.Players;
 using Magnus.Futbot.Selenium.Services.Trade.Filters;
 using Magnus.Futbot.Services;
 using OpenQA.Selenium;
@@ -14,14 +15,17 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
         private Action<ProfileDTO> _updateAction;
         private readonly FiltersService _filtersService;
         private readonly LoginSeleniumService _loginSeleniumService;
+        private readonly MovePlayersService _movePlayersService;
 
         public BinService(
             IActionsService actionsService,
             FiltersService filtersService,
-            LoginSeleniumService loginSeleniumService) : base(actionsService)
+            LoginSeleniumService loginSeleniumService,
+            MovePlayersService movePlayersService) : base(actionsService)
         {
             _filtersService = filtersService;
             _loginSeleniumService = loginSeleniumService;
+            _movePlayersService = movePlayersService;
         }
 
         public TradeAction BinPlayer(
@@ -125,8 +129,21 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
                     {
                         if (popupText == "You cannot get this Item because you have 5 or more Unassigned Items.")
                         {
-                            cancellationTokenSource.Cancel();
-                            return;
+                            var cancel = driver.TryFindElement(By.CssSelector("body > div.view-modal-container.form-modal > section > div > div > button.negative"));
+                            cancel?.Click();
+
+                            if (sellAction is not null)
+                            {
+                                Thread.Sleep(2000);
+                                profileDTO = await SellWonPlayers(driver, sellAction, profileDTO);
+                                _updateAction(profileDTO);
+                            }
+                            else
+                            {
+                                _movePlayersService.SendUnassignedItemsToTransferList(profileDTO, updateAction);
+                                Thread.Sleep(5000);
+                                continue;
+                            }
                         }
                     }
 
@@ -159,13 +176,14 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
                         }
                     }
 
-                     await Task.Delay(300, cancellationTokenSource.Token);
+                    await Task.Delay(300, cancellationTokenSource.Token);
                     driver.TryFindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-navigation-container-view.ui-layout-right > div > div > div.DetailPanel > div.ut-button-group > button:nth-child(8)"))
                         ?.Click();
                 }
                 {
                     if (sellAction is not null)
                     {
+                        Thread.Sleep(2000);
                         profileDTO = await SellWonPlayers(driver, sellAction, profileDTO);
                         _updateAction(profileDTO);
                     }

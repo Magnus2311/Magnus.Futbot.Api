@@ -23,7 +23,7 @@ namespace Magnus.Futbot.Selenium.Services.Players
             var tknSrc = new CancellationTokenSource();
 
             var moveAction = new MoveAction(profileDTO.Id, new Func<Task>(async () =>
-            { 
+            {
                 if (!driverInstance.Driver.Url.Contains("https://www.ea.com/ea-sports-fc/ultimate-team/web-app/"))
                 {
                     await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
@@ -66,22 +66,14 @@ namespace Magnus.Futbot.Selenium.Services.Players
 
                 await driverInstance.Driver.OpenUnassignedItems(profileDTO);
 
-                var players = driverInstance.Driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-unassigned-view.ui-layout-left > section > ul > li"));
-                foreach (var player in players)
-                {
-                    player.Click();
+                var circleButton = driverInstance.Driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-unassigned-view.ui-layout-left > section > header > button.ut-image-button-control.filter-btn"));
+                circleButton?.Click();
 
-                    var sendToTransferList = driverInstance.Driver.TryFindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section > div > div > div.DetailPanel > div.ut-button-group > button:nth-child(8)"));
-                    if (sendToTransferList != null && sendToTransferList.Enabled && sendToTransferList.Displayed)
-                    {
-                        sendToTransferList.Click();
-                        profileDTO.WonTargetsCount--;
-                        profileDTO.TransferListCount++;
+                var sendAllToTransferList = driverInstance.Driver.FindElement(By.CssSelector("body > div.view-modal-container.form-modal > div > div > button:nth-child(2)"));
+                sendAllToTransferList?.Click();
 
-                        // More logic for altering Trasnfer Pile should be added
-                        updateProfile(profileDTO);
-                    }
-                }
+                var okBtn = driverInstance.Driver.FindElement(By.CssSelector("body > div.view-modal-container.form-modal > section > div > div > button:nth-child(1)"));
+                okBtn?.Click();
             }), tknSrc, "Move Unassigned items to Transfer List");
 
             driverInstance.AddAction(moveAction);

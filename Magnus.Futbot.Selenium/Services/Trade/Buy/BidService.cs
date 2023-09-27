@@ -25,7 +25,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
 
         public TradeAction BidPlayer(
             ProfileDTO profileDTO,
-            BuyCardDTO bidPlayerDTO, 
+            BuyCardDTO bidPlayerDTO,
             Action<ProfileDTO> updateAction,
             CancellationTokenSource cancellationTokenSource,
             Func<Task>? sellAction)
@@ -51,8 +51,8 @@ namespace Magnus.Futbot.Services.Trade.Buy
 
         private async Task TryBidPlayer(
             IWebDriver driver,
-            BuyCardDTO bidPlayerDTO, 
-            ProfileDTO profileDTO, 
+            BuyCardDTO bidPlayerDTO,
+            ProfileDTO profileDTO,
             CancellationTokenSource cancellationTokenSource,
             Func<Task>? sellAction)
         {
@@ -65,8 +65,8 @@ namespace Magnus.Futbot.Services.Trade.Buy
         }
 
         private async Task TryBidForPlayers(
-            IWebDriver driver, 
-            BuyCardDTO bidPlayerDTO, 
+            IWebDriver driver,
+            BuyCardDTO bidPlayerDTO,
             ProfileDTO profileDTO,
             CancellationTokenSource cancellationTokenSource,
             Func<Task>? sellAction)
@@ -106,7 +106,8 @@ namespace Magnus.Futbot.Services.Trade.Buy
                 foreach (var player in wonPlayers)
                 {
                     player.Click();
-                    await sellAction?.Invoke();
+                    if (sellAction != null)
+                        await sellAction?.Invoke();
                 }
 
                 var winningPlayers = allPlayers.Count(ap => ap.GetAttribute("class").Contains("won") || ap.GetAttribute("class").Contains("highest-bid"));
@@ -122,7 +123,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
                     profileDTO.Coins = driver.GetCoins();
 
                     _updateAction(profileDTO);
-                    
+
                     var nextBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > div > button.flat.pagination.next"));
 
                     nextBtn?.Click(); //outbid
