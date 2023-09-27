@@ -2,6 +2,7 @@
 {
     public enum PileType
     {
+        Available = 5,
         Unassigned = 6,
 
         //????
