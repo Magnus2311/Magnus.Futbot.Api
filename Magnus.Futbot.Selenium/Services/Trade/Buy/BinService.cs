@@ -85,7 +85,6 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
         {
             if (cancellationTokenSource.Token.IsCancellationRequested) updateAction(profileDTO);
 
-            await Task.Delay(300);
             var allPlayers = driver.FindElements(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-pinned-list-container.SearchResults.ui-layout-left > div > ul > li"), TimeSpan.FromSeconds(2));
             if (allPlayers is null || allPlayers.Count() == 0)
             {
@@ -113,13 +112,11 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
                 {
                     if (cancellationTokenSource.Token.IsCancellationRequested) updateAction(profileDTO);
 
-                    await Task.Delay(300, cancellationTokenSource.Token);
                     if (driver.GetCoins() < buyCardDTO.Price) cancellationTokenSource.Cancel();
 
                     player.Click();
-                    await Task.Delay(300, cancellationTokenSource.Token);
 
-                    var binBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-navigation-container-view.ui-layout-right > div > div > div.DetailPanel > div.bidOptions > button.btn-standard.buyButton"));
+                    var binBtn = driver.FindElement(By.CssSelector("body > main > section > section > div.ut-navigation-container-view--content > div > div > section.ut-navigation-container-view.ui-layout-right > div > div > div.DetailPanel > div.bidOptions > button.btn-standard.buyButton"), TimeSpan.FromSeconds(2));
                     binBtn?.Click();
 
                     await Task.Delay(100, cancellationTokenSource.Token);
@@ -147,8 +144,8 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
                         }
                     }
 
-                    var okBtn = driver.FindElement(By.CssSelector("body > div.view-modal-container.form-modal > section > div > div > button:nth-child(1)"));
-                    okBtn.Click();
+                    var okBtn = driver.FindElement(By.CssSelector("body > div.view-modal-container.form-modal > section > div > div > button:nth-child(1)"), TimeSpan.FromSeconds(2));
+                    okBtn?.Click();
 
                     var errorMessage = driver.TryFindElement(By.CssSelector("#NotificationLayer > div > p"));
                     if (errorMessage is not null)
