@@ -24,7 +24,7 @@ namespace Magnus.Futbot.Selenium.Services.Players
 
             var moveAction = new MoveAction(profileDTO.Id, new Func<Task>(async () =>
             { 
-                if (!driverInstance.Driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
+                if (!driverInstance.Driver.Url.Contains("https://www.ea.com/ea-sports-fc/ultimate-team/web-app/"))
                 {
                     await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
                 }
@@ -59,7 +59,7 @@ namespace Magnus.Futbot.Selenium.Services.Players
 
             var moveAction = new MoveAction(profileDTO.Id, new Func<Task>(async () =>
             {
-                if (!driverInstance.Driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
+                if (!driverInstance.Driver.Url.Contains("https://www.ea.com/ea-sports-fc/ultimate-team/web-app/"))
                 {
                     await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
                 }

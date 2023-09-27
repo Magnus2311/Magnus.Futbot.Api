@@ -51,7 +51,7 @@ namespace Magnus.Futbot.Selenium.Services.Trade.Buy
             CancellationTokenSource cancellationTokenSource,
             Func<Task>? sellAction)
         {
-            if (!driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
+            if (!driver.Url.Contains("https://www.ea.com/ea-sports-fc/ultimate-team/web-app/"))
                 await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
 
             await _filtersService.InsertFilters(profileDTO.Email, buyCardDTO);

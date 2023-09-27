@@ -15,7 +15,7 @@ namespace Magnus.Futbot.Services
         {
             var driverInstance = GetInstance(username);
             var driver = driverInstance.Driver;
-            driverInstance.Driver.Navigate().GoToUrl("https://www.ea.com/fifa/ultimate-team/web-app/");
+            driverInstance.Driver.Navigate().GoToUrl("https://www.ea.com/ea-sports-fc/ultimate-team/web-app/");
             IWebElement? loginBtn = driver.FindElement(By.CssSelector("#Login > div > div > button.btn-standard.call-to-action"), TimeSpan.FromSeconds(20));
             if (loginBtn is null) return ProfileStatusType.Logged;
             else loginBtn?.Click();

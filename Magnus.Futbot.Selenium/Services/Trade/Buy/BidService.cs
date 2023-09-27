@@ -35,7 +35,7 @@ namespace Magnus.Futbot.Services.Trade.Buy
 
             var tradeAction = new BuyAction(profileDTO.Id, new Func<Task>(async () =>
             {
-                if (!driverInstance.Driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
+                if (!driverInstance.Driver.Url.Contains("https://www.ea.com/ea-sports-fc/ultimate-team/web-app/"))
                 {
                     await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
                 }

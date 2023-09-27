@@ -88,7 +88,7 @@ builder.Services
 
 // Background workers
 builder.Services
-    .AddHostedService<RefreshPlayersWorker>()
+    //.AddHostedService<RefreshPlayersWorker>()
     .AddHostedService<RelistPlayersWorker>()
     .AddHostedService<DeactivateAllActionsOnStartUp>();
 

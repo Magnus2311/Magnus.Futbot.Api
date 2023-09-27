@@ -2,6 +2,7 @@
 using Magnus.Futbot.Common;
 using Magnus.Futbot.Common.Interfaces.Notifiers;
 using Magnus.Futbot.Common.Interfaces.Services;
+using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.DTOs.Trading.Actions;
 using Magnus.Futbot.Common.Models.Selenium.Actions;
 using Magnus.Futbot.Database.Models.Actions;
@@ -16,7 +17,7 @@ namespace Magnus.Futbot.Api.Services
         private readonly SellActionRepository _sellActionRepository;
         private readonly MoveActionRepository _moveActionRepository;
         private readonly PauseActionRepository _pauseActionRepository;
-        private readonly ProfilesService _profilesService;
+        //private readonly ProfilesService _profilesService;
         private readonly IActionsNotifier _actionsNotifier;
         private readonly IMapper _mapper;
 
@@ -24,7 +25,7 @@ namespace Magnus.Futbot.Api.Services
             SellActionRepository sellActionRepository,
             MoveActionRepository moveActionRepository,
             PauseActionRepository pauseActionRepository,
-            ProfilesService profilesService,
+            //ProfilesService profilesService,
             IActionsNotifier actionsNotifier,
             IMapper mapper)
         {
@@ -32,7 +33,7 @@ namespace Magnus.Futbot.Api.Services
             _sellActionRepository = sellActionRepository;
             _moveActionRepository = moveActionRepository;
             _pauseActionRepository = pauseActionRepository;
-            _profilesService = profilesService;
+            //_profilesService = profilesService;
             _actionsNotifier = actionsNotifier;
             _mapper = mapper;
         }
@@ -94,10 +95,10 @@ namespace Magnus.Futbot.Api.Services
             }
         }
 
-        public async Task PauseProfile(string email, string selectedDuration, string userId)
+        public async Task<TradeActionDTO> PauseProfile(string email, string selectedDuration, string userId)
         {
-            var profileDTO = await _profilesService.GetByEmail(email);
-            if (profileDTO.UserId != userId) return;
+            var profileDTO = new ProfileDTO();
+            if (profileDTO.UserId != userId) return new TradeActionDTO();
 
             var tknSrc = new CancellationTokenSource();
 
@@ -108,6 +109,8 @@ namespace Magnus.Futbot.Api.Services
 
             await _pauseActionRepository.Add(_mapper.Map<PauseActionEntity>(tradeAction));
             await _actionsNotifier.AddAction(profileDTO, tradeAction);
+
+            return _mapper.Map<TradeActionDTO>(tradeAction);
         }
     }
 }

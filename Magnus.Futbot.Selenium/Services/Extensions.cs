@@ -97,8 +97,8 @@ namespace Magnus.Futbot.Services
 
         public static async Task OpenTransfer(this IWebDriver driver)
         {
-            if (!driver.Url.Contains("https://www.ea.com/fifa/ultimate-team/web-app/"))
-                driver.Navigate().GoToUrl("https://www.ea.com/fifa/ultimate-team/web-app/");
+            if (!driver.Url.Contains("https://www.ea.com/ea-sports-fc/ultimate-team/web-app/"))
+                driver.Navigate().GoToUrl("https://www.ea.com/ea-sports-fc/ultimate-team/web-app/");
 
             driver.FindElement(By.CssSelector("body > main > section > nav > button.ut-tab-bar-item.icon-transfer")).Click();
             await Task.Delay(500);
