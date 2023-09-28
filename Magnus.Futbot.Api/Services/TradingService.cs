@@ -12,6 +12,7 @@ using Magnus.Futbot.Selenium.Services.Players;
 using Magnus.Futbot.Selenium.Services.Trade.Buy;
 using Magnus.Futbot.Selenium.Services.Trade.Sell;
 using Magnus.Futbot.Services.Trade.Buy;
+using Magnus.Futtbot.Connections.Services;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Magnus.Futbot.Api.Services
@@ -29,6 +30,7 @@ namespace Magnus.Futbot.Api.Services
         private readonly IHubContext<ProfilesHub, IProfilesClient> _profilesHubContext;
         private readonly IActionsNotifier _actionsNotifier;
         private readonly IMapper _mapper;
+        private readonly BuyService _buyService;
         private readonly Action<ProfileDTO> _updateProfile;
 
         public TradingService(BidService bidService,
@@ -41,7 +43,8 @@ namespace Magnus.Futbot.Api.Services
             MoveActionRepository moveActionRepository,
             IHubContext<ProfilesHub, IProfilesClient> profilesHubContext,
             IActionsNotifier actionsNotifier,
-            IMapper mapper)
+            IMapper mapper,
+            BuyService buyService)
         {
             _bidService = bidService;
             _movePlayersService = movePlayersService;
@@ -54,6 +57,7 @@ namespace Magnus.Futbot.Api.Services
             _profilesHubContext = profilesHubContext;
             _actionsNotifier = actionsNotifier;
             _mapper = mapper;
+            _buyService = buyService;
             _updateProfile = new Action<ProfileDTO>(
                 async (profileDTO) => 
                 { 
@@ -68,8 +72,8 @@ namespace Magnus.Futbot.Api.Services
 
             var tknSrc = new CancellationTokenSource();
 
-            TradeAction tradeAction;
-            if (buyCardDTO.IsBin) tradeAction = _binService.BinPlayer(profileDTO, buyCardDTO, _updateProfile, tknSrc, null);
+            TradeAction tradeAction = new BuyAction();
+            if (buyCardDTO.IsBin) await _buyService.Buy(profileDTO, buyCardDTO, tknSrc);
             else tradeAction = _bidService.BidPlayer(profileDTO, buyCardDTO, _updateProfile, tknSrc, null);
 
             await _buyActionRepository.Add(_mapper.Map<BuyActionEntity>(tradeAction));

@@ -24,6 +24,8 @@ using Magnus.Futbot.Selenium.Trading.Connections;
 using Magnus.Futbot.Services;
 using Magnus.Futbot.Services.Trade.Buy;
 using Magnus.Futbot.Storage;
+using Magnus.Futtbot.Connections.Connection.Trading;
+using Magnus.Futtbot.Connections.Services;
 using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -58,6 +60,10 @@ builder.Services
     .AddHttpClient<EaConnectionService>();
 builder.Services
     .AddHttpClient<TradePileConnection>();
+builder.Services
+    .AddHttpClient<BidConnection>();
+builder.Services
+    .AddHttpClient<TransferMarketCardsConnection>();
 
 // Services
 builder.Services
@@ -80,6 +86,10 @@ builder.Services
     .AddTransient<DataSeleniumService>()
     .AddTransient<InitProfileService>()
     .AddTransient<LoginSeleniumService>();
+
+// Trading Services
+builder.Services
+    .AddTransient<BuyService>();
 
 // Caches
 builder.Services
