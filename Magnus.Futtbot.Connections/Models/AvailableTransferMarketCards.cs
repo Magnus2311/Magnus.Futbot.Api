@@ -2,7 +2,8 @@
 {
     public class AvailableTransferMarketCards
     {
-        public Auctioninfo[] auctionInfo { get; set; }
+        public Auctioninfo[] auctionInfo { get; set; } 
+        
         public Bidtokens bidTokens { get; set; }
     }
 }

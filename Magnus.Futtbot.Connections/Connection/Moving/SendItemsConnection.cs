@@ -1,22 +1,23 @@
 ﻿using Magnus.Futtbot.Connections.Enums;
+using Magnus.Futtbot.Connections.Models.Requests;
 using Magnus.Futtbot.Connections.Utils;
 using System.Net;
 using System.Text.Json;
 
-namespace Magnus.Futtbot.Connections.Connection.Trading.Buy
+namespace Magnus.Futtbot.Connections.Connection.Moving
 {
-    public class BidConnection
+    public class SendItemsConnection
     {
         private readonly HttpClient _httpClient;
 
-        public BidConnection(HttpClient httpClient)
+        public SendItemsConnection(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
 
-        public async Task<ConnectionResponseType> BidPlayer(string username, long tradeId, int bidValue)
+        public async Task<ConnectionResponseType> SendWonItemsToTransferList(string username, SendCardsToTransferListRequest sendCardsToTransferListRequest)
         {
-            var request = new HttpRequestMessage(HttpMethod.Put, $"https://utas.mob.v2.fut.ea.com/ut/game/fc24/trade/{tradeId}/bid");
+            var request = new HttpRequestMessage(HttpMethod.Put, "https://utas.mob.v2.fut.ea.com/ut/game/fc24/item");
             request.Headers.Add("Accept", "*/*");
             request.Headers.Add("Accept-Encoding", "gzip, deflate, br");
             request.Headers.Add("Accept-Language", "en-US,en;q=0.9");
@@ -32,16 +33,10 @@ namespace Magnus.Futtbot.Connections.Connection.Trading.Buy
             request.Headers.Add("sec-ch-ua", "\"Google Chrome\";v=\"117\", \"Not;A=Brand\";v=\"8\", \"Chromium\";v=\"117\"");
             request.Headers.Add("sec-ch-ua-mobile", "?0");
             request.Headers.Add("sec-ch-ua-platform", "\"Windows\"");
-
-            var bidObj = new
-            {
-                bid = bidValue
-            };
-
-            var content = new StringContent(JsonSerializer.Serialize(bidObj), null, "application/json");
+            var content = new StringContent(JsonSerializer.Serialize(sendCardsToTransferListRequest), null, "application/json");
             request.Content = content;
-
             var response = await _httpClient.SendAsync(request);
+
             if (response.StatusCode == HttpStatusCode.UnavailableForLegalReasons
                 || response.StatusCode == HttpStatusCode.TooManyRequests)
             {
@@ -53,7 +48,7 @@ namespace Magnus.Futtbot.Connections.Connection.Trading.Buy
                 return ConnectionResponseType.Unauthorized;
 
             if (!response.IsSuccessStatusCode)
-                return ConnectionResponseType.PauseForAWhile;
+                return ConnectionResponseType.Unknown;
 
             return ConnectionResponseType.Success;
         }

@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Connection\Moving\" />
     <Folder Include="Connection\Trading\Sell\" />
   </ItemGroup>
 
