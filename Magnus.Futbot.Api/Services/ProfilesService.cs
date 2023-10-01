@@ -6,8 +6,8 @@ using Magnus.Futbot.Common.Models.Responses;
 using Magnus.Futbot.Common.Models.Selenium.Profiles;
 using Magnus.Futbot.Database.Models;
 using Magnus.Futbot.Database.Repositories;
-using Magnus.Futbot.Selenium.Services.Players;
 using Magnus.Futbot.Services;
+using Magnus.Futtbot.Connections.Services;
 using MongoDB.Bson;
 
 namespace Magnus.Futbot.Api.Services
@@ -16,22 +16,21 @@ namespace Magnus.Futbot.Api.Services
     {
         private readonly IMapper _mapper;
         private readonly ProfilesRepository _profilesRepository;
-        private readonly FullPlayersDataService _fullPlayersDataService;
         private readonly InitProfileService _initProfileService;
         private readonly LoginSeleniumService _loginSeleniumService;
+        private readonly ProfileService _profileService;
 
-        public ProfilesService(
-            ProfilesRepository profilesRepository,
-            FullPlayersDataService fullPlayersDataService,
+        public ProfilesService(ProfilesRepository profilesRepository,
             InitProfileService initProfileService,
             LoginSeleniumService loginSeleniumService,
+            ProfileService profileService,
             IMapper mapper)
         {
             _mapper = mapper;
             _profilesRepository = profilesRepository;
-            _fullPlayersDataService = fullPlayersDataService;
             _initProfileService = initProfileService;
             _loginSeleniumService = loginSeleniumService;
+            _profileService = profileService;
         }
 
         public async Task<IEnumerable<ProfileDTO>> GetAll(string userId)
@@ -64,10 +63,10 @@ namespace Magnus.Futbot.Api.Services
         public async Task<ProfileDTO> RefreshProfile(string profileId, string userId)
         {
             var profile = await _profilesRepository.Get(new ObjectId(profileId), new ObjectId(userId));
-            var refreshedProfile = await _initProfileService.InitProfile(_mapper.Map<ProfileDTO>(profile));
-            refreshedProfile.TradePile = await _fullPlayersDataService.GetTransferPile(refreshedProfile);
-            await _profilesRepository.Update(_mapper.Map<ProfileDocument>(refreshedProfile));
-            return refreshedProfile;
+            var profileDTO = _mapper.Map<ProfileDTO>(profile);
+            profileDTO.TradePile = await _profileService.GetTradePile(profileDTO);
+            await _profilesRepository.Update(_mapper.Map<ProfileDocument>(profileDTO));
+            return profileDTO;
         }
 
         public Task UpdateProfile(ProfileDTO profileDTO)

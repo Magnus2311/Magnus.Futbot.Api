@@ -19,14 +19,15 @@ using Magnus.Futbot.Initializer.Connections;
 using Magnus.Futbot.Selenium.Services.Players;
 using Magnus.Futbot.Selenium.Services.Trade.Buy;
 using Magnus.Futbot.Selenium.Services.Trade.Filters;
-using Magnus.Futbot.Selenium.Services.Trade.Sell;
 using Magnus.Futbot.Selenium.Trading.Connections;
 using Magnus.Futbot.Services;
 using Magnus.Futbot.Services.Trade.Buy;
 using Magnus.Futbot.Storage;
+using Magnus.Futtbot.Connections.Connection;
 using Magnus.Futtbot.Connections.Connection.Moving;
 using Magnus.Futtbot.Connections.Connection.Trading;
 using Magnus.Futtbot.Connections.Connection.Trading.Buy;
+using Magnus.Futtbot.Connections.Connection.Trading.Sell;
 using Magnus.Futtbot.Connections.Services;
 using Microsoft.AspNetCore.SignalR;
 
@@ -68,6 +69,10 @@ builder.Services
     .AddHttpClient<TransferMarketCardsConnection>();
 builder.Services
     .AddHttpClient<SendItemsConnection>();
+builder.Services
+    .AddHttpClient<SellConnection>();
+builder.Services
+    .AddHttpClient<GetUserPileConnection>();
 
 // Services
 builder.Services
@@ -94,7 +99,9 @@ builder.Services
 // Trading Services
 builder.Services
     .AddTransient<BuyService>()
-    .AddTransient<MoveService>();
+    .AddTransient<MoveService>()
+    .AddTransient<SellService>()
+    .AddTransient<ProfileService>();
 
 // Caches
 builder.Services
@@ -104,7 +111,7 @@ builder.Services
 // Background workers
 builder.Services
     //.AddHostedService<RefreshPlayersWorker>()
-    .AddHostedService<RelistPlayersWorker>()
+    //.AddHostedService<RelistPlayersWorker>()
     .AddHostedService<DeactivateAllActionsOnStartUp>();
 
 // Azure

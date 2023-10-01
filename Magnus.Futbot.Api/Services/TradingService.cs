@@ -9,9 +9,6 @@ using Magnus.Futbot.Common.Models.Selenium.Actions;
 using Magnus.Futbot.Database.Models.Actions;
 using Magnus.Futbot.Database.Repositories.Actions;
 using Magnus.Futbot.Selenium.Services.Players;
-using Magnus.Futbot.Selenium.Services.Trade.Buy;
-using Magnus.Futbot.Selenium.Services.Trade.Sell;
-using Magnus.Futbot.Services.Trade.Buy;
 using Magnus.Futtbot.Connections.Services;
 using Microsoft.AspNetCore.SignalR;
 
@@ -19,11 +16,8 @@ namespace Magnus.Futbot.Api.Services
 {
     public class TradingService : ITradingService
     {
-        private readonly BidService _bidService;
         private readonly MovePlayersService _movePlayersService;
         private readonly ProfilesService _profilesService;
-        private readonly SellService _sellService;
-        private readonly BinService _binService;
         private readonly BuyActionRepository _buyActionRepository;
         private readonly SellActionRepository _sellActionRepository;
         private readonly MoveActionRepository _moveActionRepository;
@@ -31,26 +25,22 @@ namespace Magnus.Futbot.Api.Services
         private readonly IActionsNotifier _actionsNotifier;
         private readonly IMapper _mapper;
         private readonly BuyService _buyService;
+        private readonly SellService _sellService;
         private readonly Action<ProfileDTO> _updateProfile;
 
-        public TradingService(BidService bidService,
-            MovePlayersService movePlayersService,
+        public TradingService(MovePlayersService movePlayersService,
             ProfilesService profilesService,
-            SellService sellService,
-            BinService binService,
             BuyActionRepository buyActionRepository,
             SellActionRepository sellActionRepository,
             MoveActionRepository moveActionRepository,
             IHubContext<ProfilesHub, IProfilesClient> profilesHubContext,
             IActionsNotifier actionsNotifier,
             IMapper mapper,
-            BuyService buyService)
+            BuyService buyService,
+            SellService sellService)
         {
-            _bidService = bidService;
             _movePlayersService = movePlayersService;
             _profilesService = profilesService;
-            _sellService = sellService;
-            _binService = binService;
             _buyActionRepository = buyActionRepository;
             _sellActionRepository = sellActionRepository;
             _moveActionRepository = moveActionRepository;
@@ -58,6 +48,7 @@ namespace Magnus.Futbot.Api.Services
             _actionsNotifier = actionsNotifier;
             _mapper = mapper;
             _buyService = buyService;
+            _sellService = sellService;
             _updateProfile = new Action<ProfileDTO>(
                 async (profileDTO) => 
                 { 
@@ -72,10 +63,14 @@ namespace Magnus.Futbot.Api.Services
 
             var tknSrc = new CancellationTokenSource();
 
-            TradeAction tradeAction = new BuyAction();
-            if (buyCardDTO.IsBin) await _buyService.Buy(profileDTO, buyCardDTO, tknSrc);
-            else tradeAction = _bidService.BidPlayer(profileDTO, buyCardDTO, _updateProfile, tknSrc, null);
+            var buyAction = new Func<Task>(async () =>
+            {
+                await _buyService.Buy(profileDTO, buyCardDTO, tknSrc, null);
+            });
 
+            var tradeAction = new BuyAction(profileDTO.Id, buyAction, tknSrc, buyCardDTO);
+
+            await tradeAction.Action.Invoke();
             await _buyActionRepository.Add(_mapper.Map<BuyActionEntity>(tradeAction));
             await _actionsNotifier.AddAction(profileDTO, tradeAction);
         }
@@ -89,14 +84,18 @@ namespace Magnus.Futbot.Api.Services
 
             var tknSrc = new CancellationTokenSource();
 
-            var sellAction = new Func<Task>(async () =>
+            var sellAction = new Func<long, Task>(async (tradeId) =>
             {
-                await _sellService.SellCurrentPlayer(sellCardDTO, profileDTO, _updateProfile, tknSrc);
+                await _sellService.SellCardById(profileDTO, sellCardDTO, tradeId);
             });
 
-            TradeAction tradeAction;
-            if (buyCardDTO.IsBin) tradeAction = _binService.BinPlayer(profileDTO, buyCardDTO, _updateProfile, tknSrc, sellAction);
-            else tradeAction = _bidService.BidPlayer(profileDTO, buyCardDTO, _updateProfile, tknSrc, sellAction);
+            var buyAction = new Func<Task>(async () =>
+            {
+                await _buyService.Buy(profileDTO, buyCardDTO, tknSrc, sellAction);
+            });
+
+            var tradeAction = new BuyAction(profileDTO.Id, buyAction, tknSrc, buyCardDTO);
+            await tradeAction.Action.Invoke();
 
             await _buyActionRepository.Add(_mapper.Map<BuyActionEntity>(tradeAction));
             await _actionsNotifier.AddAction(profileDTO, tradeAction);
@@ -104,13 +103,18 @@ namespace Magnus.Futbot.Api.Services
 
         public async Task Sell(SellCardDTO sellCardDTO)
         {
-            var tknSrc = new CancellationTokenSource();
             var profileDTO = await _profilesService.GetByEmail(sellCardDTO.Email);
+            var tknSrc = new CancellationTokenSource();
 
-            var tradeAction = _sellService.SellPlayer(sellCardDTO, profileDTO, _updateProfile, tknSrc);
-            await _actionsNotifier.AddAction(profileDTO, tradeAction);
+            var sellAction = new Func<Task>(async () =>
+            {
+                await _sellService.SellCard(profileDTO, sellCardDTO, tknSrc);
+            });
+
+            await sellAction.Invoke();
+            var tradeAction = new SellAction(profileDTO.Id, sellAction, tknSrc, sellCardDTO);
             await _sellActionRepository.Add(_mapper.Map<SellActionEntity>(tradeAction));
-            await _profilesService.UpdateProfile(profileDTO);
+            await _actionsNotifier.AddAction(profileDTO, tradeAction);
         }
 
         public async Task MoveCardsFromTransferTargetsToTransferList(string email)
@@ -129,14 +133,14 @@ namespace Magnus.Futbot.Api.Services
 
         public async Task RelistPlayers()
         {
-            var profiles = await _profilesService.GetRelistProfiles();
-            Parallel.ForEach(profiles, async (profile) =>
-            {
-                var tknSrc = new CancellationTokenSource();
-                var action = _sellService.RelistPlayers(profile, tknSrc);
-                await _moveActionRepository.Add(_mapper.Map<MoveActionEntity>(action));
-                await _actionsNotifier.AddAction(profile, action);
-            });
+            //var profiles = await _profilesService.GetRelistProfiles();
+            //Parallel.ForEach(profiles, async (profile) =>
+            //{
+            //    var tknSrc = new CancellationTokenSource();
+            //    var action = _sellSeleniumService.RelistPlayers(profile, tknSrc);
+            //    await _moveActionRepository.Add(_mapper.Map<MoveActionEntity>(action));
+            //    await _actionsNotifier.AddAction(profile, action);
+            //});
         }
     }
 }

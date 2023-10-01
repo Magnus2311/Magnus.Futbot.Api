@@ -1,30 +1,24 @@
 ﻿using Magnus.Futtbot.Connections.Enums;
-using Magnus.Futtbot.Connections.Utils;
+using Magnus.Futtbot.Connections.Models.Requests;
 using System.Net;
 using System.Text.Json;
 
-namespace Magnus.Futtbot.Connections.Connection.Trading.Buy
+namespace Magnus.Futtbot.Connections.Connection.Trading.Sell
 {
-    public class BidConnection
+    public class SellConnection
     {
         private readonly HttpClient _httpClient;
 
-        public BidConnection(HttpClient httpClient)
+        public SellConnection(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
 
-        public async Task<ConnectionResponseType> BidPlayer(string username, long tradeId, int bidValue)
+        public async Task<ConnectionResponseType> SellCard(string username, SellCardRequest sellCardRequest)
         {
-            var request = new HttpRequestMessage(HttpMethod.Put, $"https://utas.mob.v2.fut.ea.com/ut/game/fc24/trade/{tradeId}/bid");
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://utas.mob.v2.fut.ea.com/ut/game/fc24/auctionhouse");
             request.SetCommonHeaders(username);
-
-            var bidObj = new
-            {
-                bid = bidValue
-            };
-
-            var content = new StringContent(JsonSerializer.Serialize(bidObj), null, "application/json");
+            var content = new StringContent(JsonSerializer.Serialize(sellCardRequest), null, "application/json");
             request.Content = content;
 
             var response = await _httpClient.SendAsync(request);

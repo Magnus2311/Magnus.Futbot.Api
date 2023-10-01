@@ -163,12 +163,11 @@ namespace Magnus.Futbot.Services
             var (Name, Rating) = player.GetCardNameAndRating();
             IWebElement? canvas = null;
 
-            var availableCards = cards.Where(c => c.OverallRating == Rating && c.Name.Contains(Name));
-            if (availableCards.Count() == 1)
+            var card = cards.FirstOrDefault(c => c.OverallRating == Rating && c.Name.Contains(Name));
+            if (card != null)
                 return new TransferCard
                 {
-                    PossibleCards = availableCards,
-                    PlayerCardStatus = PlayerCardStatus.Won,
+                    Card = card,
                 };
 
 
@@ -177,8 +176,7 @@ namespace Magnus.Futbot.Services
             {
                 return new TransferCard
                 {
-                    PossibleCards = availableCards,
-                    PlayerCardStatus = PlayerCardStatus.Won,
+                    Card = card,
                 };
             }
 
@@ -187,8 +185,7 @@ namespace Magnus.Futbot.Services
             {
                 return new TransferCard
                 {
-                    PossibleCards = availableCards,
-                    PlayerCardStatus = PlayerCardStatus.Won,
+                    Card = card,
                 };
             }
 
@@ -197,20 +194,16 @@ namespace Magnus.Futbot.Services
             {
                 return new TransferCard
                 {
-                    PossibleCards = availableCards,
-                    PlayerCardStatus = PlayerCardStatus.Won,
+                    Card = card,
                 };
             }
 
             return new TransferCard()
             {
-                PossibleCards = new List<Card>
+                Card = new Card()
                 {
-                    new Card()
-                    {
-                        FirstName = Name,
-                        OverallRating = Rating
-                    }
+                    FirstName = Name,
+                    OverallRating = Rating
                 }
             };
         }

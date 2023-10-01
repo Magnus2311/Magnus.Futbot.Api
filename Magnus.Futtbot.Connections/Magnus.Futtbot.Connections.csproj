@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Connection\Trading\Sell\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Magnus.Futbot.Common\Magnus.Futbot.Common.csproj" />
     <ProjectReference Include="..\Magnus.Futbot.Selenium\Magnus.Futbot.Selenium.csproj" />
   </ItemGroup>
