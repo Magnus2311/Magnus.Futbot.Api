@@ -56,7 +56,7 @@ namespace Magnus.Futbot.Services
                 catch
                 {
                     var tempDriver = new ChromeDriver(chromeOptions);
-                    var tempDriverInstsance = new DriverInstance(tempDriver, _actionsService);
+                    var tempDriverInstsance = new DriverInstance(tempDriver);
                     _chromeDrivers[username] = tempDriverInstsance;
                 }
 
@@ -64,7 +64,7 @@ namespace Magnus.Futbot.Services
             }
 
             var chromeDriver = new ChromeDriver(chromeOptions);
-            var driverInstsance = new DriverInstance(chromeDriver, _actionsService);
+            var driverInstsance = new DriverInstance(chromeDriver);
             _chromeDrivers.TryAdd(username, driverInstsance);
             return driverInstsance;
         }
