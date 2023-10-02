@@ -1,6 +1,7 @@
 ﻿using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.DTOs.Trading;
 using Magnus.Futbot.Common.Models.Selenium.Actions;
+using Magnus.Futbot.Selenium.Helpers;
 using Magnus.Futbot.Services;
 using Magnus.Futtbot.Connections.Connection.Trading;
 using Magnus.Futtbot.Connections.Connection.Trading.Buy;
@@ -129,7 +130,16 @@ namespace Magnus.Futtbot.Connections.Services
                 if (availableCardsResponse.ConnectionResponseType == ConnectionResponseType.Success 
                     && availableCardsResponse.Data is not null 
                     && availableCardsResponse.Data.auctionInfo.Any())
+                {
+                    tradingData.PauseForAWhile = 0;
                     return availableCardsResponse.Data;
+                }
+
+                if (availableCardsResponse.ConnectionResponseType == ConnectionResponseType.PauseForAWhile)
+                {
+                    tradingData.PauseForAWhile++;
+                    Thread.Sleep(1000 * tradingData.PauseForAWhile);
+                }
 
                 tradingData.MinBin += tradingData.MinBin == 0 ? 200 : 50;
             }

@@ -17,7 +17,6 @@ namespace Magnus.Futbot.Api.Services
         private readonly SellActionRepository _sellActionRepository;
         private readonly MoveActionRepository _moveActionRepository;
         private readonly PauseActionRepository _pauseActionRepository;
-        //private readonly ProfilesService _profilesService;
         private readonly IActionsNotifier _actionsNotifier;
         private readonly IMapper _mapper;
 
@@ -25,7 +24,6 @@ namespace Magnus.Futbot.Api.Services
             SellActionRepository sellActionRepository,
             MoveActionRepository moveActionRepository,
             PauseActionRepository pauseActionRepository,
-            //ProfilesService profilesService,
             IActionsNotifier actionsNotifier,
             IMapper mapper)
         {
@@ -33,7 +31,6 @@ namespace Magnus.Futbot.Api.Services
             _sellActionRepository = sellActionRepository;
             _moveActionRepository = moveActionRepository;
             _pauseActionRepository = pauseActionRepository;
-            //_profilesService = profilesService;
             _actionsNotifier = actionsNotifier;
             _mapper = mapper;
         }
@@ -50,7 +47,7 @@ namespace Magnus.Futbot.Api.Services
             return _mapper.Map<TradeActionsDTO>(actions);
         }
 
-        public async Task DeleteActionById(string actionId, TradeActionType actionType, string userId)
+        public async Task<string> DeleteActionById(string actionId, TradeActionType actionType, string userId)
         {
             switch (actionType)
             {
@@ -58,17 +55,19 @@ namespace Magnus.Futbot.Api.Services
                     var buyActionEntity = await _buyActionRepository.GetById(new ObjectId(actionId));
                     buyActionEntity.IsDeleted = true;
                     await _buyActionRepository.Update(buyActionEntity);
-                    break;
+                    return buyActionEntity.Id.ToString();
                 case TradeActionType.Sell:
                     var sellActionEntity = await _sellActionRepository.GetById(new ObjectId(actionId));
                     sellActionEntity.IsDeleted = true;
                     await _sellActionRepository.Update(sellActionEntity);
-                    break;
+                    return sellActionEntity.Id.ToString();
                 case TradeActionType.Move:
                     var moveActionEntity = await _moveActionRepository.GetById(new ObjectId(actionId));
                     moveActionEntity.IsDeleted = true;
                     await _moveActionRepository.Update(moveActionEntity);
-                    break;
+                    return moveActionEntity.Id.ToString();
+                default:
+                    return "";
             }
         }
 

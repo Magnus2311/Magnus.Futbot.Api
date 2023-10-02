@@ -26,7 +26,7 @@ namespace Magnus.Futbot.Api.Hubs
         public async Task CancelActionById(string profileId, string actionId, TradeActionType tradeActionType)
         {
             var userId = Context.UserIdentifier ?? "";
-            await _actionsService.DeleteActionById(actionId, tradeActionType, userId);
+            var actionIdStr = await _actionsService.DeleteActionById(actionId, tradeActionType, userId);
             await _actionDeactivator.DeactivateAction(profileId, actionId);
             await Clients.Users(userId).OnActionCanceled(actionId);
         }

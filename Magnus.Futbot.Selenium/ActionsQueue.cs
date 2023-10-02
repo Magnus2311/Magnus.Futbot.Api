@@ -42,6 +42,7 @@ namespace Magnus.Futbot
                             }
                         }
                     }), action.CancellationTokenSource, action.BuyCardDTO);
+                    tradeAction.Id = action.Id;
 
                     PendingActions.Enqueue(tradeAction, action.Priority);
                     return tradeAction;
@@ -67,6 +68,7 @@ namespace Magnus.Futbot
                             }
                         }
                     }), action.CancellationTokenSource, action.BuyCardDTO);
+                    tradeAction.Id = action.Id;
 
                     PendingActions.Enqueue(tradeAction, tradeAction.Priority);
                     Task.Run(async () =>
@@ -105,6 +107,7 @@ namespace Magnus.Futbot
                             }
                         }
                     }), action.CancellationTokenSource, action.SellCardDTO);
+                    tempAction.Id = action.Id;
                     PendingActions.Enqueue(tempAction, action.Priority);
                     return tempAction;
                 }

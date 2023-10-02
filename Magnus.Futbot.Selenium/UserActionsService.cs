@@ -23,12 +23,28 @@ namespace Magnus.Futbot.Selenium
             return UserActions[username];
         }
 
-        public void AddAction(string username, TradeAction tradeAction)
+        public void AddAction(string username, BuyAction tradeAction)
         {
             if (!UserActions.ContainsKey(username))
                 UserActions.TryAdd(username, new ActionsQueue(_actionsService));
 
-            UserActions[username].PendingActions.Enqueue(tradeAction, tradeAction.Priority);
+            UserActions[username].AddAction(tradeAction);
+        }
+
+        public void AddAction(string username, SellAction tradeAction)
+        {
+            if (!UserActions.ContainsKey(username))
+                UserActions.TryAdd(username, new ActionsQueue(_actionsService));
+
+            UserActions[username].AddAction(tradeAction);
+        }
+
+        public void AddAction(string username, MoveAction tradeAction)
+        {
+            if (!UserActions.ContainsKey(username))
+                UserActions.TryAdd(username, new ActionsQueue(_actionsService));
+
+            UserActions[username].AddAction(tradeAction);
         }
     }
 }
