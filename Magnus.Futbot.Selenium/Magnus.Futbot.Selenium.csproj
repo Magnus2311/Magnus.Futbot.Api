@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="11.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="Selenium.Chrome.WebDriver" Version="85.0.0" />
     <PackageReference Include="Selenium.WebDriver" Version="4.3.0" />
@@ -17,5 +18,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Magnus.Futbot.Common\Magnus.Futbot.Common.csproj" />
+    <ProjectReference Include="..\Magnus.Futbot.Database\Magnus.Futbot.Database.csproj" />
   </ItemGroup>
 </Project>

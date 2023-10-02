@@ -9,12 +9,15 @@ namespace Magnus.Futbot.Selenium.Services.Players
     public class MovePlayersService : BaseService
     {
         private readonly LoginSeleniumService _loginSeleniumService;
+        private readonly UserActionsService _userActionsService;
 
         public MovePlayersService(
             IActionsService actionsService,
-            LoginSeleniumService loginSeleniumService) : base(actionsService)
+            LoginSeleniumService loginSeleniumService,
+            UserActionsService userActionsService) : base(actionsService)
         {
             _loginSeleniumService = loginSeleniumService;
+            _userActionsService = userActionsService;
         }
 
         public void SendTransferTargetsToTransferList(ProfileDTO profileDTO, Action<ProfileDTO> updateProfile)
@@ -49,7 +52,7 @@ namespace Magnus.Futbot.Selenium.Services.Players
                 }
             }), tknSrc, "Move items from Transfer Target to Transfer List");
 
-            driverInstance.AddAction(moveAction);
+            _userActionsService.AddAction(profileDTO.Email, moveAction);
         }
 
         public void SendUnassignedItemsToTransferList(ProfileDTO profileDTO, Action<ProfileDTO> updateProfile)
@@ -76,7 +79,7 @@ namespace Magnus.Futbot.Selenium.Services.Players
                 okBtn?.Click();
             }), tknSrc, "Move Unassigned items to Transfer List");
 
-            driverInstance.AddAction(moveAction);
+            _userActionsService.AddAction(profileDTO.Email, moveAction);
         }
     }
 }

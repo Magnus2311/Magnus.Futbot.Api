@@ -1,4 +1,5 @@
 using AutoMapper;
+using Magnus.Futbot;
 using Magnus.Futbot.Api.Caches;
 using Magnus.Futbot.Api.Helpers;
 using Magnus.Futbot.Api.Hubs;
@@ -14,14 +15,12 @@ using Magnus.Futbot.Common.Interfaces.Notifiers;
 using Magnus.Futbot.Common.Interfaces.Services;
 using Magnus.Futbot.Database.Repositories;
 using Magnus.Futbot.Database.Repositories.Actions;
-using Magnus.Futbot.Initializer;
 using Magnus.Futbot.Initializer.Connections;
+using Magnus.Futbot.Selenium;
 using Magnus.Futbot.Selenium.Services.Players;
-using Magnus.Futbot.Selenium.Services.Trade.Buy;
 using Magnus.Futbot.Selenium.Services.Trade.Filters;
 using Magnus.Futbot.Selenium.Trading.Connections;
 using Magnus.Futbot.Services;
-using Magnus.Futbot.Services.Trade.Buy;
 using Magnus.Futbot.Storage;
 using Magnus.Futtbot.Connections.Connection;
 using Magnus.Futtbot.Connections.Connection.Moving;
@@ -86,12 +85,10 @@ builder.Services
 
 // Selenium Services
 builder.Services
-    .AddTransient<BidService>()
     .AddTransient<FullPlayersDataService>()
     .AddTransient<MovePlayersService>()
     .AddTransient<SellService>()
     .AddTransient<FiltersService>()
-    .AddTransient<BinService>()
     .AddTransient<DataSeleniumService>()
     .AddTransient<InitProfileService>()
     .AddTransient<LoginSeleniumService>();
@@ -101,7 +98,8 @@ builder.Services
     .AddTransient<BuyService>()
     .AddTransient<MoveService>()
     .AddTransient<SellService>()
-    .AddTransient<ProfileService>();
+    .AddTransient<ProfileService>()
+    .AddTransient<UserActionsService>();
 
 // Caches
 builder.Services

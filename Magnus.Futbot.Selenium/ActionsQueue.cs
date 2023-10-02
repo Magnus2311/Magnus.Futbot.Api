@@ -1,14 +1,15 @@
 ﻿using Magnus.Futbot.Common;
+using Magnus.Futbot.Common.Interfaces.Services;
 using Magnus.Futbot.Common.Models.Selenium.Actions;
 
-namespace Magnus.Futbot.Api.Services
+namespace Magnus.Futbot
 {
     public class ActionsQueue
     {
-        private readonly ActionsService _actionsService;
+        private readonly IActionsService _actionsService;
         private readonly object _locker = new();
 
-        public ActionsQueue(ActionsService actionsService)
+        public ActionsQueue(IActionsService actionsService)
         {
             _actionsService = actionsService;
         }
