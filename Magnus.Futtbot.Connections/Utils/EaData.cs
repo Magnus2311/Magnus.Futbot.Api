@@ -6,7 +6,7 @@ namespace Magnus.Futtbot.Connections.Utils
     {
         private static readonly Lazy<EaData> _instance = new(() => new EaData());
 
-        public static Dictionary<string, string> UserXUTSIDs;
+        public static Dictionary<string, string> UserXUTSIDs { get; } = new Dictionary<string, string>();
 
         public static EaData Instance => _instance.Value;
 
