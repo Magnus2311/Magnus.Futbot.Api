@@ -7,6 +7,7 @@ using Magnus.Futtbot.Connections.Connection.Trading.Sell;
 using Magnus.Futtbot.Connections.Enums;
 using Magnus.Futtbot.Connections.Models;
 using Magnus.Futtbot.Connections.Models.Requests;
+using Magnus.Futtbot.Connections.Models.Responses;
 using Magnus.Futtbot.Connections.Utils;
 
 namespace Magnus.Futtbot.Connections.Services
@@ -68,20 +69,42 @@ namespace Magnus.Futtbot.Connections.Services
                 var availablePlayersForSelling = getUserPileResponse.Data.auctionInfo.Where(ai => ai.tradeState != "active");
                 var currentPlayerForSale = availablePlayersForSelling.Where(p => p.itemData.assetId == sellCardDTO.Card.EAId);
 
-                foreach (var player in currentPlayerForSale)
+                while (sellCardDTO.Count > SellingData.AlreadySoldTrades.Count)
                 {
-                    if (SellingData.AlreadySoldTrades.Contains(player.itemData.id)) return;
+                    var notSoldPlayers = currentPlayerForSale.Where(p => !SellingData.AlreadySoldTrades.Contains(p.itemData.id));
+                    if (!notSoldPlayers.Any())
+                        break;
 
-                    SellingData.AlreadySoldTrades.Add(player.itemData.id);
-
-                    Thread.Sleep(600);
-                    var sellCardResponse = await _sellConnection.SellCard(profileDTO.Email, new SellCardRequest(sellCardDTO.FromBin, DurationType.OneHour, new SellCardItemData(player.itemData.id), sellCardDTO.FromBid));
-                    if (sellCardResponse == ConnectionResponseType.Unauthorized)
+                    var playersCountToSell = sellCardDTO.Count - SellingData.AlreadySoldTrades.Count;
+                    var soldPlayers = TrySellCards(profileDTO, sellCardDTO, currentPlayerForSale.ToArray(), playersCountToSell);
+                    await foreach (var player in soldPlayers)
                     {
-                        await SellCard(profileDTO, sellCardDTO, cancellationTokenSource);
-                        return;
+                        if (player.ConnectionResponseType == ConnectionResponseType.Unauthorized)
+                        {
+                            await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
+                            continue;
+                        }
+
+                        if (player.ConnectionResponseType == ConnectionResponseType.Success)
+                            SellingData.AlreadySoldTrades.Add(player.Data);
                     }
                 }
+            }
+        }
+
+        public async IAsyncEnumerable<ConnectionResponse<long>> TrySellCards(ProfileDTO profileDTO, SellCardDTO sellCardDTO, Auctioninfo[] playersForSale, int playersToSell)
+        {
+            foreach (var player in playersForSale.Take(playersToSell))
+            {
+                Thread.Sleep(600);
+                var sellCardResponse = await _sellConnection.SellCard(profileDTO.Email, new SellCardRequest(sellCardDTO.FromBin, DurationType.OneHour, new SellCardItemData(player.itemData.id), sellCardDTO.FromBid));
+                if (sellCardResponse == ConnectionResponseType.Unauthorized)
+                    break;
+
+                if (sellCardResponse != ConnectionResponseType.Success)
+                    yield return new ConnectionResponse<long>(ConnectionResponseType.Unknown, player.itemData.id);
+
+                yield return new ConnectionResponse<long>(ConnectionResponseType.Success, player.itemData.id);
             }
         }
 
