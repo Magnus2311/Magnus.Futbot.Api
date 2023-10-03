@@ -1,7 +1,5 @@
 ﻿using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.DTOs.Trading;
-using Magnus.Futbot.Common.Models.Selenium.Actions;
-using Magnus.Futbot.Selenium.Helpers;
 using Magnus.Futbot.Services;
 using Magnus.Futtbot.Connections.Connection.Trading;
 using Magnus.Futtbot.Connections.Connection.Trading.Buy;
@@ -20,7 +18,7 @@ namespace Magnus.Futtbot.Connections.Services
         private readonly LoginSeleniumService _loginSeleniumService;
         private readonly MoveService _moveService;
 
-        public BuyService(TransferMarketCardsConnection transferMarketCardsConnection, 
+        public BuyService(TransferMarketCardsConnection transferMarketCardsConnection,
             BidConnection bidConnection, LoginSeleniumService loginSeleniumService,
             MoveService moveService)
         {
@@ -55,7 +53,7 @@ namespace Magnus.Futtbot.Connections.Services
             while (!cancellationTokenSource.IsCancellationRequested)
             {
                 var availableCards = await GetAvailableByRotating(profileDTO, buyCardDTO, tradingData, cancellationTokenSource);
-                
+
                 if (availableCards == null)
                 {
                     await Buy(profileDTO, buyCardDTO, cancellationTokenSource, tradingData, sellAction);
@@ -96,25 +94,26 @@ namespace Magnus.Futtbot.Connections.Services
                         tradingData.AlreadyBoughtCount += 1;
                         Console.Write($"Player won succesfully: {buyCardDTO.Card.Name} for {availableCard.buyNowPrice} coins!");
 
-                        if (sellAction != null)
-                            await sellAction(availableCard.itemData.id);
-                        else
-                        {
-                            var sendResponse = await _moveService.SendWonItemsToTransferList(profileDTO.Email, new SendCardsToTransferListRequest(new List<ItemDataForMoving>()
+                        var sendResponse = await _moveService.SendWonItemsToTransferList(profileDTO.Email, new SendCardsToTransferListRequest(new List<ItemDataForMoving>()
                             {
                                 new(availableCard.itemData.id, "trade")
                             }));
 
-                            Thread.Sleep(300);
+                        Thread.Sleep(300);
 
-                            if (sendResponse == ConnectionResponseType.Unauthorized)
-                            {
-                                tradingData.LoginFailedAttempts += 1;
-                                await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
-                                await Buy(profileDTO, buyCardDTO, cancellationTokenSource, tradingData, sellAction);
-                                cancellationTokenSource.Cancel();
-                                return;
-                            }
+                        if (sendResponse == ConnectionResponseType.Unauthorized)
+                        {
+                            tradingData.LoginFailedAttempts += 1;
+                            await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
+                            await Buy(profileDTO, buyCardDTO, cancellationTokenSource, tradingData, sellAction);
+                            cancellationTokenSource.Cancel();
+                            return;
+                        }
+
+                        if (sendResponse == ConnectionResponseType.Success)
+                        {
+                            if (sellAction != null)
+                                await sellAction(availableCard.itemData.id);
                         }
                     }
                 }
@@ -127,8 +126,8 @@ namespace Magnus.Futtbot.Connections.Services
             {
                 var availableCardsResponse = await GetAvailableCardsResponse(profileDTO, buyCardDTO, tradingData.MinBin);
 
-                if (availableCardsResponse.ConnectionResponseType == ConnectionResponseType.Success 
-                    && availableCardsResponse.Data is not null 
+                if (availableCardsResponse.ConnectionResponseType == ConnectionResponseType.Success
+                    && availableCardsResponse.Data is not null
                     && availableCardsResponse.Data.auctionInfo.Any())
                 {
                     tradingData.PauseForAWhile = 0;

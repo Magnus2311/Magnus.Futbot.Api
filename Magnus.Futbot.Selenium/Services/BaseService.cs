@@ -22,28 +22,9 @@ namespace Magnus.Futbot.Services
 
         public DriverInstance GetInstance(string username)
         {
-            var proxyServer = new ProxyServer();
+            var chromeOptions = new ChromeOptions();
 
-            // Set up the endpoint
-            var explicitEndPoint = new ExplicitProxyEndPoint(System.Net.IPAddress.Any, 18882, true);
-            proxyServer.AddEndPoint(explicitEndPoint);
-            proxyServer.Start();
-
-            proxyServer.BeforeRequest += async (sender, e) => await OnRequest(sender, e, username);
-
-            // Set up proxy for Selenium
-            var proxy = new OpenQA.Selenium.Proxy()
-            {
-                HttpProxy = "http://localhost:18882",
-                SslProxy = "http://localhost:18882",
-                FtpProxy = "http://localhost:18882"
-            };
-
-            var chromeOptions = new ChromeOptions
-            {
-                Proxy = proxy
-            };
-
+            var port = 18882;
             chromeOptions.AddArguments("--disable-backgrounding-occluded-windows");
             chromeOptions.AddArgument(@$"user-data-dir={Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Google\Chrome\User Data\{username.Split("@").FirstOrDefault()}\Default");
 
@@ -55,28 +36,75 @@ namespace Magnus.Futbot.Services
                 }
                 catch
                 {
+                    var ps = new ProxyServer();
+
+                    // Set up the endpoint
+                    var eep = new ExplicitProxyEndPoint(System.Net.IPAddress.Any, port + _chromeDrivers.Count, true);
+                    ps.AddEndPoint(eep);
+                    ps.Start();
+
+                    ps.BeforeRequest += async (sender, e) => await OnRequest(sender, e);
+
+                    // Set up proxy for Selenium
+                    var p = new OpenQA.Selenium.Proxy()
+                    {
+                        HttpProxy = $"http://localhost:{port + _chromeDrivers.Count}",
+                        SslProxy = $"http://localhost:{port + _chromeDrivers.Count}",
+                        FtpProxy = $"http://localhost:{port + _chromeDrivers.Count}"
+                    };
+                    chromeOptions.Proxy = p;
                     var tempDriver = new ChromeDriver(chromeOptions);
-                    var tempDriverInstsance = new DriverInstance(tempDriver);
+                    var tempDriverInstsance = new DriverInstance(tempDriver, ps);
                     _chromeDrivers[username] = tempDriverInstsance;
                 }
 
                 return _chromeDrivers[username];
             }
 
+            var proxyServer = new ProxyServer();
+
+            // Set up the endpoint
+            var eep2 = new ExplicitProxyEndPoint(System.Net.IPAddress.Any, port + _chromeDrivers.Count, true);
+            proxyServer.AddEndPoint(eep2);
+            proxyServer.Start();
+
+            proxyServer.BeforeRequest += async (sender, e) => await OnRequest(sender, e);
+
+            // Set up proxy for Selenium
+            var proxy = new OpenQA.Selenium.Proxy()
+            {
+                HttpProxy = $"http://localhost:{port + _chromeDrivers.Count}",
+                SslProxy = $"http://localhost:{port + _chromeDrivers.Count}",
+                FtpProxy = $"http://localhost:{port + _chromeDrivers.Count}"
+            };
+
+            chromeOptions.Proxy = proxy;
             var chromeDriver = new ChromeDriver(chromeOptions);
-            var driverInstsance = new DriverInstance(chromeDriver);
+            var driverInstsance = new DriverInstance(chromeDriver, proxyServer);
             _chromeDrivers.TryAdd(username, driverInstsance);
+            AttachOnRequestHandler(driverInstsance, username);
             return driverInstsance;
         }
 
-
-        public static async Task OnRequest(object sender, SessionEventArgs e, string username)
+        public async Task OnRequest(object sender, SessionEventArgs e)
         {
+            var username = e.UserData as string;
+            if (username == null) return;
+
             foreach (var header in e.HttpClient.Request.Headers)
             {
                 if (header?.Name.ToUpperInvariant() == "X-UT-SID")
                     EventAggregator.Instance.OnXUTSIDUpdated(sender, new XUTSIDUpdatedEventArgs(username, header.Value));
             }
+        }
+
+        public void AttachOnRequestHandler(DriverInstance driverInstance, string username)
+        {
+            driverInstance.ProxyServer.BeforeRequest += async (s, e) =>
+            {
+                e.UserData = username;
+                await OnRequest(s, e);
+            };
         }
     }
 }
