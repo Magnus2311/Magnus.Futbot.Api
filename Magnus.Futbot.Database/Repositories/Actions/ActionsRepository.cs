@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System;
 
 namespace Magnus.Futbot.Database.Repositories.Actions
 {
@@ -42,5 +43,8 @@ namespace Magnus.Futbot.Database.Repositories.Actions
 
         public Task DeactivateById(ObjectId actionId)
             => _collection.UpdateOneAsync(Builders<TActionEntity>.Filter.Eq(a => a.Id, actionId), Builders<TActionEntity>.Update.Set(e => e.IsDeleted, true));
+
+        public Task DeactivateAllActions(ObjectId profileId)
+            => _collection.UpdateOneAsync(Builders<TActionEntity>.Filter.Eq(a => a.ProfileId, profileId), Builders<TActionEntity>.Update.Set(e => e.IsDeleted, true));
     }
 }

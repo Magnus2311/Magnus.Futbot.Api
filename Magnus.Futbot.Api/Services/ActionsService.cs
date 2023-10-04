@@ -111,5 +111,12 @@ namespace Magnus.Futbot.Api.Services
 
             return _mapper.Map<TradeActionDTO>(tradeAction);
         }
+
+        public async Task DeactivateAllActionsByProfileId(string profileId)
+        {
+            await _buyActionRepository.DeactivateAllActions(new ObjectId(profileId));
+            await _sellActionRepository.DeactivateAllActions(new ObjectId(profileId));
+            await _moveActionRepository.DeactivateAllActions(new ObjectId(profileId));
+        }
     }
 }

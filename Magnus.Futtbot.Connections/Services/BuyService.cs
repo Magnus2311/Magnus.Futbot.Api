@@ -28,14 +28,14 @@ namespace Magnus.Futtbot.Connections.Services
             _moveService = moveService;
         }
 
-        public async Task Buy(ProfileDTO profileDTO, BuyCardDTO buyCardDTO, CancellationTokenSource cancellationTokenSource, Func<long, Task>? sellAction)
+        public async Task Buy(ProfileDTO profileDTO, BuyCardDTO buyCardDTO, CancellationTokenSource cancellationTokenSource, Func<long, Task>? sellAction, Action<ProfileDTO> updateProfile)
         {
             var tradingData = new BuyingData();
 
-            await Buy(profileDTO, buyCardDTO, cancellationTokenSource, tradingData, sellAction);
+            await Buy(profileDTO, buyCardDTO, cancellationTokenSource, tradingData, sellAction, updateProfile);
         }
 
-        public async Task Buy(ProfileDTO profileDTO, BuyCardDTO buyCardDTO, CancellationTokenSource cancellationTokenSource, BuyingData tradingData, Func<long, Task>? sellAction)
+        public async Task Buy(ProfileDTO profileDTO, BuyCardDTO buyCardDTO, CancellationTokenSource cancellationTokenSource, BuyingData tradingData, Func<long, Task>? sellAction, Action<ProfileDTO> updateProfile)
         {
             if (tradingData.AlreadyBoughtCount >= buyCardDTO.Count)
                 cancellationTokenSource.Cancel();
@@ -56,7 +56,7 @@ namespace Magnus.Futtbot.Connections.Services
 
                 if (availableCards == null)
                 {
-                    await Buy(profileDTO, buyCardDTO, cancellationTokenSource, tradingData, sellAction);
+                    await Buy(profileDTO, buyCardDTO, cancellationTokenSource, tradingData, sellAction, updateProfile);
                     return;
                 }
 
@@ -68,13 +68,19 @@ namespace Magnus.Futtbot.Connections.Services
                         continue;
                     }
 
+                    if (profileDTO.Coins < availableCard.buyNowPrice)
+                    {
+                        cancellationTokenSource.Cancel();
+                        return;
+                    }
+
                     tradingData.AlreadyBiddedTrades.Add(availableCard.tradeId);
                     var responseType = await _bidConnection.BidPlayer(profileDTO.Email, availableCard.tradeId, availableCard.buyNowPrice);
                     Thread.Sleep(300);
                     if (responseType == ConnectionResponseType.PauseForAWhile)
                     {
                         tradingData.PauseForAWhile += 1;
-                        await Buy(profileDTO, buyCardDTO, cancellationTokenSource, tradingData, sellAction);
+                        await Buy(profileDTO, buyCardDTO, cancellationTokenSource, tradingData, sellAction, updateProfile);
                         cancellationTokenSource.Cancel();
                         return;
                     }
@@ -83,13 +89,18 @@ namespace Magnus.Futtbot.Connections.Services
                     {
                         tradingData.LoginFailedAttempts += 1;
                         await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
-                        await Buy(profileDTO, buyCardDTO, cancellationTokenSource, tradingData, sellAction);
+                        await Buy(profileDTO, buyCardDTO, cancellationTokenSource, tradingData, sellAction, updateProfile);
                         cancellationTokenSource.Cancel();
                         return;
                     }
 
                     if (responseType == ConnectionResponseType.Success)
                     {
+                        profileDTO.Coins -= availableCard.buyNowPrice;
+                        profileDTO.WonTargetsCount++;
+
+                        updateProfile(profileDTO);
+
                         tradingData.LoginFailedAttempts = 0;
                         tradingData.AlreadyBoughtCount += 1;
                         Console.Write($"Player won succesfully: {buyCardDTO.Card.Name} for {availableCard.buyNowPrice} coins!");
@@ -105,7 +116,7 @@ namespace Magnus.Futtbot.Connections.Services
                         {
                             tradingData.LoginFailedAttempts += 1;
                             await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
-                            await Buy(profileDTO, buyCardDTO, cancellationTokenSource, tradingData, sellAction);
+                            await Buy(profileDTO, buyCardDTO, cancellationTokenSource, tradingData, sellAction, updateProfile);
                             cancellationTokenSource.Cancel();
                             return;
                         }

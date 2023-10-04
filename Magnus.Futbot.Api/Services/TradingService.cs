@@ -69,7 +69,7 @@ namespace Magnus.Futbot.Api.Services
 
             var buyAction = new Func<Task>(async () =>
             {
-                await _buyService.Buy(profileDTO, buyCardDTO, tknSrc, null);
+                await _buyService.Buy(profileDTO, buyCardDTO, tknSrc, null, _updateProfile);
             });
 
             var tradeAction = new BuyAction(profileDTO.Id, buyAction, tknSrc, buyCardDTO);
@@ -96,7 +96,7 @@ namespace Magnus.Futbot.Api.Services
 
             var buyAction = new Func<Task>(async () =>
             {
-                await _buyService.Buy(profileDTO, buyCardDTO, tknSrc, sellAction);
+                await _buyService.Buy(profileDTO, buyCardDTO, tknSrc, sellAction, _updateProfile);
             });
 
             var tradeAction = new BuyAction(profileDTO.Id, buyAction, tknSrc, buyCardDTO);

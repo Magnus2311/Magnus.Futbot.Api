@@ -9,5 +9,6 @@ namespace Magnus.Futbot.Common.Interfaces.Services
         Task DeactivateAllActionsOnStartUp();
         Task DeactivateAction(string actionId, TradeActionType actionType);
         Task<TradeActionDTO> PauseProfile(string email, string selectedDuration, string userId);
+        Task DeactivateAllActionsByProfileId(string profileId);
     }
 }

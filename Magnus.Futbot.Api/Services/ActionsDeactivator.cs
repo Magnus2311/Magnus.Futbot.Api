@@ -21,5 +21,16 @@ namespace Magnus.Futbot.Api.Services
             var action = _dataSeleniumService.GetTradeActionsByProfile(profileDTO).FirstOrDefault(a => a.Id == actionId);
             action?.CancellationTokenSource.Cancel();
         }
+
+        public async Task DeactivateAllAction(string profileId)
+        {
+            var profileDTO = await _profilesService.GetById(profileId);
+            var actions = _dataSeleniumService.GetTradeActionsByProfile(profileDTO);
+            if (actions is null)
+                return;
+
+            foreach (var action in actions)
+                action.CancellationTokenSource.Cancel();
+        }
     }
 }
