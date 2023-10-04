@@ -1,26 +1,21 @@
 ﻿using Magnus.Futtbot.Connections.Enums;
-using Magnus.Futtbot.Connections.Models.Requests;
-using Magnus.Futtbot.Connections.Utils;
 using System.Net;
-using System.Text.Json;
 
 namespace Magnus.Futtbot.Connections.Connection.Moving
 {
-    public class SendItemsConnection
+    public class ClearSoldConnection
     {
         private readonly HttpClient _httpClient;
 
-        public SendItemsConnection(HttpClient httpClient)
+        public ClearSoldConnection(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
 
-        public async Task<ConnectionResponseType> SendWonItemsToTransferList(string username, SendCardsToTransferListRequest sendCardsToTransferListRequest)
+        public async Task<ConnectionResponseType> ClearSold(string username)
         {
-            var request = new HttpRequestMessage(HttpMethod.Put, "https://utas.mob.v2.fut.ea.com/ut/game/fc24/item");
+            var request = new HttpRequestMessage(HttpMethod.Delete, "https://utas.mob.v2.fut.ea.com/ut/game/fc24/trade/sold");
             request.SetCommonHeaders(username);
-            var content = new StringContent(JsonSerializer.Serialize(sendCardsToTransferListRequest), null, "application/json");
-            request.Content = content;
             var response = await _httpClient.SendAsync(request);
 
             if (response.StatusCode == HttpStatusCode.UnavailableForLegalReasons

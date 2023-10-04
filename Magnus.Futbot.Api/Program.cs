@@ -56,22 +56,15 @@ builder.Services
     .AddTransient<PauseActionRepository>();
 
 // Http Clients
-builder.Services
-    .AddHttpClient<SsoConnectionService>();
-builder.Services
-    .AddHttpClient<EaConnectionService>();
-builder.Services
-    .AddHttpClient<TradePileConnection>();
-builder.Services
-    .AddHttpClient<BidConnection>();
-builder.Services
-    .AddHttpClient<TransferMarketCardsConnection>();
-builder.Services
-    .AddHttpClient<SendItemsConnection>();
-builder.Services
-    .AddHttpClient<SellConnection>();
-builder.Services
-    .AddHttpClient<GetUserPileConnection>();
+builder.Services.AddHttpClient<SsoConnectionService>();
+builder.Services.AddHttpClient<EaConnectionService>();
+builder.Services.AddHttpClient<TradePileConnection>();
+builder.Services.AddHttpClient<BidConnection>();
+builder.Services.AddHttpClient<TransferMarketCardsConnection>();
+builder.Services.AddHttpClient<SendItemsConnection>();
+builder.Services.AddHttpClient<SellConnection>();
+builder.Services.AddHttpClient<GetUserPileConnection>();
+builder.Services.AddHttpClient<ClearSoldConnection>();
 
 // Services
 builder.Services

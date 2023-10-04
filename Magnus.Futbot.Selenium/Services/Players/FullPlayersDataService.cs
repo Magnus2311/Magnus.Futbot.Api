@@ -28,7 +28,6 @@ namespace Magnus.Futbot.Selenium.Services.Players
             var transferPile = new TradePile
             {
                 TransferTargets = (await GetTransferTargets(profileDTO)).ToList(),
-                TransferList = (await GetTransferListCards(profileDTO)).ToList(),
                 UnassignedItems = (await GetUnassignedItems(profileDTO)).ToList()
             };
 

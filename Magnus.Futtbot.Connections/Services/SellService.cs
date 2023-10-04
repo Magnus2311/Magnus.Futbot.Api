@@ -86,7 +86,9 @@ namespace Magnus.Futtbot.Connections.Services
                         }
 
                         if (player.ConnectionResponseType == ConnectionResponseType.Success)
+                        {
                             SellingData.AlreadySoldTrades.Add(player.Data);
+                        }
                     }
                 }
             }
