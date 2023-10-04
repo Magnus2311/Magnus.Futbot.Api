@@ -1,5 +1,4 @@
 ﻿using Magnus.Futtbot.Connections.Enums;
-using Magnus.Futtbot.Connections.Utils;
 using System.Net;
 using System.Text.Json;
 
@@ -37,6 +36,9 @@ namespace Magnus.Futtbot.Connections.Connection.Trading.Buy
 
             if (response.StatusCode == HttpStatusCode.Unauthorized)
                 return ConnectionResponseType.Unauthorized;
+
+            if (response.StatusCode == HttpStatusCode.UpgradeRequired)
+                return ConnectionResponseType.UpgradeRequired;
 
             if (!response.IsSuccessStatusCode)
                 return ConnectionResponseType.PauseForAWhile;

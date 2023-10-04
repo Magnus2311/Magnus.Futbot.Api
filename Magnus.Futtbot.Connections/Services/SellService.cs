@@ -38,7 +38,7 @@ namespace Magnus.Futtbot.Connections.Services
             if (!EaData.UserXUTSIDs.ContainsKey(profileDTO.Email))
                 await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
 
-            var getUserPileResponse = await _getUserPileConnection.GetUserTradePile(profileDTO);
+            var getUserPileResponse = await _getUserPileConnection.GetUserTradePile(profileDTO.Email);
             if (getUserPileResponse.ConnectionResponseType == ConnectionResponseType.Unauthorized)
             {
                 await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);

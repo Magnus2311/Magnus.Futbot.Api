@@ -1,5 +1,4 @@
-﻿using Magnus.Futbot.Common;
-using Magnus.Futbot.Common.Interfaces.Helpers;
+﻿using Magnus.Futbot.Common.Interfaces.Helpers;
 using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.Selenium.Trading;
 using Magnus.Futbot.Services;
@@ -30,7 +29,7 @@ namespace Magnus.Futtbot.Connections.Services
             if (!EaData.UserXUTSIDs.ContainsKey(profileDTO.Email))
                 await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
 
-            var tradePileResponse = await _getUserPileConnection.GetUserTradePile(profileDTO);
+            var tradePileResponse = await _getUserPileConnection.GetUserTradePile(profileDTO.Email);
             if (tradePileResponse.ConnectionResponseType == ConnectionResponseType.Unauthorized)
             {
                 await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);

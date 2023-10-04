@@ -17,98 +17,92 @@ namespace Magnus.Futtbot.Connections.Services
         private readonly BidConnection _bidConnection;
         private readonly LoginSeleniumService _loginSeleniumService;
         private readonly MoveService _moveService;
+        private readonly ProfileService _profileService;
 
         public BuyService(TransferMarketCardsConnection transferMarketCardsConnection,
             BidConnection bidConnection, LoginSeleniumService loginSeleniumService,
-            MoveService moveService)
+            MoveService moveService, ProfileService profileService)
         {
             _transferMarketCardsConnection = transferMarketCardsConnection;
             _bidConnection = bidConnection;
             _loginSeleniumService = loginSeleniumService;
             _moveService = moveService;
+            _profileService = profileService;
         }
 
         public async Task Buy(ProfileDTO profileDTO, BuyCardDTO buyCardDTO, CancellationTokenSource cancellationTokenSource, Func<long, Task>? sellAction, Action<ProfileDTO> updateProfile)
         {
             var tradingData = new BuyingData();
 
-            await Buy(profileDTO, buyCardDTO, cancellationTokenSource, tradingData, sellAction, updateProfile);
-        }
+            profileDTO.TradePile = await _profileService.GetTradePile(profileDTO);
+            updateProfile(profileDTO);
 
-        public async Task Buy(ProfileDTO profileDTO, BuyCardDTO buyCardDTO, CancellationTokenSource cancellationTokenSource, BuyingData tradingData, Func<long, Task>? sellAction, Action<ProfileDTO> updateProfile)
-        {
-            if (tradingData.AlreadyBoughtCount >= buyCardDTO.Count)
-                cancellationTokenSource.Cancel();
-
-            if (tradingData.LoginFailedAttempts > 5)
-                cancellationTokenSource.Cancel();
-
-            if (tradingData.PauseForAWhile > 50)
-                cancellationTokenSource.Cancel();
-
-            if (!EaData.UserXUTSIDs.ContainsKey(profileDTO.Email))
-                await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
-
-            //cancellationTokenSource.Cancel();
-            while (!cancellationTokenSource.IsCancellationRequested)
+            while (tradingData.AlreadyBoughtCount < buyCardDTO.Count
+                && !cancellationTokenSource.IsCancellationRequested
+                && tradingData.LoginFailedAttempts <= 5
+                && tradingData.PauseForAWhile <= 50)
             {
+                if (!EaData.UserXUTSIDs.ContainsKey(profileDTO.Email))
+                    await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
+
                 var availableCards = await GetAvailableByRotating(profileDTO, buyCardDTO, tradingData, cancellationTokenSource);
 
                 if (availableCards == null)
                 {
-                    await Buy(profileDTO, buyCardDTO, cancellationTokenSource, tradingData, sellAction, updateProfile);
-                    return;
+                    tradingData.PauseForAWhile += 1;
+                    continue;
                 }
 
                 foreach (var availableCard in availableCards.auctionInfo.OrderBy(ai => ai.buyNowPrice))
                 {
+                    if (tradingData.AlreadyBoughtCount >= buyCardDTO.Count)
+                        continue;
+
                     if (tradingData.AlreadyBiddedTrades.Contains(availableCard.tradeId))
                     {
                         tradingData.MinBin += 50;
                         continue;
                     }
 
-                    if (profileDTO.Coins < availableCard.buyNowPrice)
-                    {
-                        cancellationTokenSource.Cancel();
-                        return;
-                    }
-
                     tradingData.AlreadyBiddedTrades.Add(availableCard.tradeId);
-                    var responseType = await _bidConnection.BidPlayer(profileDTO.Email, availableCard.tradeId, availableCard.buyNowPrice);
-                    Thread.Sleep(300);
-                    if (responseType == ConnectionResponseType.PauseForAWhile)
-                    {
-                        tradingData.PauseForAWhile += 1;
-                        await Buy(profileDTO, buyCardDTO, cancellationTokenSource, tradingData, sellAction, updateProfile);
-                        cancellationTokenSource.Cancel();
-                        return;
-                    }
+                    var responseType = await Buy(profileDTO, availableCard);
 
                     if (responseType == ConnectionResponseType.Unauthorized)
                     {
                         tradingData.LoginFailedAttempts += 1;
                         await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
-                        await Buy(profileDTO, buyCardDTO, cancellationTokenSource, tradingData, sellAction, updateProfile);
-                        cancellationTokenSource.Cancel();
-                        return;
+                        continue;
+                    }
+
+                    if (responseType == ConnectionResponseType.PauseForAWhile)
+                    {
+                        tradingData.PauseForAWhile += 1;
+                        continue;
+                    }
+
+                    if (responseType == ConnectionResponseType.UpgradeRequired)
+                    {
+                        profileDTO.TradePile = await _profileService.GetTradePile(profileDTO);
+                        updateProfile(profileDTO);
+                        continue;
                     }
 
                     if (responseType == ConnectionResponseType.Success)
                     {
                         profileDTO.Coins -= availableCard.buyNowPrice;
                         profileDTO.WonTargetsCount++;
+                        tradingData.AlreadyBoughtCount += 1;
+                        tradingData.LoginFailedAttempts = 0;
+                        tradingData.PauseForAWhile = 0;
 
                         updateProfile(profileDTO);
 
-                        tradingData.LoginFailedAttempts = 0;
-                        tradingData.AlreadyBoughtCount += 1;
-                        Console.Write($"Player won succesfully: {buyCardDTO.Card.Name} for {availableCard.buyNowPrice} coins!");
+                        Console.Write($"Player won succesfully: {buyCardDTO.Card!.Name} for {availableCard.buyNowPrice} coins! Account: {profileDTO.Email}");
 
                         var sendResponse = await _moveService.SendWonItemsToTransferList(profileDTO.Email, new SendCardsToTransferListRequest(new List<ItemDataForMoving>()
-                            {
-                                new(availableCard.itemData.id, "trade")
-                            }));
+                        {
+                            new(availableCard.itemData.id, "trade")
+                        }));
 
                         Thread.Sleep(300);
 
@@ -116,21 +110,20 @@ namespace Magnus.Futtbot.Connections.Services
                         {
                             tradingData.LoginFailedAttempts += 1;
                             await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
-                            await Buy(profileDTO, buyCardDTO, cancellationTokenSource, tradingData, sellAction, updateProfile);
-                            cancellationTokenSource.Cancel();
-                            return;
+                            continue;
                         }
 
-                        if (sendResponse == ConnectionResponseType.Success)
-                        {
-                            if (sellAction != null)
+                        if (sendResponse == ConnectionResponseType.Success && sellAction is not null)
                                 await sellAction(availableCard.itemData.id);
-                        }
                     }
                 }
             }
+
         }
 
+        public async Task<ConnectionResponseType> Buy(ProfileDTO profileDTO, Auctioninfo availableCard)
+            => await _bidConnection.BidPlayer(profileDTO.Email, availableCard.tradeId, availableCard.buyNowPrice);
+        
         public async Task<AvailableTransferMarketCards?> GetAvailableByRotating(ProfileDTO profileDTO, BuyCardDTO buyCardDTO, BuyingData tradingData, CancellationTokenSource cancellationTokenSource)
         {
             while (tradingData.MinBin < buyCardDTO?.Price && tradingData.MinBin <= 500 && !cancellationTokenSource.IsCancellationRequested)

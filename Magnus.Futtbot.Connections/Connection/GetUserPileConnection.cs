@@ -17,14 +17,14 @@ namespace Magnus.Futtbot.Connections.Connection
             _httpClient = httpClient;
         }
 
-        public async Task<ConnectionResponse<TradePileData>> GetUserTradePile(ProfileDTO profileDTO)
+        public async Task<ConnectionResponse<TradePileData>> GetUserTradePile(string username)
         {
             var handler = new HttpClientHandler();
             handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
             _httpClient = new HttpClient(handler);
             var request = new HttpRequestMessage(HttpMethod.Get, "https://utas.mob.v2.fut.ea.com/ut/game/fc24/tradepile");
-            request.SetCommonHeaders(profileDTO.Email);
+            request.SetCommonHeaders(username);
             var content = new StringContent(string.Empty);
 
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
