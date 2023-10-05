@@ -17,7 +17,6 @@ namespace Magnus.Futbot.Api.Services
 {
     public class TradingService : ITradingService
     {
-        private readonly MovePlayersService _movePlayersService;
         private readonly ProfilesService _profilesService;
         private readonly BuyActionRepository _buyActionRepository;
         private readonly SellActionRepository _sellActionRepository;
@@ -30,8 +29,7 @@ namespace Magnus.Futbot.Api.Services
         private readonly UserActionsService _userActionsService;
         private readonly Action<ProfileDTO> _updateProfile;
 
-        public TradingService(MovePlayersService movePlayersService,
-            ProfilesService profilesService,
+        public TradingService(ProfilesService profilesService,
             BuyActionRepository buyActionRepository,
             SellActionRepository sellActionRepository,
             MoveActionRepository moveActionRepository,
@@ -42,7 +40,6 @@ namespace Magnus.Futbot.Api.Services
             SellService sellService,
             UserActionsService userActionsService)
         {
-            _movePlayersService = movePlayersService;
             _profilesService = profilesService;
             _buyActionRepository = buyActionRepository;
             _sellActionRepository = sellActionRepository;
@@ -126,15 +123,13 @@ namespace Magnus.Futbot.Api.Services
         public async Task MoveCardsFromTransferTargetsToTransferList(string email)
         {
             var profileDTO = await _profilesService.GetByEmail(email);
-
-            _movePlayersService.SendTransferTargetsToTransferList(profileDTO, _updateProfile);
+            //TO DO
         }
 
         public async Task SendUnassignedItemsToTransferList(string email)
         {
             var profileDTO = await _profilesService.GetByEmail(email);
-
-            _movePlayersService.SendUnassignedItemsToTransferList(profileDTO, _updateProfile);
+            //TO DO
         }
 
         public async Task RelistPlayers()

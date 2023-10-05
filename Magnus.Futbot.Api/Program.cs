@@ -79,11 +79,8 @@ builder.Services
 // Selenium Services
 builder.Services
     .AddTransient<FullPlayersDataService>()
-    .AddTransient<MovePlayersService>()
     .AddTransient<SellService>()
     .AddTransient<FiltersService>()
-    .AddTransient<DataSeleniumService>()
-    .AddTransient<InitProfileService>()
     .AddTransient<LoginSeleniumService>();
 
 // Trading Services

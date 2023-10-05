@@ -4,7 +4,7 @@ namespace Magnus.Futbot.Common.Models.Selenium.Trading
 {
     public class TradePile
     {
-        public TransferList TransferList { get; } = new();
+        public TransferList TransferList { get; set; } = new();
         public List<TransferCard> UnassignedItems { get; set; } = new List<TransferCard>();
         public List<TransferCard> TransferTargets { get; set; } = new List<TransferCard>();
         public List<TransferCard> ClubItems { get; set; } = new List<TransferCard>();

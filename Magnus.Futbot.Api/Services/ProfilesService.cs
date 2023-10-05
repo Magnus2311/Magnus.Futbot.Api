@@ -16,19 +16,16 @@ namespace Magnus.Futbot.Api.Services
     {
         private readonly IMapper _mapper;
         private readonly ProfilesRepository _profilesRepository;
-        private readonly InitProfileService _initProfileService;
         private readonly LoginSeleniumService _loginSeleniumService;
         private readonly ProfileService _profileService;
 
         public ProfilesService(ProfilesRepository profilesRepository,
-            InitProfileService initProfileService,
             LoginSeleniumService loginSeleniumService,
             ProfileService profileService,
             IMapper mapper)
         {
             _mapper = mapper;
             _profilesRepository = profilesRepository;
-            _initProfileService = initProfileService;
             _loginSeleniumService = loginSeleniumService;
             _profileService = profileService;
         }
@@ -48,10 +45,10 @@ namespace Magnus.Futbot.Api.Services
                 return new LoginResponseDTO(ProfileStatusType.AlreadyAdded, _mapper.Map<ProfileDTO>(profileDTO));
             await _profilesRepository.Add(_mapper.Map<ProfileDocument>(profileDTO));
 
-            var response = await _initProfileService.InitProfile(profileDTO);
-            await _profilesRepository.Update(_mapper.Map<ProfileDocument>(response));
+            var response = await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
+            await _profilesRepository.Update(_mapper.Map<ProfileDocument>(profileDTO));
 
-            return new LoginResponseDTO(response.Status, _mapper.Map<ProfileDTO>(profileDTO));
+            return new LoginResponseDTO(response, _mapper.Map<ProfileDTO>(profileDTO));
         }
 
         public async Task<ProfileDTO> SubmitCode(SubmitCodeDTO submitCodeDTO)

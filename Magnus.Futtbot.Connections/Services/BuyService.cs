@@ -1,5 +1,8 @@
-﻿using Magnus.Futbot.Common.Models.DTOs;
+﻿using Magnus.Futbot.Common.Interfaces.Helpers;
+using Magnus.Futbot.Common.Models.Database.Card;
+using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.DTOs.Trading;
+using Magnus.Futbot.Common.Models.Selenium.Trading;
 using Magnus.Futbot.Services;
 using Magnus.Futtbot.Connections.Connection.Trading;
 using Magnus.Futtbot.Connections.Connection.Trading.Buy;
@@ -18,16 +21,19 @@ namespace Magnus.Futtbot.Connections.Services
         private readonly LoginSeleniumService _loginSeleniumService;
         private readonly MoveService _moveService;
         private readonly ProfileService _profileService;
+        private readonly IEnumerable<Card> _cards;
 
         public BuyService(TransferMarketCardsConnection transferMarketCardsConnection,
             BidConnection bidConnection, LoginSeleniumService loginSeleniumService,
-            MoveService moveService, ProfileService profileService)
+            MoveService moveService, ProfileService profileService,
+            ICardsHelper cardsHelper)
         {
             _transferMarketCardsConnection = transferMarketCardsConnection;
             _bidConnection = bidConnection;
             _loginSeleniumService = loginSeleniumService;
             _moveService = moveService;
             _profileService = profileService;
+            _cards = cardsHelper.GetAllCards().Where(c => c is not null);
         }
 
         public async Task Buy(ProfileDTO profileDTO, BuyCardDTO buyCardDTO, CancellationTokenSource cancellationTokenSource, Func<long, Task>? sellAction, Action<ProfileDTO> updateProfile)
@@ -90,7 +96,17 @@ namespace Magnus.Futtbot.Connections.Services
                     if (responseType == ConnectionResponseType.Success)
                     {
                         profileDTO.Coins -= availableCard.buyNowPrice;
-                        profileDTO.WonTargetsCount++;
+
+                        var card = _cards.FirstOrDefault(c => c.EAId == availableCard.itemData.assetId);
+                        if (profileDTO.TradePile.TransferList.ActiveTransfers.Any(at => at.Card == card))
+                            profileDTO.TradePile.TransferList.ActiveTransfers.FirstOrDefault(at => at.Card == card)!.Count++;
+                        else
+                            profileDTO.TradePile.TransferList.ActiveTransfers.Add(new TransferCard
+                            {
+                                Card = card,
+                                Count = 1
+                            });
+
                         tradingData.AlreadyBoughtCount += 1;
                         tradingData.LoginFailedAttempts = 0;
                         tradingData.PauseForAWhile = 0;
