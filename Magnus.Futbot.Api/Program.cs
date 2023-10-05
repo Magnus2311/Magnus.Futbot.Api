@@ -16,9 +16,6 @@ using Magnus.Futbot.Common.Interfaces.Services;
 using Magnus.Futbot.Database.Repositories;
 using Magnus.Futbot.Database.Repositories.Actions;
 using Magnus.Futbot.Initializer.Connections;
-using Magnus.Futbot.Selenium;
-using Magnus.Futbot.Selenium.Services.Players;
-using Magnus.Futbot.Selenium.Services.Trade.Filters;
 using Magnus.Futbot.Selenium.Trading.Connections;
 using Magnus.Futbot.Services;
 using Magnus.Futbot.Storage;
@@ -78,9 +75,6 @@ builder.Services
 
 // Selenium Services
 builder.Services
-    .AddTransient<FullPlayersDataService>()
-    .AddTransient<SellService>()
-    .AddTransient<FiltersService>()
     .AddTransient<LoginSeleniumService>();
 
 // Trading Services

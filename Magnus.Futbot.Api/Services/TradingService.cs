@@ -9,7 +9,6 @@ using Magnus.Futbot.Common.Models.Selenium.Actions;
 using Magnus.Futbot.Database.Models.Actions;
 using Magnus.Futbot.Database.Repositories.Actions;
 using Magnus.Futbot.Selenium;
-using Magnus.Futbot.Selenium.Services.Players;
 using Magnus.Futtbot.Connections.Services;
 using Microsoft.AspNetCore.SignalR;
 
@@ -20,7 +19,6 @@ namespace Magnus.Futbot.Api.Services
         private readonly ProfilesService _profilesService;
         private readonly BuyActionRepository _buyActionRepository;
         private readonly SellActionRepository _sellActionRepository;
-        private readonly MoveActionRepository _moveActionRepository;
         private readonly IHubContext<ProfilesHub, IProfilesClient> _profilesHubContext;
         private readonly IActionsNotifier _actionsNotifier;
         private readonly IMapper _mapper;
@@ -43,7 +41,6 @@ namespace Magnus.Futbot.Api.Services
             _profilesService = profilesService;
             _buyActionRepository = buyActionRepository;
             _sellActionRepository = sellActionRepository;
-            _moveActionRepository = moveActionRepository;
             _profilesHubContext = profilesHubContext;
             _actionsNotifier = actionsNotifier;
             _mapper = mapper;

@@ -2,7 +2,7 @@
 using Magnus.Futbot.Common.Models.Selenium.Actions;
 using System.Collections.Concurrent;
 
-namespace Magnus.Futbot.Selenium
+namespace Magnus.Futbot
 {
     public class UserActionsService
     {

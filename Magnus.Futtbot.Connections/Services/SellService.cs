@@ -12,7 +12,6 @@ using Magnus.Futtbot.Connections.Models;
 using Magnus.Futtbot.Connections.Models.Requests;
 using Magnus.Futtbot.Connections.Models.Responses;
 using Magnus.Futtbot.Connections.Utils;
-using System.Linq;
 
 namespace Magnus.Futtbot.Connections.Services
 {
