@@ -141,5 +141,19 @@ namespace Magnus.Futtbot.Connections.Services
                 return;
             }
         }
+
+        public async Task RelistAll(ProfileDTO profileDTO, CancellationTokenSource tknSrc)
+        {
+            if (!EaData.UserXUTSIDs.ContainsKey(profileDTO.Email))
+                await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
+
+            var sellCardResponse = await _sellConnection.RelistAll(profileDTO.Email);
+            if (sellCardResponse == ConnectionResponseType.Unauthorized)
+            {
+                await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
+                await RelistAll(profileDTO, tknSrc);
+                return;
+            }
+        }
     }
 }

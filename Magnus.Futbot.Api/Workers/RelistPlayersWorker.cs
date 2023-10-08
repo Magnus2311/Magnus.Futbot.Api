@@ -18,7 +18,7 @@ namespace Magnus.Futbot.Api.Workers
                 while (!stoppingToken.IsCancellationRequested)
                 {
                     await _tradingService.RelistPlayers();
-                    await Task.Delay(TimeSpan.FromMinutes(65), stoppingToken);
+                    await Task.Delay(TimeSpan.FromMinutes(63), stoppingToken);
                 }
             }, stoppingToken);
         }

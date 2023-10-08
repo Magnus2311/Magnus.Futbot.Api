@@ -93,7 +93,7 @@ builder.Services
 // Background workers
 builder.Services
     //.AddHostedService<RefreshPlayersWorker>()
-    //.AddHostedService<RelistPlayersWorker>()
+    .AddHostedService<RelistPlayersWorker>()
     .AddHostedService<DeactivateAllActionsOnStartUp>();
 
 // Azure

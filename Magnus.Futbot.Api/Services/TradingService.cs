@@ -8,7 +8,6 @@ using Magnus.Futbot.Common.Models.DTOs.Trading;
 using Magnus.Futbot.Common.Models.Selenium.Actions;
 using Magnus.Futbot.Database.Models.Actions;
 using Magnus.Futbot.Database.Repositories.Actions;
-using Magnus.Futbot.Selenium;
 using Magnus.Futtbot.Connections.Services;
 using Microsoft.AspNetCore.SignalR;
 
@@ -19,6 +18,7 @@ namespace Magnus.Futbot.Api.Services
         private readonly ProfilesService _profilesService;
         private readonly BuyActionRepository _buyActionRepository;
         private readonly SellActionRepository _sellActionRepository;
+        private readonly MoveActionRepository _moveActionRepository;
         private readonly IHubContext<ProfilesHub, IProfilesClient> _profilesHubContext;
         private readonly IActionsNotifier _actionsNotifier;
         private readonly IMapper _mapper;
@@ -41,6 +41,7 @@ namespace Magnus.Futbot.Api.Services
             _profilesService = profilesService;
             _buyActionRepository = buyActionRepository;
             _sellActionRepository = sellActionRepository;
+            _moveActionRepository = moveActionRepository;
             _profilesHubContext = profilesHubContext;
             _actionsNotifier = actionsNotifier;
             _mapper = mapper;
@@ -131,14 +132,23 @@ namespace Magnus.Futbot.Api.Services
 
         public async Task RelistPlayers()
         {
-            //var profiles = await _profilesService.GetRelistProfiles();
-            //Parallel.ForEach(profiles, async (profile) =>
-            //{
-            //    var tknSrc = new CancellationTokenSource();
-            //    var action = _sellSeleniumService.RelistPlayers(profile, tknSrc);
-            //    await _moveActionRepository.Add(_mapper.Map<MoveActionEntity>(action));
-            //    await _actionsNotifier.AddAction(profile, action);
-            //});
+            var profiles = await _profilesService.GetRelistProfiles();
+            Parallel.ForEach(profiles, async (profileDTO) =>
+            {
+                var tknSrc = new CancellationTokenSource();
+
+                var sellAction = new Func<Task>(async () =>
+                {
+                    await _sellService.RelistAll(profileDTO, tknSrc);
+                });
+
+                var action = new MoveAction(profileDTO.Id, sellAction, tknSrc, "Relisting all");
+
+                _userActionsService.AddAction(profileDTO.Email, action);
+
+                await _moveActionRepository.Add(_mapper.Map<MoveActionEntity>(action));
+                await _actionsNotifier.AddAction(profileDTO, action);
+            });
         }
     }
 }
