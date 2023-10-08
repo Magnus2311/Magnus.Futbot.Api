@@ -1,4 +1,5 @@
-﻿using Magnus.Futbot.Common.Models.DTOs.Trading;
+﻿using Magnus.Futbot.Common.Models.DTOs;
+using Magnus.Futbot.Common.Models.DTOs.Trading;
 
 namespace Magnus.Futbot.Api.Services.Interfaces
 {
@@ -10,5 +11,6 @@ namespace Magnus.Futbot.Api.Services.Interfaces
         Task SendUnassignedItemsToTransferList(string email);
         Task BuyAndSell(BuyAndSellCardDTO buyAndSellCardDTO);
         Task RelistPlayers();
+        Task RelistPlayersByProfile(ProfileDTO profileDTO);
     }
 }

@@ -2,9 +2,9 @@
 using Magnus.Futbot.Api.Hubs.Interfaces;
 using Magnus.Futbot.Api.Services.Interfaces;
 using Magnus.Futbot.Common.Models.Database.Card;
+using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.DTOs.Trading;
 using Microsoft.AspNetCore.SignalR;
-using MongoDB.Bson;
 
 namespace Magnus.Futbot.Api.Hubs
 {
@@ -40,5 +40,8 @@ namespace Magnus.Futbot.Api.Hubs
 
         public Task SendUnassignedItemsToTransferList(string email)
             => _tradingService.SendUnassignedItemsToTransferList(email);
+
+        public Task RelistAllForProfile(dynamic profileDTO)
+            => _tradingService.RelistPlayersByProfile(new ProfileDTO());
     }
 }

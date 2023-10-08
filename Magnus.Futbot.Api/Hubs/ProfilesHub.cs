@@ -1,5 +1,6 @@
 using Magnus.Futbot.Api.Hubs.Interfaces;
 using Magnus.Futbot.Api.Services;
+using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.DTOs.Profiles;
 using Magnus.Futbot.Common.Models.Selenium.Profiles;
 using Microsoft.AspNetCore.SignalR;

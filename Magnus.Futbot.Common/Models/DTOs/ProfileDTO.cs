@@ -9,7 +9,6 @@ namespace Magnus.Futbot.Common.Models.DTOs
         public string Password { get; set; } = string.Empty;
         public ProfileStatusType Status { get; set; }
         public int Coins { get; set; }
-        public int Outbidded { get; set; }
         public string UserId { get; set; } = string.Empty;
         public string UTSID { get; set; } = string.Empty;
         public TradePile TradePile { get; set; } = new TradePile();
