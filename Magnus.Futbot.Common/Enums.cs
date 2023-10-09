@@ -55,4 +55,11 @@
         Move,
         Pause
     }
+
+    public enum TradeHistoryActionType
+    {
+        Buy,
+        Sell,
+        BuyAndSell
+    }
 }

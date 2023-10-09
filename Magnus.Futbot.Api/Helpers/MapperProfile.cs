@@ -69,6 +69,7 @@ namespace Magnus.Futbot.Api.Helpers
             CreateMap<SellActionDTO, SellAction>().ReverseMap();
             CreateMap<MoveActionDTO, MoveAction>().ReverseMap();
             CreateMap<PauseActionDTO, PauseAction>().ReverseMap();
+            CreateMap<Trade, TradeDTO>().ReverseMap();
         }
     }
 }

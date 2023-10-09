@@ -7,6 +7,7 @@ using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.DTOs.Trading;
 using Magnus.Futbot.Common.Models.Selenium.Actions;
 using Magnus.Futbot.Database.Models.Actions;
+using Magnus.Futbot.Database.Repositories;
 using Magnus.Futbot.Database.Repositories.Actions;
 using Magnus.Futtbot.Connections.Services;
 using Microsoft.AspNetCore.SignalR;
@@ -25,18 +26,14 @@ namespace Magnus.Futbot.Api.Services
         private readonly BuyService _buyService;
         private readonly SellService _sellService;
         private readonly UserActionsService _userActionsService;
+        private readonly TradeHistoryService _tradeHistoryService;
         private readonly Action<ProfileDTO> _updateProfile;
 
-        public TradingService(ProfilesService profilesService,
-            BuyActionRepository buyActionRepository,
-            SellActionRepository sellActionRepository,
-            MoveActionRepository moveActionRepository,
-            IHubContext<ProfilesHub, IProfilesClient> profilesHubContext,
-            IActionsNotifier actionsNotifier,
-            IMapper mapper,
-            BuyService buyService,
-            SellService sellService,
-            UserActionsService userActionsService)
+        public TradingService(ProfilesService profilesService, BuyActionRepository buyActionRepository,
+            SellActionRepository sellActionRepository, MoveActionRepository moveActionRepository,
+            IHubContext<ProfilesHub, IProfilesClient> profilesHubContext, IActionsNotifier actionsNotifier,
+            IMapper mapper, BuyService buyService, SellService sellService, UserActionsService userActionsService,
+            TradeHistoryService tradeHistoryService)
         {
             _profilesService = profilesService;
             _buyActionRepository = buyActionRepository;
@@ -48,6 +45,7 @@ namespace Magnus.Futbot.Api.Services
             _buyService = buyService;
             _sellService = sellService;
             _userActionsService = userActionsService;
+            _tradeHistoryService = tradeHistoryService;
             _updateProfile = new Action<ProfileDTO>(
                 async (profileDTO) => 
                 { 
@@ -73,6 +71,7 @@ namespace Magnus.Futbot.Api.Services
 
             await _buyActionRepository.Add(_mapper.Map<BuyActionEntity>(tradeAction));
             await _actionsNotifier.AddAction(profileDTO, tradeAction);
+            await _tradeHistoryService.AddTradeAsync(profileDTO, buyCardDTO);
         }
 
         public async Task BuyAndSell(BuyAndSellCardDTO buyAndSellCardDTO)
@@ -99,6 +98,7 @@ namespace Magnus.Futbot.Api.Services
 
             await _buyActionRepository.Add(_mapper.Map<BuyActionEntity>(tradeAction));
             await _actionsNotifier.AddAction(profileDTO, tradeAction);
+            await _tradeHistoryService.AddTradeAsync(profileDTO, buyAndSellCardDTO);
         }
 
         public async Task Sell(SellCardDTO sellCardDTO)
@@ -116,6 +116,7 @@ namespace Magnus.Futbot.Api.Services
 
             await _sellActionRepository.Add(_mapper.Map<SellActionEntity>(tradeAction));
             await _actionsNotifier.AddAction(profileDTO, tradeAction);
+            await _tradeHistoryService.AddTradeAsync(profileDTO, buyCardDTO);
         }
 
         public async Task MoveCardsFromTransferTargetsToTransferList(string email)

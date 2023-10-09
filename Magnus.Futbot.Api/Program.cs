@@ -73,7 +73,8 @@ builder.Services
     .AddTransient<ICardsHelper, CardsHelper>()
     .AddTransient<IActionsNotifier, ActionsNotifier>()
     .AddTransient<ProfilesNotifier>()
-    .AddTransient<ActionsDeactivator>();
+    .AddTransient<ActionsDeactivator>()
+    .AddTransient<TradeHistoryService>();
 
 // Selenium Services
 builder.Services
