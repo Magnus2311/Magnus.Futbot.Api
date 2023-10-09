@@ -133,7 +133,7 @@ namespace Magnus.Futbot.Api.Services
         public async Task RelistPlayers()
         {
             var profiles = await _profilesService.GetRelistProfiles();
-            Parallel.ForEach(profiles, async (profileDTO) =>
+            foreach (var profileDTO in profiles)
             {
                 var tknSrc = new CancellationTokenSource();
 
@@ -148,7 +148,8 @@ namespace Magnus.Futbot.Api.Services
 
                 await _moveActionRepository.Add(_mapper.Map<MoveActionEntity>(action));
                 await _actionsNotifier.AddAction(profileDTO, action);
-            });
+                Thread.Sleep(2000);
+            }
         }
 
         public async Task RelistPlayersByProfile(string email)
