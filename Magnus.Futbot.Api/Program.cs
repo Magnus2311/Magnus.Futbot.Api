@@ -50,7 +50,8 @@ builder.Services
     .AddTransient<MoveActionRepository>()
     .AddTransient<BuyActionRepository>()
     .AddTransient<SellActionRepository>()
-    .AddTransient<PauseActionRepository>();
+    .AddTransient<PauseActionRepository>()
+    .AddTransient<TradesRepository>();
 
 // Http Clients
 builder.Services.AddHttpClient<SsoConnectionService>();
