@@ -42,8 +42,7 @@ namespace Magnus.Futbot.Api.Hubs
         public async Task OnProfileRefresh(string profileId)
         {
             var userId = Context.UserIdentifier ?? "";
-            var profileDTO = await _profilesService.RefreshProfile(profileId, userId);
-            await Clients.Users(userId).OnProfileUpdated(profileDTO);
+            await _profilesService.RefreshProfile(profileId, userId);
         }
 
         public async Task SetAutoRelist(EditProfileAutoListDTO editProfileAutoListDTO)

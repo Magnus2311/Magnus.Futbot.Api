@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Magnus.Futbot.Api.Services.Notifiers;
 using Magnus.Futbot.Common;
 using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.DTOs.Profiles;
@@ -18,16 +19,19 @@ namespace Magnus.Futbot.Api.Services
         private readonly ProfilesRepository _profilesRepository;
         private readonly LoginSeleniumService _loginSeleniumService;
         private readonly ProfileService _profileService;
+        private readonly ProfilesNotifier _profilesNotifier;
 
         public ProfilesService(ProfilesRepository profilesRepository,
             LoginSeleniumService loginSeleniumService,
             ProfileService profileService,
+            ProfilesNotifier profilesNotifier,
             IMapper mapper)
         {
             _mapper = mapper;
             _profilesRepository = profilesRepository;
             _loginSeleniumService = loginSeleniumService;
             _profileService = profileService;
+            _profilesNotifier = profilesNotifier;
         }
 
         public async Task<IEnumerable<ProfileDTO>> GetAll(string userId)
@@ -61,8 +65,14 @@ namespace Magnus.Futbot.Api.Services
         {
             var profile = await _profilesRepository.Get(new ObjectId(profileId), new ObjectId(userId));
             var profileDTO = _mapper.Map<ProfileDTO>(profile);
+            return await RefreshProfile(profileDTO);
+        }
+
+        public async Task<ProfileDTO> RefreshProfile(ProfileDTO profileDTO)
+        {
             profileDTO.TradePile = await _profileService.GetTradePile(profileDTO);
             await _profilesRepository.Update(_mapper.Map<ProfileDocument>(profileDTO));
+            await _profilesNotifier.RefreshProfile(profileDTO);
             return profileDTO;
         }
 

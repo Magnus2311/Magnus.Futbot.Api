@@ -41,7 +41,7 @@ namespace Magnus.Futbot.Api.Hubs
         public Task SendUnassignedItemsToTransferList(string email)
             => _tradingService.SendUnassignedItemsToTransferList(email);
 
-        public Task RelistAllForProfile(dynamic profileDTO)
-            => _tradingService.RelistPlayersByProfile(new ProfileDTO());
+        public Task RelistAllForProfile(string email)
+            => _tradingService.RelistPlayersByProfile(email);
     }
 }

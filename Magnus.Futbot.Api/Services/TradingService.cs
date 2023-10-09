@@ -151,10 +151,12 @@ namespace Magnus.Futbot.Api.Services
             });
         }
 
-        public async Task RelistPlayersByProfile(ProfileDTO profileDTO)
+        public async Task RelistPlayersByProfile(string email)
         {
+            var profileDTO = await _profilesService.GetByEmail(email);
             var tknSrc = new CancellationTokenSource();
             await _sellService.RelistAll(profileDTO, tknSrc);
+            await _profilesService.RefreshProfile(profileDTO);
         }
     }
 }

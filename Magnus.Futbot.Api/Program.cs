@@ -71,6 +71,7 @@ builder.Services
     .AddTransient<ITradingService, TradingService>()
     .AddTransient<ICardsHelper, CardsHelper>()
     .AddTransient<IActionsNotifier, ActionsNotifier>()
+    .AddTransient<ProfilesNotifier>()
     .AddTransient<ActionsDeactivator>();
 
 // Selenium Services
@@ -93,7 +94,7 @@ builder.Services
 // Background workers
 builder.Services
     //.AddHostedService<RefreshPlayersWorker>()
-    .AddHostedService<RelistPlayersWorker>()
+    //.AddHostedService<RelistPlayersWorker>()
     .AddHostedService<DeactivateAllActionsOnStartUp>();
 
 // Azure
