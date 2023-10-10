@@ -116,7 +116,7 @@ namespace Magnus.Futbot.Api.Services
 
             await _sellActionRepository.Add(_mapper.Map<SellActionEntity>(tradeAction));
             await _actionsNotifier.AddAction(profileDTO, tradeAction);
-            await _tradeHistoryService.AddTradeAsync(profileDTO, buyCardDTO);
+            await _tradeHistoryService.AddTradeAsync(profileDTO, sellCardDTO);
         }
 
         public async Task MoveCardsFromTransferTargetsToTransferList(string email)
