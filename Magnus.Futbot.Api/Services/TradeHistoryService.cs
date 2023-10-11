@@ -36,7 +36,7 @@ namespace Magnus.Futbot.Api.Services
                 UserId = new ObjectId(profileDTO.UserId),
                 ProfileId = profileDTO.Id,
                 SellCardDTO = sellCardDTO,
-                TradeHistoryActionType = TradeHistoryActionType.Buy,
+                TradeHistoryActionType = TradeHistoryActionType.Sell,
             };
 
             await _tradesRepository.Add(trade);
@@ -49,10 +49,16 @@ namespace Magnus.Futbot.Api.Services
                 UserId = new ObjectId(profileDTO.UserId),
                 ProfileId = profileDTO.Id,
                 BuyAndSellCardDTO = buyAndSellCardDTO,
-                TradeHistoryActionType = TradeHistoryActionType.Buy,
+                TradeHistoryActionType = TradeHistoryActionType.BuyAndSell,
             };
 
             await _tradesRepository.Add(trade);
+        }
+
+        internal async Task<List<Trade>> GetAllTrades(string profileId, string userId)
+        {
+            var trades = await _tradesRepository.GetAll(new ObjectId(userId));
+            return trades.Where(t => t.ProfileId == profileId).ToList();
         }
     }
 }

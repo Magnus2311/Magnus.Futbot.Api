@@ -113,6 +113,8 @@ builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
     builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
 }));
 
+builder.Services.AddControllers();
+
 var app = builder.Build();
 
 app.UseCors("corsapp");
@@ -127,5 +129,6 @@ app.UseEndpoints(endpoints =>
     endpoints.MapHub<CardsHub>("/hubs/cards");
     endpoints.MapHub<ActionsHub>("/hubs/actions");
 });
+app.MapControllers();
 
 app.Run();
