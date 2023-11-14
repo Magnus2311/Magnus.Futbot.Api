@@ -1,7 +1,9 @@
 ﻿using Magnus.Futbot.Common.Interfaces.Helpers;
+using Magnus.Futbot.Common.Models;
 using Magnus.Futbot.Common.Models.Database.Card;
 using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.DTOs.Trading;
+using Magnus.Futbot.Common.Models.Selenium.Actions;
 using Magnus.Futbot.Common.Models.Selenium.Trading;
 using Magnus.Futbot.Services;
 using Magnus.Futtbot.Connections.Connection.Trading;
@@ -11,6 +13,8 @@ using Magnus.Futtbot.Connections.Models;
 using Magnus.Futtbot.Connections.Models.Requests;
 using Magnus.Futtbot.Connections.Models.Responses;
 using Magnus.Futtbot.Connections.Utils;
+using System.Diagnostics.Eventing.Reader;
+using System.Threading;
 
 namespace Magnus.Futtbot.Connections.Services
 {
@@ -37,6 +41,81 @@ namespace Magnus.Futtbot.Connections.Services
         }
 
         public async Task Buy(ProfileDTO profileDTO, BuyCardDTO buyCardDTO, CancellationTokenSource cancellationTokenSource, Func<long, Task>? sellAction, Action<ProfileDTO> updateProfile)
+        {
+            if (buyCardDTO.IsBin)
+                await BinAsync(profileDTO, buyCardDTO, cancellationTokenSource, sellAction, updateProfile);
+            else
+                await BidAsync(profileDTO, buyCardDTO, cancellationTokenSource, sellAction, updateProfile);
+        }
+
+        private async Task BidAsync(ProfileDTO profileDTO, BuyCardDTO buyCardDTO, CancellationTokenSource cancellationTokenSource, Func<long, Task>? sellAction, Action<ProfileDTO> updateProfile)
+        {
+            var tradingData = new BuyingData();
+
+            profileDTO.TradePile = await _profileService.GetTradePile(profileDTO);
+            updateProfile(profileDTO);
+
+            while (tradingData.AlreadyBoughtCount < buyCardDTO.Count
+                && !cancellationTokenSource.IsCancellationRequested
+                && tradingData.LoginFailedAttempts <= 5
+                && tradingData.PauseForAWhile <= 50)
+            {
+                if (!EaData.UserXUTSIDs.ContainsKey(profileDTO.Email))
+                    await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
+
+                var availableCards = await GetAvailableForBidding(profileDTO, buyCardDTO, tradingData, cancellationTokenSource);
+
+                if (availableCards == null)
+                {
+                    tradingData.PauseForAWhile += 1;
+                    continue;
+                }
+
+                foreach (var availableCard in availableCards.auctionInfo)
+                {
+                    if (tradingData.AlreadyBoughtCount >= buyCardDTO.Count)
+                        break;
+
+                    var nextBidStep = NumberSteps.GetNextStep(availableCard.currentBid, availableCard.startingBid);
+
+                    var responseType = await BidAsync(profileDTO, availableCard, nextBidStep);
+
+                    if (responseType == ConnectionResponseType.Unauthorized)
+                    {
+                        tradingData.LoginFailedAttempts += 1;
+                        await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
+                        continue;
+                    }
+
+                    if (responseType == ConnectionResponseType.PauseForAWhile)
+                    {
+                        tradingData.PauseForAWhile += 1;
+                        continue;
+                    }
+
+                    if (responseType == ConnectionResponseType.UpgradeRequired)
+                    {
+                        profileDTO.TradePile = await _profileService.GetTradePile(profileDTO);
+                        updateProfile(profileDTO);
+                        continue;
+                    }
+
+                    if (responseType == ConnectionResponseType.Success)
+                    {
+                        tradingData.LoginFailedAttempts = 0;
+                        tradingData.PauseForAWhile = 0;
+
+                        Console.Write($"Player bidded succesfully: {buyCardDTO.Card!.Name} for {nextBidStep} coins! Account: {profileDTO.Email}");
+
+                        await Task.Delay(300);
+                    }
+                }
+
+                await Task.Delay(2000);
+            }
+        }
+
+        public async Task BinAsync(ProfileDTO profileDTO, BuyCardDTO buyCardDTO, CancellationTokenSource cancellationTokenSource, Func<long, Task>? sellAction, Action<ProfileDTO> updateProfile)
         {
             var tradingData = new BuyingData();
 
@@ -71,7 +150,7 @@ namespace Magnus.Futtbot.Connections.Services
                     }
 
                     tradingData.AlreadyBiddedTrades.Add(availableCard.tradeId);
-                    var responseType = await Buy(profileDTO, availableCard);
+                    var responseType = await BidAsync(profileDTO, availableCard, availableCard.buyNowPrice);
 
                     if (responseType == ConnectionResponseType.Unauthorized)
                     {
@@ -130,21 +209,20 @@ namespace Magnus.Futtbot.Connections.Services
                         }
 
                         if (sendResponse == ConnectionResponseType.Success && sellAction is not null)
-                                await sellAction(availableCard.itemData.id);
+                            await sellAction(availableCard.itemData.id);
                     }
                 }
             }
-
         }
 
-        public async Task<ConnectionResponseType> Buy(ProfileDTO profileDTO, Auctioninfo availableCard)
-            => await _bidConnection.BidPlayer(profileDTO.Email, availableCard.tradeId, availableCard.buyNowPrice);
-        
+        public async Task<ConnectionResponseType> BidAsync(ProfileDTO profileDTO, Auctioninfo availableCard, int price)
+            => await _bidConnection.BidPlayer(profileDTO.Email, availableCard.tradeId, price);
+
         public async Task<AvailableTransferMarketCards?> GetAvailableByRotating(ProfileDTO profileDTO, BuyCardDTO buyCardDTO, BuyingData tradingData, CancellationTokenSource cancellationTokenSource)
         {
             while (tradingData.MinBin < buyCardDTO?.Price && tradingData.MinBin <= 500 && !cancellationTokenSource.IsCancellationRequested)
             {
-                var availableCardsResponse = await GetAvailableCardsResponse(profileDTO, buyCardDTO, tradingData.MinBin);
+                var availableCardsResponse = await GetAvailableCardsByMaxBinResponse(profileDTO, buyCardDTO, tradingData.MinBin);
 
                 if (availableCardsResponse.ConnectionResponseType == ConnectionResponseType.Success
                     && availableCardsResponse.Data is not null
@@ -168,9 +246,64 @@ namespace Magnus.Futtbot.Connections.Services
             return null;
         }
 
-        private async Task<ConnectionResponse<AvailableTransferMarketCards>> GetAvailableCardsResponse(ProfileDTO profileDTO, BuyCardDTO buyCardDTO, int minBin)
+        public async Task<AvailableTransferMarketCards?> GetAvailableForBidding(ProfileDTO profileDTO, BuyCardDTO buyCardDTO, BuyingData tradingData, CancellationTokenSource cancellationTokenSource)
         {
-            var availableCardsResponse = await _transferMarketCardsConnection.GetAvailableCardsByPlayer(profileDTO, buyCardDTO.Card.EAId, minBin, buyCardDTO.Price);
+            var availableTransferCards = new List<Auctioninfo>();
+            var startingIndex = 1;
+
+            while (!cancellationTokenSource.IsCancellationRequested)
+            {
+                var availableCardsResponse = await GetAvailableCardsByPlayerResponse(profileDTO, buyCardDTO, startingIndex);
+
+                if (availableCardsResponse.ConnectionResponseType == ConnectionResponseType.Success
+                    && availableCardsResponse.Data is not null
+                    && availableCardsResponse.Data.auctionInfo.Any())
+                {
+                    tradingData.PauseForAWhile = 0;
+                    availableTransferCards.AddRange(availableCardsResponse.Data.auctionInfo);
+
+                    if (availableTransferCards.LastOrDefault()?.expires > 40)
+                    {
+                        availableCardsResponse.Data.auctionInfo = availableTransferCards
+                            .Where(c => 
+                                c.tradeState == "active"
+                                && c.bidState != "highest"
+                                && c.currentBid < buyCardDTO.Price
+                                && c.startingBid <= buyCardDTO.Price
+                                && c.expires <= 40)
+                            .ToList();
+
+                        return availableCardsResponse.Data;
+                    }
+
+                    if (startingIndex == 1)
+                        startingIndex = 20;
+                    else
+                        startingIndex += 20;
+                }
+                else if (availableCardsResponse.ConnectionResponseType == ConnectionResponseType.PauseForAWhile)
+                {
+                    tradingData.PauseForAWhile++;
+                    await Task.Delay(1000 * tradingData.PauseForAWhile);
+                }
+            }
+
+            return null;
+        }
+
+        private async Task<ConnectionResponse<AvailableTransferMarketCards>> GetAvailableCardsByMaxBinResponse(ProfileDTO profileDTO, BuyCardDTO buyCardDTO, int minBin)
+        {
+            var availableCardsResponse = await _transferMarketCardsConnection.GetAvailableCardsByPlayerAndMaxPrice(profileDTO, buyCardDTO.Card.EAId, minBin, buyCardDTO.Price);
+
+            if (availableCardsResponse.ConnectionResponseType == ConnectionResponseType.Unauthorized)
+                await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
+
+            return availableCardsResponse;
+        }
+
+        private async Task<ConnectionResponse<AvailableTransferMarketCards>> GetAvailableCardsByPlayerResponse(ProfileDTO profileDTO, BuyCardDTO buyCardDTO, int startingIndex)
+        {
+            var availableCardsResponse = await _transferMarketCardsConnection.GetAvailableCardsByPlayer(profileDTO, buyCardDTO.Card.EAId, startingIndex);
 
             if (availableCardsResponse.ConnectionResponseType == ConnectionResponseType.Unauthorized)
                 await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);

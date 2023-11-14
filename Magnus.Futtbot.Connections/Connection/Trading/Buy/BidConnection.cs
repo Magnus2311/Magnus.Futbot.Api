@@ -6,15 +6,18 @@ namespace Magnus.Futtbot.Connections.Connection.Trading.Buy
 {
     public class BidConnection
     {
-        private readonly HttpClient _httpClient;
+        private HttpClient _httpClient;
 
         public BidConnection(HttpClient httpClient)
         {
-            _httpClient = httpClient;
         }
 
         public async Task<ConnectionResponseType> BidPlayer(string username, long tradeId, int bidValue)
         {
+            var handler = new HttpClientHandler();
+            handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+
+            _httpClient = new HttpClient(handler);
             var request = new HttpRequestMessage(HttpMethod.Put, $"https://utas.mob.v2.fut.ea.com/ut/game/fc24/trade/{tradeId}/bid");
             request.SetCommonHeaders(username);
 
