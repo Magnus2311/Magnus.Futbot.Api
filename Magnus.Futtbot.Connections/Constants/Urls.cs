@@ -4,7 +4,7 @@
     {
         public static string Main => "https://www.ea.com/ea-sports-fc/ultimate-team/web-app/";
 
-        public static string Nucleus => "https://accounts.ea.com/connect/auth?accessToken=&client_id=FC24_JS_WEB_APP&display=web2/login&hide_create=true&locale=en_US&prompt=login&redirect_uri=https://www.ea.com/ea-sports-fc/ultimate-team/web-app/auth.html&release_type=prod&response_type=token&scope=basic.identity+offline+signin+basic.entitlement+basic.persona";
+        public static string Nucleus => "https://accounts.ea.com/connect/auth?accessToken=&client_id=FC25_JS_WEB_APP&display=web2/login&hide_create=true&locale=en_US&prompt=login&redirect_uri=https://www.ea.com/ea-sports-fc/ultimate-team/web-app/auth.html&release_type=prod&response_type=token&scope=basic.identity+offline+signin+basic.entitlement+basic.persona";
 
         public static string Personas => "https://www.easports.com/fifa/api/personas";
 

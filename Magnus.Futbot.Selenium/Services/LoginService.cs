@@ -26,8 +26,8 @@ namespace Magnus.Futbot.Services
             IWebElement passwordInput = driver.FindElement(By.CssSelector("#password"));
             passwordInput.SendKeys(password);
 
-            IWebElement rememberMeInput = driver.FindElement(By.CssSelector("#rememberMe"));
-            if (!rememberMeInput.Selected) rememberMeInput.Click();
+            var rememberMeLabel = driver.FindElement(By.CssSelector("label[for='rememberMe']"));
+            if (!rememberMeLabel.Selected) rememberMeLabel!.Click();
 
             IWebElement signInButton = driver.FindElement(By.CssSelector("#logInBtn"));
             signInButton.Click();

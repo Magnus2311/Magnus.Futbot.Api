@@ -6,6 +6,8 @@ using Titanium.Web.Proxy;
 using Titanium.Web.Proxy.EventArguments;
 using Titanium.Web.Proxy.Models;
 using Magnus.Futbot.Common.Events;
+using WebDriverManager.DriverConfigs.Impl;
+using WebDriverManager;
 
 namespace Magnus.Futbot.Services
 {
@@ -79,6 +81,9 @@ namespace Magnus.Futbot.Services
             };
 
             chromeOptions.Proxy = proxy;
+
+            new DriverManager().SetUpDriver(new ChromeConfig());
+
             var chromeDriver = new ChromeDriver(chromeOptions);
             var driverInstsance = new DriverInstance(chromeDriver, proxyServer);
             _chromeDrivers.TryAdd(username, driverInstsance);

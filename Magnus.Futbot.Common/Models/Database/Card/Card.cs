@@ -68,7 +68,7 @@ namespace Magnus.Futbot.Common.Models.Database.Card
 
     public class AlternatePosition
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string Label { get; set; }
 
         [JsonPropertyName("shortLabel")]
@@ -77,7 +77,7 @@ namespace Magnus.Futbot.Common.Models.Database.Card
 
     public class PlayStyle
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string Label { get; set; }
 
         [JsonPropertyName("imageUrl")]
@@ -118,12 +118,22 @@ namespace Magnus.Futbot.Common.Models.Database.Card
 
     public class Position
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         [JsonPropertyName("shortLabel")]
         public string ShortLabel { get; set; }
 
         public string Label { get; set; }
+
+        public Positiontype PositionType { get; set; }
+    }
+
+    public class Positiontype
+    {
+        public string Id { get; set; }
+
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
     }
 
     public class Stats

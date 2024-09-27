@@ -16,7 +16,7 @@ namespace Magnus.Futtbot.Connections.Connection.Trading.Sell
 
         public async Task<ConnectionResponseType> SellCard(string username, SellCardRequest sellCardRequest)
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://utas.mob.v2.fut.ea.com/ut/game/fc24/auctionhouse");
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://utas.mob.v4.prd.futc-ext.gcp.ea.com/ut/game/fc25/auctionhouse");
             request.SetCommonHeaders(username);
             var content = new StringContent(JsonSerializer.Serialize(sellCardRequest), null, "application/json");
             request.Content = content;
@@ -40,7 +40,7 @@ namespace Magnus.Futtbot.Connections.Connection.Trading.Sell
 
         public async Task<ConnectionResponseType> RelistAll(string username)
         {
-            var request = new HttpRequestMessage(HttpMethod.Put, "https://utas.mob.v2.fut.ea.com/ut/game/fc24/auctionhouse/relist");
+            var request = new HttpRequestMessage(HttpMethod.Put, "https://utas.mob.v4.prd.futc-ext.gcp.ea.com/ut/game/fc25/auctionhouse/relist");
             request.SetCommonHeaders(username);
 
             var response = await _httpClient.SendAsync(request);
