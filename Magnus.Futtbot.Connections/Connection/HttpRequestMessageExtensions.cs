@@ -8,7 +8,7 @@ public static class HttpRequestMessageExtensions
         request.Headers.Add("Accept-Encoding", "gzip, deflate, br");
         request.Headers.Add("Accept-Language", "en-US,en;q=0.9");
         request.Headers.Add("Connection", "keep-alive");
-        request.Headers.Add("Host", "utas.mob.v2.fut.ea.com");
+        request.Headers.Add("Host", "utas.mob.v4.prd.futc-ext.gcp.ea.com");
         request.Headers.Add("Origin", "https://www.ea.com");
         request.Headers.Add("Referer", "https://www.ea.com/");
         request.Headers.Add("Sec-Fetch-Dest", "empty");

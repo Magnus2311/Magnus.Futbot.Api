@@ -2,7 +2,6 @@
 using Magnus.Futbot.Api.Hubs.Interfaces;
 using Magnus.Futbot.Api.Services.Interfaces;
 using Magnus.Futbot.Common.Models.Database.Card;
-using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.DTOs.Trading;
 using Microsoft.AspNetCore.SignalR;
 
@@ -21,7 +20,13 @@ namespace Magnus.Futbot.Api.Hubs
         }
 
         public async Task GetCards(string name)
-            => await Clients.Client(Context.ConnectionId).OnCardsLoaded(_cardsCache.Cards.Where(c => c.Name.ToUpperInvariant().Contains(name.ToUpperInvariant())).Take(20));
+            => await Clients.Client(Context.ConnectionId).OnCardsLoaded(_cardsCache
+                .Cards
+                .Where(c => c.Name.ToUpperInvariant().Contains(name.ToUpperInvariant()))
+                .OrderByDescending(c => c.OverallRating)
+                .GroupBy(c => new { c.Name, c.OverallRating })
+                .Select(g => g.First()) 
+                .Take(20));
         
         public Card? GetCardById(long cardId)
             => _cardsCache?.Cards?.FirstOrDefault(c => c.EAId == cardId);

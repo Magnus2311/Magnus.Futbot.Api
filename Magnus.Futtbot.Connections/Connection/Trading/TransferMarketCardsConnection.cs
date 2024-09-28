@@ -20,13 +20,21 @@ namespace Magnus.Futtbot.Connections.Connection.Trading
         public async Task<ConnectionResponse<AvailableTransferMarketCards>> GetAvailableCardsByPlayerAndMaxPrice(ProfileDTO profileDTO, long playerEaId, int minBin, int maxBin)
         {
             Thread.Sleep(1000);
-            Console.WriteLine($"Trying to get players for {playerEaId} with maxBin: {maxBin} on {DateTime.Now:dd:MM:yyyy hh:mm:ss)}");
+            Console.WriteLine($"Trying to get players for {playerEaId} with minBin: {minBin} and maxBin: {maxBin} on {DateTime.Now:dd:MM:yyyy hh:mm:ss)}");
             var handler = new HttpClientHandler();
             handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
             _httpClient = new HttpClient(handler);
 
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://utas.mob.v4.prd.futc-ext.gcp.ea.com/ut/game/fc25/transfermarket?num=21&start=1&type=player&maskedDefId={playerEaId}&minb={minBin}&maxb={maxBin}");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://utas.mob.v4.prd.futc-ext.gcp.ea.com/ut/game/fc25/transfermarket?num=21&start=0&type=player&maskedDefId={playerEaId}&minb={minBin}&maxb={maxBin}");
+
+            request.Headers.CacheControl = new CacheControlHeaderValue
+            {
+                NoCache = true,
+                NoStore = true,
+                MustRevalidate = true
+            };
+
             request.SetCommonHeaders(profileDTO.Email);
             var content =  new StringContent(string.Empty);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
