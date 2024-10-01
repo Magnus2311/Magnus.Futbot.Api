@@ -32,6 +32,13 @@ namespace Magnus.Futbot.Database.Repositories
             await _collection.ReplaceOneAsync(Builders<TEntity>.Filter.Eq(e => e.Id, entity.Id), entity);
         }
 
+        public async Task Delete(IEnumerable<ObjectId> ids)
+        {
+            var entity = await (await _collection.FindAsync(e => ids.Contains(e.Id))).FirstOrDefaultAsync();
+            entity.IsDeleted = true;
+            await _collection.ReplaceOneAsync(Builders<TEntity>.Filter.Eq(e => e.Id, entity.Id), entity);
+        }
+
         public async Task<TEntity> Recover(ObjectId id)
         {
             var entity = await (await _collection.FindAsync(e => e.Id == id)).FirstOrDefaultAsync();

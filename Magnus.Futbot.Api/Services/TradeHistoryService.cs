@@ -58,7 +58,17 @@ namespace Magnus.Futbot.Api.Services
         internal async Task<List<Trade>> GetAllTrades(string profileId, string userId)
         {
             var trades = await _tradesRepository.GetAll(new ObjectId(userId));
-            return trades.Where(t => t.ProfileId == profileId).ToList();
+            var allProfileTrades = trades.Where(t => t.ProfileId == profileId).ToList();
+
+            allProfileTrades.Reverse();
+
+            var lastTrades = allProfileTrades.Take(51).ToList();
+
+            var tradesToDelete = allProfileTrades.Where(apt => !lastTrades.Select(lt => lt.Id).Contains(apt.Id));
+
+            await _tradesRepository.Delete(tradesToDelete.Select(t => t.Id));
+
+            return lastTrades;
         }
     }
 }
