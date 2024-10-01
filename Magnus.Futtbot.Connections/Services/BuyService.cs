@@ -231,6 +231,8 @@ namespace Magnus.Futtbot.Connections.Services
                 if (availableCardsResponse.ConnectionResponseType == ConnectionResponseType.PauseForAWhile)
                 {
                     tradingData.PauseForAWhile++;
+                    if (tradingData.PauseForAWhile > 10) cancellationTokenSource.Cancel();
+
                     Thread.Sleep(1000 * tradingData.PauseForAWhile);
                 }
 
