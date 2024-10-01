@@ -20,10 +20,10 @@
         public int startingBid { get; set; }
         public int confidenceValue { get; set; }
         public int expires { get; set; }
-        public object sellerName { get; set; }
+        public string sellerName { get; set; }
         public int sellerEstablished { get; set; }
         public int sellerId { get; set; }
-        public bool? tradeOwner { get; set; }
+        public bool tradeOwner { get; set; }
         public string tradeIdStr { get; set; }
     }
 }

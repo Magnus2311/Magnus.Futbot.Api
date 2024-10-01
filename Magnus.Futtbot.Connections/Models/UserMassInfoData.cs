@@ -223,13 +223,12 @@
         public int[] lifetimeStatsArray { get; set; }
         public int skillmoves { get; set; }
         public int weakfootabilitytypecode { get; set; }
-        public int attackingworkrate { get; set; }
-        public int defensiveworkrate { get; set; }
         public int preferredfoot { get; set; }
+        public int marketAverage { get; set; }
         public string[] possiblePositions { get; set; }
         public int gender { get; set; }
         public int[] baseTraits { get; set; }
-        public object[] iconTraits { get; set; }
+        public int[] plusRoles { get; set; }
     }
 
     public class Loanplayerclientdata

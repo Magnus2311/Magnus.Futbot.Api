@@ -3,7 +3,6 @@ using Magnus.Futbot.Common.Models;
 using Magnus.Futbot.Common.Models.Database.Card;
 using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.DTOs.Trading;
-using Magnus.Futbot.Common.Models.Selenium.Actions;
 using Magnus.Futbot.Common.Models.Selenium.Trading;
 using Magnus.Futbot.Services;
 using Magnus.Futtbot.Connections.Connection.Trading;
@@ -13,9 +12,6 @@ using Magnus.Futtbot.Connections.Models;
 using Magnus.Futtbot.Connections.Models.Requests;
 using Magnus.Futtbot.Connections.Models.Responses;
 using Magnus.Futtbot.Connections.Utils;
-using System.Diagnostics.Eventing.Reader;
-using System.Threading;
-
 namespace Magnus.Futtbot.Connections.Services
 {
     public class BuyService
@@ -249,7 +245,7 @@ namespace Magnus.Futtbot.Connections.Services
         public async Task<AvailableTransferMarketCards?> GetAvailableForBidding(ProfileDTO profileDTO, BuyCardDTO buyCardDTO, BuyingData tradingData, CancellationTokenSource cancellationTokenSource)
         {
             var availableTransferCards = new List<Auctioninfo>();
-            var startingIndex = 1;
+            var startingIndex = 0;
 
             while (!cancellationTokenSource.IsCancellationRequested)
             {

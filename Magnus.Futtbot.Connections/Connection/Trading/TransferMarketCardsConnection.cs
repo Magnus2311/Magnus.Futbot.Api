@@ -66,7 +66,7 @@ namespace Magnus.Futtbot.Connections.Connection.Trading
 
         public async Task<ConnectionResponse<AvailableTransferMarketCards>> GetAvailableCardsByPlayer(ProfileDTO profileDTO, long playerEaId, int startingIndex)
         {
-            Thread.Sleep(1000);
+            Thread.Sleep(5000);
             Console.WriteLine($"Trying to get bid players for {playerEaId} on {DateTime.Now:dd:MM:yyyy hh:mm:ss)}");
             var handler = new HttpClientHandler();
             handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;

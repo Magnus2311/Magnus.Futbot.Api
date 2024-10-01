@@ -39,7 +39,7 @@ namespace Magnus.Futtbot.Connections.Services
 
         public SellingData SellingData { get; }
 
-        public async Task SellCard(ProfileDTO profileDTO, SellCardDTO sellCardDTO, CancellationTokenSource cancellationTokenSource)
+        public async Task SellCard(ProfileDTO profileDTO, SellCardDTO sellCardDTO, CancellationTokenSource cancellationTokenSource, Action<ProfileDTO> updateProfile)
         {
             if (!EaData.UserXUTSIDs.ContainsKey(profileDTO.Email))
                 await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
@@ -48,13 +48,13 @@ namespace Magnus.Futtbot.Connections.Services
             if (getUserPileResponse.ConnectionResponseType == ConnectionResponseType.Unauthorized)
             {
                 await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
-                await SellCard(profileDTO, sellCardDTO, cancellationTokenSource);
+                await SellCard(profileDTO, sellCardDTO, cancellationTokenSource, updateProfile);
                 return;
             }
 
             if (getUserPileResponse.Data is null)
             {
-                await SellCard(profileDTO, sellCardDTO, cancellationTokenSource);
+                await SellCard(profileDTO, sellCardDTO, cancellationTokenSource, updateProfile);
                 return;
             }
 
@@ -68,7 +68,7 @@ namespace Magnus.Futtbot.Connections.Services
 
                 if (sendWonItemsToTransferListResponse == ConnectionResponseType.Unauthorized)
                 {
-                    await SellCard(profileDTO, sellCardDTO, cancellationTokenSource);
+                    await SellCard(profileDTO, sellCardDTO, cancellationTokenSource, updateProfile);
                     return;
                 }
 
@@ -106,6 +106,36 @@ namespace Magnus.Futtbot.Connections.Services
                                     Card = card,
                                     Count = 1
                                 });
+
+                            if (profileDTO.TradePile.TransferList.AvailableItems.Any(at => at.Card == card))
+                            {
+                                var availableCard = profileDTO.TradePile.TransferList.AvailableItems.FirstOrDefault(at => at.Card == card);
+                                if (availableCard != null)
+                                {
+                                    if (availableCard.Count <= 1)
+                                        profileDTO.TradePile.TransferList.AvailableItems.Remove(availableCard);
+                                    else
+                                    {
+                                        availableCard.Count--;
+                                    }
+                                }
+                            }
+
+                            if (profileDTO.TradePile.TransferList.UnsoldItems.Any(at => at.Card == card))
+                            {
+                                var unsoldCard = profileDTO.TradePile.TransferList.UnsoldItems.FirstOrDefault(at => at.Card == card);
+                                if (unsoldCard != null)
+                                {
+                                    if (unsoldCard.Count <= 1)
+                                        profileDTO.TradePile.TransferList.UnsoldItems.Remove(unsoldCard);
+                                    else
+                                    {
+                                        unsoldCard.Count--;
+                                    }
+                                }
+                            }
+
+                            updateProfile(profileDTO);
                         }
                     }
                 }
@@ -116,7 +146,7 @@ namespace Magnus.Futtbot.Connections.Services
         {
             foreach (var player in playersForSale.Take(playersToSell))
             {
-                Thread.Sleep(600);
+                Thread.Sleep(1500);
                 var sellCardResponse = await _sellConnection.SellCard(profileDTO.Email, new SellCardRequest(sellCardDTO.FromBin, DurationType.OneHour, new SellCardItemData(player.itemData.id), sellCardDTO.FromBid));
                 if (sellCardResponse == ConnectionResponseType.Unauthorized)
                     break;
