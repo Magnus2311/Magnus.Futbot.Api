@@ -7,8 +7,9 @@ using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.DTOs.Trading;
 using Magnus.Futbot.Common.Models.Selenium.Actions;
 using Magnus.Futbot.Database.Models.Actions;
-using Magnus.Futbot.Database.Repositories;
 using Magnus.Futbot.Database.Repositories.Actions;
+using Magnus.Futtbot.Connections.Connection;
+using Magnus.Futtbot.Connections.Enums;
 using Magnus.Futtbot.Connections.Services;
 using Microsoft.AspNetCore.SignalR;
 
@@ -27,13 +28,14 @@ namespace Magnus.Futbot.Api.Services
         private readonly SellService _sellService;
         private readonly UserActionsService _userActionsService;
         private readonly TradeHistoryService _tradeHistoryService;
+        private readonly GetUserPileConnection _getUserPileConnection;
         private readonly Action<ProfileDTO> _updateProfile;
 
         public TradingService(ProfilesService profilesService, BuyActionRepository buyActionRepository,
             SellActionRepository sellActionRepository, MoveActionRepository moveActionRepository,
             IHubContext<ProfilesHub, IProfilesClient> profilesHubContext, IActionsNotifier actionsNotifier,
             IMapper mapper, BuyService buyService, SellService sellService, UserActionsService userActionsService,
-            TradeHistoryService tradeHistoryService)
+            TradeHistoryService tradeHistoryService, GetUserPileConnection getUserPileConnection)
         {
             _profilesService = profilesService;
             _buyActionRepository = buyActionRepository;
@@ -46,6 +48,7 @@ namespace Magnus.Futbot.Api.Services
             _sellService = sellService;
             _userActionsService = userActionsService;
             _tradeHistoryService = tradeHistoryService;
+            _getUserPileConnection = getUserPileConnection;
             _updateProfile = new Action<ProfileDTO>(
                 async (profileDTO) => 
                 { 
@@ -158,6 +161,30 @@ namespace Magnus.Futbot.Api.Services
             var profileDTO = await _profilesService.GetByEmail(email);
             var tknSrc = new CancellationTokenSource();
             await _sellService.RelistAll(profileDTO, tknSrc);
+            await _profilesService.RefreshProfile(profileDTO);
+        }
+
+        public async Task ClearSoldCards(string email)
+        {
+            var profileDTO = await _profilesService.GetByEmail(email);
+            var tknSrc = new CancellationTokenSource();
+
+            profileDTO = await _profilesService.RefreshProfile(profileDTO);
+
+            var clearSoldCardsResponse = await _sellService.ClearSoldCards(profileDTO, tknSrc);
+            if (clearSoldCardsResponse != ConnectionResponseType.Success)
+                return;
+
+            var tradePileResponse = await _getUserPileConnection.GetUserTradePile(email);
+            if (tradePileResponse == null 
+                || tradePileResponse.Data == null 
+                || tradePileResponse.ConnectionResponseType != ConnectionResponseType.Success) return;
+
+            var soldCards = tradePileResponse.Data.auctionInfo
+                .Where(ai => ai.tradeState == "closed");
+
+            profileDTO.History.AddRange(soldCards);
+
             await _profilesService.RefreshProfile(profileDTO);
         }
     }

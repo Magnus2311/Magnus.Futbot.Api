@@ -1,5 +1,5 @@
-﻿using Magnus.Futtbot.Connections.Enums;
-using Magnus.Futtbot.Connections.Models;
+﻿using Magnus.Futbot.Common.fcmodels;
+using Magnus.Futtbot.Connections.Enums;
 using Magnus.Futtbot.Connections.Models.Responses;
 using System.Net;
 using System.Net.Http.Headers;

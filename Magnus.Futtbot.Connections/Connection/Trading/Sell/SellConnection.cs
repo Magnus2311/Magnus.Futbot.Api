@@ -59,5 +59,27 @@ namespace Magnus.Futtbot.Connections.Connection.Trading.Sell
 
             return ConnectionResponseType.Success;
         }
+
+        public async Task<ConnectionResponseType> ClearSold(string username)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Put, "https://utas.mob.v4.prd.futc-ext.gcp.ea.com/ut/game/fc25/auctionhouse/relist");
+            request.SetCommonHeaders(username);
+
+            var response = await _httpClient.SendAsync(request);
+            if (response.StatusCode == HttpStatusCode.UnavailableForLegalReasons
+                || response.StatusCode == HttpStatusCode.TooManyRequests)
+            {
+                Thread.Sleep(1000);
+                return ConnectionResponseType.PauseForAWhile;
+            }
+
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+                return ConnectionResponseType.Unauthorized;
+
+            if (!response.IsSuccessStatusCode)
+                return ConnectionResponseType.PauseForAWhile;
+
+            return ConnectionResponseType.Success;
+        }
     }
 }

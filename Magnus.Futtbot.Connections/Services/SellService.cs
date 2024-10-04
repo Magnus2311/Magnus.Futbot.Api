@@ -1,4 +1,5 @@
-﻿using Magnus.Futbot.Common.Interfaces.Helpers;
+﻿using Magnus.Futbot.Common.fcmodels;
+using Magnus.Futbot.Common.Interfaces.Helpers;
 using Magnus.Futbot.Common.Models.Database.Card;
 using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.DTOs.Trading;
@@ -184,6 +185,22 @@ namespace Magnus.Futtbot.Connections.Services
                 await RelistAll(profileDTO, tknSrc);
                 return;
             }
+        }
+
+        public async Task<ConnectionResponseType> ClearSoldCards(ProfileDTO profileDTO, CancellationTokenSource tknSrc)
+        {
+            if (!EaData.UserXUTSIDs.ContainsKey(profileDTO.Email))
+                await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
+
+            var clearSoldCardsResponse = await _sellConnection.ClearSold(profileDTO.Email);
+            if (clearSoldCardsResponse == ConnectionResponseType.Unauthorized)
+            {
+                await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
+                clearSoldCardsResponse = await ClearSoldCards(profileDTO, tknSrc);
+                return clearSoldCardsResponse;
+            }
+
+            return clearSoldCardsResponse;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Magnus.Futtbot.Connections.Models
+﻿namespace Magnus.Futbot.Common.fcmodels
 {
     public class UserMassInfoData
     {

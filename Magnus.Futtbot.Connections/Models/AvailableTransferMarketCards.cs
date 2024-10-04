@@ -1,4 +1,6 @@
-﻿namespace Magnus.Futtbot.Connections.Models
+﻿using Magnus.Futbot.Common.fcmodels;
+
+namespace Magnus.Futtbot.Connections.Models
 {
     public class AvailableTransferMarketCards
     {

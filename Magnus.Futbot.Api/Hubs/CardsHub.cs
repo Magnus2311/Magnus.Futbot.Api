@@ -48,5 +48,8 @@ namespace Magnus.Futbot.Api.Hubs
 
         public Task RelistAllForProfile(string email)
             => _tradingService.RelistPlayersByProfile(email);
+
+        public Task ClearSoldItemsForProfile(string email)
+            => _tradingService.ClearSoldCards(email);
     }
 }
