@@ -1,4 +1,5 @@
-﻿using Magnus.Futbot.Common.Interfaces.Helpers;
+﻿using Magnus.Futbot.Common.fcmodels;
+using Magnus.Futbot.Common.Interfaces.Helpers;
 using Magnus.Futbot.Common.Models;
 using Magnus.Futbot.Common.Models.Database.Card;
 using Magnus.Futbot.Common.Models.DTOs;
@@ -173,6 +174,10 @@ namespace Magnus.Futtbot.Connections.Services
                         profileDTO.Coins -= availableCard.buyNowPrice;
 
                         var card = _cards.FirstOrDefault(c => c.EAId == availableCard.itemData.assetId);
+
+                        if (availableCard != null)
+                            profileDTO.History.Add(availableCard);
+
                         if (profileDTO.TradePile.TransferList.ActiveTransfers.Any(at => at.Card == card))
                             profileDTO.TradePile.TransferList.ActiveTransfers.FirstOrDefault(at => at.Card == card)!.Count++;
                         else
@@ -263,7 +268,7 @@ namespace Magnus.Futtbot.Connections.Services
                     if (availableTransferCards.LastOrDefault()?.expires > 40)
                     {
                         availableCardsResponse.Data.auctionInfo = availableTransferCards
-                            .Where(c => 
+                            .Where(c =>
                                 c.tradeState == "active"
                                 && c.bidState != "highest"
                                 && c.currentBid < buyCardDTO.Price

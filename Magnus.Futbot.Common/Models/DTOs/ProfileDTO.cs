@@ -1,4 +1,5 @@
-﻿using Magnus.Futbot.Common.Models.Selenium.Trading;
+﻿using Magnus.Futbot.Common.fcmodels;
+using Magnus.Futbot.Common.Models.Selenium.Trading;
 
 namespace Magnus.Futbot.Common.Models.DTOs
 {
@@ -13,6 +14,8 @@ namespace Magnus.Futbot.Common.Models.DTOs
         public string UTSID { get; set; } = string.Empty;
         public TradePile TradePile { get; set; } = new TradePile();
         public bool AutoRelist { get; set; }
+
+        public List<Auctioninfo> History { get; set; } = new List<Auctioninfo>();
 
         public override int GetHashCode()
             => HashCode.Combine(Email);

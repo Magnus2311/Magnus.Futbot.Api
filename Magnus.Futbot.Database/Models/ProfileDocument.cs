@@ -1,4 +1,5 @@
 ﻿using Magnus.Futbot.Common;
+using Magnus.Futbot.Common.fcmodels;
 using Magnus.Futbot.Common.Models.Database.Interfaces;
 using Magnus.Futbot.Common.Models.Selenium.Trading;
 using MongoDB.Bson;
@@ -18,11 +19,9 @@ namespace Magnus.Futbot.Database.Models
         public DateTime UpdatedDate { get; set; } = DateTime.Now;
         public ProfileStatusType ProfilesStatus { get; set; }
         public int Coins { get; set; }
-        public int ActiveBidsCount { get; set; }
-        public int WonTargetsCount { get; set; }
-        public int TransferListCount { get; set; }
-        public int UnassignedCount { get; set; }
-        public int Outbidded { get; set; }
+
+        public List<Auctioninfo> History { get; set; } = new List<Auctioninfo>();
+
         public TradePile TradePile { get; set; } = new TradePile();
         public bool AutoRelist { get; set; }
     }
