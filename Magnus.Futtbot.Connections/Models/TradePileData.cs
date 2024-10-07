@@ -15,7 +15,7 @@
         public int buyNowPrice { get; set; }
         public int currentBid { get; set; }
         public int offers { get; set; }
-        public bool watched { get; set; }
+        public bool? watched { get; set; }
         public string bidState { get; set; }
         public int startingBid { get; set; }
         public int confidenceValue { get; set; }
@@ -23,7 +23,7 @@
         public string sellerName { get; set; }
         public int sellerEstablished { get; set; }
         public int sellerId { get; set; }
-        public bool tradeOwner { get; set; }
+        public bool? tradeOwner { get; set; }
         public string tradeIdStr { get; set; }
     }
 }

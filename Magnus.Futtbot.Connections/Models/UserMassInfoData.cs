@@ -11,7 +11,7 @@
         public Clubuser clubUser { get; set; }
         public Activemessages activeMessages { get; set; }
         public Onboardingclientdata onboardingClientData { get; set; }
-        public bool isPlayerPicksTemporaryStorageNotEmpty { get; set; }
+        public bool? isPlayerPicksTemporaryStorageNotEmpty { get; set; }
     }
 
     public class Errors
@@ -48,9 +48,9 @@
         public string personaName { get; set; }
         public Squadlist squadList { get; set; }
         public Unopenedpacks unopenedPacks { get; set; }
-        public bool purchased { get; set; }
+        public bool? purchased { get; set; }
         public Reliability reliability { get; set; }
-        public bool seasonTicket { get; set; }
+        public bool? seasonTicket { get; set; }
         public string accountCreatedPlatformName { get; set; }
         public int unassignedPileSize { get; set; }
         public Feature feature { get; set; }
@@ -122,7 +122,7 @@
 
     public class Platform
     {
-        public bool hasTid { get; set; }
+        public bool? hasTid { get; set; }
     }
 
     public class Currency
@@ -137,7 +137,7 @@
         public long id { get; set; }
         public int timestamp { get; set; }
         public string formation { get; set; }
-        public bool untradeable { get; set; }
+        public bool? untradeable { get; set; }
         public int assetId { get; set; }
         public int rating { get; set; }
         public string itemType { get; set; }
@@ -160,24 +160,24 @@
         public string description { get; set; }
         public int resourceGameYear { get; set; }
         public int[] attributeArray { get; set; }
-        public bool authenticity { get; set; }
+        public bool? authenticity { get; set; }
         public int showCasePriority { get; set; }
         public int category { get; set; }
         public int year { get; set; }
-        public bool isPlatformSpecific { get; set; }
+        public bool? isPlatformSpecific { get; set; }
         public string biodescription { get; set; }
         public int stadiumid { get; set; }
         public int capacity { get; set; }
         public int tifoSupportType { get; set; }
-        public bool tifoRestricted { get; set; }
-        public bool bannerRestricted { get; set; }
-        public bool ballRestricted { get; set; }
+        public bool? tifoRestricted { get; set; }
+        public bool? bannerRestricted { get; set; }
+        public bool? ballRestricted { get; set; }
         public int preferredTime1 { get; set; }
         public int preferredTime2 { get; set; }
         public int preferredWeather { get; set; }
-        public bool undiscardable { get; set; }
+        public bool? undiscardable { get; set; }
         public int tier { get; set; }
-        public bool myStadium { get; set; }
+        public bool? myStadium { get; set; }
         public int weightrare { get; set; }
         public string header { get; set; }
         public int chantsCount { get; set; }
@@ -194,7 +194,7 @@
         public long id { get; set; }
         public int timestamp { get; set; }
         public string formation { get; set; }
-        public bool untradeable { get; set; }
+        public bool? untradeable { get; set; }
         public int assetId { get; set; }
         public int rating { get; set; }
         public string itemType { get; set; }
@@ -245,7 +245,7 @@
     public class Squad
     {
         public int id { get; set; }
-        public bool valid { get; set; }
+        public bool? valid { get; set; }
         public long personaId { get; set; }
         public string formation { get; set; }
         public object rating { get; set; }
@@ -270,7 +270,7 @@
         public long id { get; set; }
         public int timestamp { get; set; }
         public string formation { get; set; }
-        public bool untradeable { get; set; }
+        public bool? untradeable { get; set; }
         public int assetId { get; set; }
         public int rating { get; set; }
         public string itemType { get; set; }
