@@ -60,6 +60,31 @@ namespace Magnus.Futtbot.Connections.Services
                 if (!EaData.UserXUTSIDs.ContainsKey(profileDTO.Email))
                     await _loginSeleniumService.Login(profileDTO.Email, profileDTO.Password);
 
+                if (sellAction != null)
+                {
+                    // Да се добави в сингълтън колекция и някакъв worker да минава и да я чисти и да ги продава
+
+                    //var availableItems = tradePileResponse
+                    //.Data
+                    //.auctionInfo
+                    //.Where(ai => ai.tradeState is null)
+                    //.Where(ai => ai.itemData.pile == (int)PileType.Available)
+                    //.GroupBy(ai => ai.itemData.assetId)
+                    //.Select(g => new
+                    //{
+                    //    AuctionInfo = g.First(),
+                    //    Count = g.Count()
+                    //})
+                    //.Select(ai =>
+                    //    new TransferCard
+                    //    {
+                    //        Card = cards.FirstOrDefault(c => c.EAId == ai.AuctionInfo.itemData.assetId),
+                    //        Count = ai.Count
+                    //    }
+                    //).ToList();
+                }
+               
+
                 var availableCards = await GetAvailableForBidding(profileDTO, buyCardDTO, tradingData, cancellationTokenSource);
 
                 if (availableCards == null)
