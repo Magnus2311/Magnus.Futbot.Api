@@ -18,7 +18,6 @@ using Magnus.Futbot.Database.Repositories.Actions;
 using Magnus.Futbot.Initializer.Connections;
 using Magnus.Futbot.Selenium.Trading.Connections;
 using Magnus.Futbot.Services;
-using Magnus.Futbot.Storage;
 using Magnus.Futtbot.Connections.Connection;
 using Magnus.Futtbot.Connections.Connection.Moving;
 using Magnus.Futtbot.Connections.Connection.Trading;
@@ -98,10 +97,6 @@ builder.Services
     //.AddHostedService<RefreshPlayersWorker>()
     //.AddHostedService<RelistPlayersWorker>()
     .AddHostedService<DeactivateAllActionsOnStartUp>();
-
-// Azure
-builder.Services
-    .AddSingleton<AzureStorage>();
 
 builder.Services
     .AddSingleton<IUserIdProvider, UserProvider>();
