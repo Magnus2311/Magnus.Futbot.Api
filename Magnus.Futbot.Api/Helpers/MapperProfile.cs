@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Magnus.Futbot.Api.Models.Requests;
+using Magnus.Futbot.Api.Models.Responses;
 using Magnus.Futbot.Common.Models.DTOs;
 using Magnus.Futbot.Common.Models.DTOs.Trading;
 using Magnus.Futbot.Common.Models.DTOs.Trading.Actions;
@@ -70,6 +72,13 @@ namespace Magnus.Futbot.Api.Helpers
             CreateMap<MoveActionDTO, MoveAction>().ReverseMap();
             CreateMap<PauseActionDTO, PauseAction>().ReverseMap();
             CreateMap<Trade, TradeDTO>().ReverseMap();
+
+            CreateMap<AddPlayerPricesRequest, PlayerPrice>()
+                .ForMember(dest => dest.Prices, options => options.MapFrom(src => src.Prices.Select(p => new PriceEntry { Prize = p })));
+
+            CreateMap<PlayerPrice, GetPriceResponse>()
+                .ForMember(dest => dest.Prices, options => options.MapFrom(src => src.Prices.Select(p => p.Prize)))
+                .ForMember(dest => dest.LastUpdated, options => options.MapFrom(src => src.Prices.OrderByDescending(p => p.CreatedDate).FirstOrDefault().CreatedDate));
         }
     }
 }

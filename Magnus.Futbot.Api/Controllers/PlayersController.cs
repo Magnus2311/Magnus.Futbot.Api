@@ -1,5 +1,6 @@
 ﻿using Magnus.Futbot.Api.Caches;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
 
 namespace Magnus.Futbot.Api.Controllers
 {

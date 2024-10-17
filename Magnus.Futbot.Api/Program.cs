@@ -50,7 +50,10 @@ builder.Services
     .AddTransient<BuyActionRepository>()
     .AddTransient<SellActionRepository>()
     .AddTransient<PauseActionRepository>()
-    .AddTransient<TradesRepository>();
+    .AddTransient<TradesRepository>()
+    .AddTransient<PriceRepository>();
+
+builder.Services.AddMemoryCache();
 
 // Http Clients
 builder.Services.AddHttpClient<SsoConnectionService>();
@@ -73,7 +76,8 @@ builder.Services
     .AddTransient<IActionsNotifier, ActionsNotifier>()
     .AddTransient<ProfilesNotifier>()
     .AddTransient<ActionsDeactivator>()
-    .AddTransient<TradeHistoryService>();
+    .AddTransient<TradeHistoryService>()
+    .AddTransient<PriceService>();
 
 // Selenium Services
 builder.Services
