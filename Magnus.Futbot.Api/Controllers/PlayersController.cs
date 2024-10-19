@@ -9,13 +9,15 @@ namespace Magnus.Futbot.Api.Controllers
     public class PlayersController(CardsCache cardsCache) : Controller
     {
         [HttpGet]
-        public IActionResult Get(int page = 1, int pageSize = 50)
+        public IActionResult Get(int page = 1, int pageSize = 50, string search = "")
         {
-            var totalCount = cardsCache.Cards.Count; 
-            
-            var pagedPlayers = cardsCache
+            var totalFilteredCards = cardsCache
                 .Cards
+                .Where(c => c.Name.ToLower().Contains(search.ToLower()))
                 .OrderByDescending(c => c.OverallRating)
+                .DistinctBy(c => new { c.OverallRating, c.Name, c.EAId }); 
+            
+            var pagedPlayers = totalFilteredCards
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
@@ -23,7 +25,7 @@ namespace Magnus.Futbot.Api.Controllers
             var response = new
             {
                 Data = pagedPlayers,
-                TotalCount = totalCount,
+                TotalCount = totalFilteredCards.Count(),
                 PageSize = pageSize
             };
 
