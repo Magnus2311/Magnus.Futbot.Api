@@ -11,11 +11,13 @@ namespace Magnus.Futbot.Database.Models
 
         public SellCardDTO SellCardDTO { get; set; }
 
-        public  BuyAndSellCardDTO BuyAndSellCardDTO { get; set; }
+        public BuyAndSellCardDTO BuyAndSellCardDTO { get; set; }
 
         public TradeHistoryActionType TradeHistoryActionType { get; set; }
 
         public string ProfileId { get; set; }
+
+        public string PidId { get; set; }
 
         public ObjectId Id { get; set; }
 

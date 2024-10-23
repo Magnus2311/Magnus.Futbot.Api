@@ -79,6 +79,8 @@ namespace Magnus.Futbot.Api.Helpers
             CreateMap<PlayerPrice, GetPriceResponse>()
                 .ForMember(dest => dest.Prices, options => options.MapFrom(src => src.Prices.Select(p => p.Prize)))
                 .ForMember(dest => dest.LastUpdated, options => options.MapFrom(src => src.Prices.OrderByDescending(p => p.CreatedDate).FirstOrDefault().CreatedDate));
+
+            CreateMap<AddBuyTradeRequest, BuyCardDTO>();
         }
     }
 }

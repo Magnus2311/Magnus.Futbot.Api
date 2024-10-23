@@ -103,7 +103,8 @@ builder.Services
     .AddHostedService<DeactivateAllActionsOnStartUp>();
 
 builder.Services
-    .AddSingleton<IUserIdProvider, UserProvider>();
+    .AddSingleton<IUserIdProvider, UserProvider>()
+    .AddSingleton<Initializer>();
 
 builder.Services.AddSignalR();
 
@@ -115,6 +116,8 @@ builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+app.Services.GetRequiredService<Initializer>();
 
 app.UseCors("corsapp");
 app.UseHttpsRedirection();

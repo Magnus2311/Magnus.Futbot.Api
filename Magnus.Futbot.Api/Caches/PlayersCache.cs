@@ -18,10 +18,7 @@ namespace Magnus.Futbot.Api.Caches
             _playersConnection = playersConnection;
 
             Players = new ConcurrentDictionary<int, PlayerDocument>(_playersRepository.GetAll().Result.ToDictionary(p => p.Id, p => p));
-            Task.Run(async () =>
-            {
-                await OnPlayerAdded();
-            });
+            Task.Run(OnPlayerAdded);
         }
 
         public ConcurrentDictionary<int, PlayerDocument> Players { get; }
