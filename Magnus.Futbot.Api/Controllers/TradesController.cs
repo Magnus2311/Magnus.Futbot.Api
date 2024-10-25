@@ -37,7 +37,7 @@ namespace Magnus.Futbot.Api.Controllers
             return Ok(await _tradeHistoryService.GetAllTradesAsync(profileId, userId));
         }
 
-        [HttpGet("pidid/{pidId}")]
+        [HttpGet("{pidId}")]
         [SSOVerification]
         public async Task<IActionResult> GetByPidIdAsync(string pidId)
         {
@@ -45,7 +45,7 @@ namespace Magnus.Futbot.Api.Controllers
             if (userId == null)
                 return Unauthorized();
 
-            return Ok(await _tradeHistoryService.GetAllTradesAsync(pidId, userId));
+            return Ok(await _tradeHistoryService.GetAllTradesByPidIdAsync(pidId, userId));
         }
 
         [HttpPost("buy/{pidId}")]

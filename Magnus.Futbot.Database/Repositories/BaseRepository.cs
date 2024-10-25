@@ -35,8 +35,11 @@ namespace Magnus.Futbot.Database.Repositories
         public async Task Delete(IEnumerable<ObjectId> ids)
         {
             var entity = await (await _collection.FindAsync(e => ids.Contains(e.Id))).FirstOrDefaultAsync();
-            entity.IsDeleted = true;
-            await _collection.ReplaceOneAsync(Builders<TEntity>.Filter.Eq(e => e.Id, entity.Id), entity);
+            if (entity is not null)
+            {
+                entity.IsDeleted = true;
+                await _collection.ReplaceOneAsync(Builders<TEntity>.Filter.Eq(e => e.Id, entity.Id), entity);
+            }
         }
 
         public async Task<TEntity> Recover(ObjectId id)
