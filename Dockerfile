@@ -2,16 +2,17 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
-# Copy the .csproj file and restore dependencies
-COPY ./Magnus.Futbot.Api/*.csproj ./Magnus.Futbot.Api/
+# Copy the .csproj and any other necessary .csproj files if there are dependencies
+COPY ./Magnus.Futbot.Api/Magnus.Futbot.Api.csproj ./Magnus.Futbot.Api/
 WORKDIR /app/Magnus.Futbot.Api
 RUN dotnet restore
 
-# Copy the entire application code
+# Return to the root working directory and copy the entire project files
 WORKDIR /app
 COPY . .
 
-# Build the application in Release mode
+# Change directory to the main project folder and publish
+WORKDIR /app/Magnus.Futbot.Api
 RUN dotnet publish -c Release -o /out
 
 # Use the official .NET 8 runtime image for running the app
