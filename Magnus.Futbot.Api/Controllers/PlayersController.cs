@@ -31,5 +31,20 @@ namespace Magnus.Futbot.Api.Controllers
 
             return Ok(response);
         }
+
+
+        [HttpGet("byAssetIds")]
+        public IActionResult GetByAssetIds([FromQuery] List<int> assetIds)
+        {
+            if (assetIds == null || assetIds.Count == 0)
+                return BadRequest("AssetIds cannot be null or empty.");
+
+            var players = cardsCache
+                .Cards
+                .Where(c => assetIds.Contains(c.EAId))
+                .ToList();
+
+            return Ok(players);
+        }
     }
 }
