@@ -25,6 +25,7 @@ using Magnus.Futtbot.Connections.Connection.Trading.Buy;
 using Magnus.Futtbot.Connections.Connection.Trading.Sell;
 using Magnus.Futtbot.Connections.Services;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -115,6 +116,9 @@ builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
 
 builder.Services.AddControllers();
 
+// Add Swagger services
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
 app.Services.GetRequiredService<Initializer>();
@@ -122,8 +126,13 @@ app.Services.GetRequiredService<Initializer>();
 app.UseCors("corsapp");
 app.UseHttpsRedirection();
 
+// Enable Swagger middleware
+app.UseSwagger();
+app.UseSwaggerUI();
+
 app.UseRouting();
 app.UseAuthorization();
+
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapHub<ProfilesHub>("/hubs/profiles");
