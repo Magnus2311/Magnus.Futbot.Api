@@ -15,10 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Magnus.Futbot.Selenium", "M
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Magnus.Futtbot.Connections", "Magnus.Futtbot.Connections\Magnus.Futtbot.Connections.csproj", "{C7365D0A-9464-4028-B2C6-F82F2A886104}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Magnus.SSO", "..\Magnus.SSO\Magnus.SSO\Magnus.SSO.csproj", "{CFFE865C-1E09-4CE1-A698-6FE26BA43172}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Magnus.SSO.Database", "..\Magnus.SSO\Magnus.SSO.Database\Magnus.SSO.Database.csproj", "{4B83D46D-42A2-4ED9-B8A6-DEDDC70C2295}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,14 +45,6 @@ Global
 		{C7365D0A-9464-4028-B2C6-F82F2A886104}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7365D0A-9464-4028-B2C6-F82F2A886104}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C7365D0A-9464-4028-B2C6-F82F2A886104}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CFFE865C-1E09-4CE1-A698-6FE26BA43172}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CFFE865C-1E09-4CE1-A698-6FE26BA43172}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CFFE865C-1E09-4CE1-A698-6FE26BA43172}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CFFE865C-1E09-4CE1-A698-6FE26BA43172}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4B83D46D-42A2-4ED9-B8A6-DEDDC70C2295}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4B83D46D-42A2-4ED9-B8A6-DEDDC70C2295}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4B83D46D-42A2-4ED9-B8A6-DEDDC70C2295}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4B83D46D-42A2-4ED9-B8A6-DEDDC70C2295}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
