@@ -33,7 +33,7 @@ namespace Magnus.Futbot.Api.Controllers
         }
 
 
-        [HttpGet("{assetIds}")]
+        [HttpGet("byAssetIds")]
         public IActionResult GetByAssetIds(string assetIds)
         {
             if (string.IsNullOrEmpty(assetIds))
