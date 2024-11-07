@@ -45,5 +45,43 @@ namespace Magnus.Futbot.Database.Repositories
 
             return playerPriceFromDb;
         }
+
+        public async Task<IEnumerable<PlayerPrice>> Get(List<string> cardIds)
+        {
+            var results = new List<PlayerPrice>();
+
+            var uncachedCardIds = new List<string>();
+            foreach (var cardId in cardIds)
+            {
+                if (_cache.TryGetValue(cardId, out PlayerPrice cachedPlayerPrice))
+                {
+                    results.Add(cachedPlayerPrice);
+                }
+                else
+                {
+                    uncachedCardIds.Add(cardId);
+                }
+            }
+
+            if (uncachedCardIds.Count != 0)
+            {
+                var playerPricesFromDb = await _collection
+                    .Find(p => uncachedCardIds.Contains(p.CardId))
+                    .Project(p => new PlayerPrice
+                    {
+                        CardId = p.CardId,
+                        Prices = p.Prices.OrderByDescending(price => price.CreatedDate).Take(5).ToList()
+                    })
+                    .ToListAsync();
+
+                foreach (var playerPrice in playerPricesFromDb)
+                {
+                    _cache.Set(playerPrice.CardId, playerPrice, _cacheExpiration);
+                    results.Add(playerPrice);
+                }
+            }
+
+            return results;
+        }
     }
 }

@@ -16,5 +16,10 @@ namespace Magnus.Futbot.Api.Services
         {
             return _priceRepository.Get(cardId);
         }
+
+        public Task<IEnumerable<PlayerPrice>> Get(List<string> cardIds)
+        {
+            return _priceRepository.Get(cardIds);
+        }
     }
 }
