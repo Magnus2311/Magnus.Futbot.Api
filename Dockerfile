@@ -13,7 +13,7 @@ COPY . .
 
 # Change directory to the main project folder and publish
 WORKDIR /app/Magnus.Futbot.Api
-RUN dotnet publish -c Release -o /out
+RUN dotnet publish -c Debug -o /out
 
 # Use the official .NET 8 runtime image for running the app
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
@@ -24,6 +24,11 @@ COPY --from=build /out .
 
 # Expose port 80 for the app
 EXPOSE 80
+EXPOSE 443
+
+# Add this before the ENTRYPOINT
+ENV ASPNETCORE_URLS=http://+:80
+ENV ASPNETCORE_ENVIRONMENT=Development
 
 # Define the entrypoint
 ENTRYPOINT ["dotnet", "Magnus.Futbot.Api.dll"]
