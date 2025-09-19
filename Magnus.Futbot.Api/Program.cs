@@ -15,6 +15,7 @@ using Magnus.Futbot.Common.Interfaces.Notifiers;
 using Magnus.Futbot.Common.Interfaces.Services;
 using Magnus.Futbot.Database.Repositories;
 using Magnus.Futbot.Database.Repositories.Actions;
+using Magnus.Futbot.Initializer;
 using Magnus.Futbot.Initializer.Connections;
 using Magnus.Futbot.Selenium.Trading.Connections;
 using Magnus.Futbot.Services;
@@ -99,7 +100,7 @@ builder.Services
 
 // Background workers
 builder.Services
-    //.AddHostedService<RefreshPlayersWorker>()
+    .AddHostedService<RefreshPlayersWorker>()
     //.AddHostedService<RelistPlayersWorker>()
     .AddHostedService<DeactivateAllActionsOnStartUp>();
 

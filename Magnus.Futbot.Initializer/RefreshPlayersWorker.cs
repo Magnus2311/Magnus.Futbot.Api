@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Magnus.Futbot.Common.Interfaces.Helpers;
 using Magnus.Futbot.Common.Interfaces.Services;
 using Magnus.Futbot.Common.Models.DTOs;
+using Magnus.Futbot.Database.Repositories;
 using Magnus.Futbot.Initializer.Connections;
 using Magnus.Futbot.Initializer.Models.Players;
 using Microsoft.Extensions.Hosting;
@@ -48,20 +50,16 @@ namespace Magnus.Futbot.Initializer
 
         private async Task<IEnumerable<PlayerDTO>> FetchPlayers()
         {
-            var response = await _eaConnectionService.FetchPlayers();
-            if (response is not null)
+            try
             {
-                Root? myDeserializedClass = JsonConvert.DeserializeObject<Root>(response);
-                if (myDeserializedClass is not null)
-                {
-                    var players = _mapper.Map<IEnumerable<PlayerDTO>>(myDeserializedClass.Players);
-                    var legendPlayers = _mapper.Map<IEnumerable<PlayerDTO>>(myDeserializedClass.LegendsPlayers);
-
-                    return players.Concat(legendPlayers);
-                }
+                var allItems = await _eaConnectionService.FetchAllPlayers();
+                return _mapper.Map<IEnumerable<PlayerDTO>>(allItems);
             }
-
-            return Enumerable.Empty<PlayerDTO>();
+            catch (Exception ex)
+            {
+                _logger.LogError(JsonConvert.SerializeObject(ex));
+                return Enumerable.Empty<PlayerDTO>();
+            }
         }
     }
 }

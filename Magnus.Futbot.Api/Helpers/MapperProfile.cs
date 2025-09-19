@@ -10,6 +10,7 @@ using Magnus.Futbot.Database.Models;
 using Magnus.Futbot.Database.Models.Actions;
 using Magnus.Futbot.Initializer.Models.Players;
 using MongoDB.Bson;
+using Magnus.Futbot.Common.Models.Database.Card;
 
 namespace Magnus.Futbot.Api.Helpers
 {
@@ -26,6 +27,11 @@ namespace Magnus.Futbot.Api.Helpers
 
             CreateMap<PlayerDTO, PlayerDocument>();
 
+            CreateMap<Card, PlayerDTO>()
+                .ForMember(dest => dest.Name, options => options.MapFrom(src => src.CommonName == null || src.CommonName == string.Empty ? src.Name : src.CommonName))
+                .ForMember(dest => dest.Rating, options => options.MapFrom(src => src.OverallRating))
+                .ForMember(dest => dest.Id, options => options.MapFrom(src => src.EAId));
+
             CreateMap<Player, PlayerDTO>()
                 .ForMember(dest => dest.Name, options => options.MapFrom(src => src.c == null ? $"{src.f} {src.l}" : src.c))
                 .ForMember(dest => dest.Rating, options => options.MapFrom(src => src.r))
@@ -35,6 +41,13 @@ namespace Magnus.Futbot.Api.Helpers
                 .ForMember(dest => dest.Name, options => options.MapFrom(src => src.c == null ? $"{src.f} {src.l}" : src.c))
                 .ForMember(dest => dest.Rating, options => options.MapFrom(src => src.r))
                 .ForMember(dest => dest.Id, options => options.MapFrom(src => src.id));
+
+            CreateMap<EaPlayerItem, PlayerDTO>()
+                .ForMember(dest => dest.Name, options => options.MapFrom(src => string.IsNullOrWhiteSpace(src.CommonName)
+                    ? $"{src.FirstName} {src.LastName}".Trim()
+                    : src.CommonName!))
+                .ForMember(dest => dest.Rating, options => options.MapFrom(src => src.OverallRating))
+                .ForMember(dest => dest.Id, options => options.MapFrom(src => src.Id));
 
             CreateMap<BuyAndSellCardDTO, BuyCardDTO>().ReverseMap();
             CreateMap<BuyAndSellCardDTO, SellCardDTO>().ReverseMap();

@@ -55,11 +55,10 @@ namespace Magnus.Futbot.Api.Services
             await _tradesRepository.Add(trade);
         }
 
-        public async Task AddTradeAsync(string pidId, string userId, BuyCardDTO buyCardDTO)
+        public async Task AddTradeAsync(string pidId, BuyCardDTO buyCardDTO)
         {
             var trade = new Trade
             {
-                UserId = new ObjectId(userId),
                 PidId = pidId,
                 BuyCardDTO = buyCardDTO,
                 TradeHistoryActionType = TradeHistoryActionType.Buy,
@@ -68,9 +67,9 @@ namespace Magnus.Futbot.Api.Services
             await _tradesRepository.Add(trade);
         }
 
-        public async Task<List<Trade>> GetAllTradesAsync(string profileId, string userId)
+        public async Task<List<Trade>> GetAllTradesAsync(string profileId)
         {
-            var trades = await _tradesRepository.GetAll(new ObjectId(userId));
+            var trades = await _tradesRepository.GetAll();
             var allProfileTrades = trades.Where(t => t.ProfileId == profileId).ToList();
 
             allProfileTrades.Reverse();
@@ -84,9 +83,9 @@ namespace Magnus.Futbot.Api.Services
             return lastTrades;
         }
 
-        public async Task<List<Trade>> GetAllTradesByPidIdAsync(string pidId, string userId)
+        public async Task<List<Trade>> GetAllTradesByPidIdAsync(string pidId)
         {
-            var trades = await _tradesRepository.GetAll(new ObjectId(userId));
+            var trades = await _tradesRepository.GetAll();
             var allProfileTrades = trades.Where(t => t.PidId == pidId).ToList();
 
             allProfileTrades.Reverse();

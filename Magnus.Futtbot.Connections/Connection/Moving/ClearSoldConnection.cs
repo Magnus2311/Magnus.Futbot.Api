@@ -14,7 +14,7 @@ namespace Magnus.Futtbot.Connections.Connection.Moving
 
         public async Task<ConnectionResponseType> ClearSold(string username)
         {
-            var request = new HttpRequestMessage(HttpMethod.Delete, "https://utas.mob.v4.prd.futc-ext.gcp.ea.com/ut/game/fc25/trade/sold");
+            var request = new HttpRequestMessage(HttpMethod.Delete, "https://utas.mob.v5.prd.futc-ext.gcp.ea.com/ut/game/fc26/trade/sold");
             request.SetCommonHeaders(username);
             var response = await _httpClient.SendAsync(request);
 

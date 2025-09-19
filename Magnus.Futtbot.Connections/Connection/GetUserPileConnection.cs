@@ -22,7 +22,7 @@ namespace Magnus.Futtbot.Connections.Connection
             handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
             _httpClient = new HttpClient(handler);
-            var request = new HttpRequestMessage(HttpMethod.Get, "https://utas.mob.v4.prd.futc-ext.gcp.ea.com/ut/game/fc25/tradepile");
+            var request = new HttpRequestMessage(HttpMethod.Get, "https://utas.mob.v5.prd.futc-ext.gcp.ea.com/ut/game/fc26/tradepile");
             request.SetCommonHeaders(username);
             var content = new StringContent(string.Empty);
 
@@ -56,7 +56,7 @@ namespace Magnus.Futtbot.Connections.Connection
             handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
             _httpClient = new HttpClient(handler);
-            var request = new HttpRequestMessage(HttpMethod.Get, "https://utas.mob.v4.prd.futc-ext.gcp.ea.com/ut/game/fc25/purchased/items");
+            var request = new HttpRequestMessage(HttpMethod.Get, "https://utas.mob.v5.prd.futc-ext.gcp.ea.com/ut/game/fc26/purchased/items");
             request.SetCommonHeaders(username);
             var content = new StringContent(string.Empty);
 

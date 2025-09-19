@@ -1,4 +1,5 @@
-﻿namespace Magnus.Futbot.Initializer.Models.Players
+﻿
+namespace Magnus.Futbot.Initializer.Models.Players
 {
     public class Root
     {

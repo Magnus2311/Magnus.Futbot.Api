@@ -26,7 +26,7 @@ namespace Magnus.Futtbot.Connections.Connection.Trading
 
             _httpClient = new HttpClient(handler);
 
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://utas.mob.v4.prd.futc-ext.gcp.ea.com/ut/game/fc25/transfermarket?num=21&start=0&type=player&maskedDefId={playerEaId}&minb={minBin}&maxb={maxBin}");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://utas.mob.v5.prd.futc-ext.gcp.ea.com/ut/game/fc26/transfermarket?num=21&start=0&type=player&maskedDefId={playerEaId}&minb={minBin}&maxb={maxBin}");
 
             request.Headers.CacheControl = new CacheControlHeaderValue
             {
@@ -73,7 +73,7 @@ namespace Magnus.Futtbot.Connections.Connection.Trading
 
             _httpClient = new HttpClient(handler);
 
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://utas.mob.v4.prd.futc-ext.gcp.ea.com/ut/game/fc25/transfermarket?num=21&start={startingIndex}&type=player&maskedDefId={playerEaId}");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://utas.mob.v5.prd.futc-ext.gcp.ea.com/ut/game/fc26/transfermarket?num=21&start={startingIndex}&type=player&maskedDefId={playerEaId}");
             request.SetCommonHeaders(profileDTO.Email);
             var content = new StringContent(string.Empty);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");

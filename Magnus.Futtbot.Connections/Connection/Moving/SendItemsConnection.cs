@@ -17,7 +17,7 @@ namespace Magnus.Futtbot.Connections.Connection.Moving
 
         public async Task<ConnectionResponseType> SendWonItemsToTransferList(string username, SendCardsToTransferListRequest sendCardsToTransferListRequest)
         {
-            var request = new HttpRequestMessage(HttpMethod.Put, "https://utas.mob.v4.prd.futc-ext.gcp.ea.com/ut/game/fc25/item");
+            var request = new HttpRequestMessage(HttpMethod.Put, "https://utas.mob.v5.prd.futc-ext.gcp.ea.com/ut/game/fc26/item");
             request.SetCommonHeaders(username);
             var content = new StringContent(JsonSerializer.Serialize(sendCardsToTransferListRequest), null, "application/json");
             request.Content = content;

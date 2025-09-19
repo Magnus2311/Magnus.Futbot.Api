@@ -18,7 +18,7 @@ namespace Magnus.Futtbot.Connections.Connection.Trading.Buy
             handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
             _httpClient = new HttpClient(handler);
-            var request = new HttpRequestMessage(HttpMethod.Put, $"https://utas.mob.v4.prd.futc-ext.gcp.ea.com/ut/game/fc25/trade/{tradeId}/bid");
+            var request = new HttpRequestMessage(HttpMethod.Put, $"https://utas.mob.v5.prd.futc-ext.gcp.ea.com/ut/game/fc26/trade/{tradeId}/bid");
             request.SetCommonHeaders(username);
 
             var bidObj = new

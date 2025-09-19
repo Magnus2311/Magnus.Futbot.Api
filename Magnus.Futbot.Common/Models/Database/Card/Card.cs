@@ -1,11 +1,13 @@
 ﻿using Magnus.Futbot.Common.Models.Database.Interfaces;
 using MongoDB.Bson;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Magnus.Futbot.Common.Models.Database.Card
 {
     public class Card : IEntity
     {
+        [JsonProperty("id")]
         public int EAId { get; set; }
         public int Rank { get; set; }
         public int OverallRating { get; set; }
@@ -25,10 +27,10 @@ namespace Magnus.Futbot.Common.Models.Database.Card
         public string AvatarUrl { get; set; }
         public string ShieldUrl { get; set; }
 
-        [JsonPropertyName("alternatePositions")]
+        [JsonProperty("alternatePositions")]
         public List<AlternatePosition> AlternatePositions { get; set; }
 
-        [JsonPropertyName("playStyle")]
+        [JsonProperty("playStyle")]
         public List<PlayStyle> PlayStyles { get; set; }
 
         public PlayStylePlus PlayStylePlus { get; set; }
@@ -42,7 +44,10 @@ namespace Magnus.Futbot.Common.Models.Database.Card
         public Position Position { get; set; }
 
         public Stats Stats { get; set; }
+
+        [JsonIgnore]
         public ObjectId Id { get; set; }
+
         public string CardId
         {
             get
@@ -71,7 +76,7 @@ namespace Magnus.Futbot.Common.Models.Database.Card
         public string Id { get; set; }
         public string Label { get; set; }
 
-        [JsonPropertyName("shortLabel")]
+        [JsonProperty("shortLabel")]
         public string ShortLabel { get; set; }
     }
 
@@ -80,7 +85,7 @@ namespace Magnus.Futbot.Common.Models.Database.Card
         public string Id { get; set; }
         public string Label { get; set; }
 
-        [JsonPropertyName("imageUrl")]
+        [JsonProperty("imageUrl")]
         public string ImageUrl { get; set; }
     }
 
@@ -100,7 +105,7 @@ namespace Magnus.Futbot.Common.Models.Database.Card
         public int Id { get; set; }
         public string Label { get; set; }
 
-        [JsonPropertyName("imageUrl")]
+        [JsonProperty("imageUrl")]
         public string ImageUrl { get; set; }
     }
 
@@ -109,10 +114,10 @@ namespace Magnus.Futbot.Common.Models.Database.Card
         public int Id { get; set; }
         public string Label { get; set; }
 
-        [JsonPropertyName("imageUrl")]
+        [JsonProperty("imageUrl")]
         public string ImageUrl { get; set; }
 
-        [JsonPropertyName("isPopular")]
+        [JsonProperty("isPopular")]
         public bool IsPopular { get; set; }
     }
 
@@ -120,7 +125,7 @@ namespace Magnus.Futbot.Common.Models.Database.Card
     {
         public string Id { get; set; }
 
-        [JsonPropertyName("shortLabel")]
+        [JsonProperty("shortLabel")]
         public string ShortLabel { get; set; }
 
         public string Label { get; set; }
@@ -132,7 +137,7 @@ namespace Magnus.Futbot.Common.Models.Database.Card
     {
         public string Id { get; set; }
 
-        [JsonPropertyName("name")]
+        [JsonProperty("name")]
         public string Name { get; set; }
     }
 

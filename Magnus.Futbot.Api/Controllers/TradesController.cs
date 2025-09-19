@@ -26,36 +26,20 @@ namespace Magnus.Futbot.Api.Controllers
         }
 
         [HttpGet]
-        [SSOVerification]
         public async Task<IActionResult> GetAsync(string profileId)
         {
-            var a = profileId;
-            var userId = Request.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
-            if (userId == null)
-                return Unauthorized();
-
-            return Ok(await _tradeHistoryService.GetAllTradesAsync(profileId, userId));
+            return Ok(await _tradeHistoryService.GetAllTradesAsync(profileId));
         }
 
         [HttpGet("{pidId}")]
-        [SSOVerification]
         public async Task<IActionResult> GetByPidIdAsync(string pidId)
         {
-            var userId = Request.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
-            if (userId == null)
-                return Unauthorized();
-
-            return Ok(await _tradeHistoryService.GetAllTradesByPidIdAsync(pidId, userId));
+            return Ok(await _tradeHistoryService.GetAllTradesByPidIdAsync(pidId));
         }
 
         [HttpPost("buy/{pidId}")]
-        [SSOVerification]
         public async Task<IActionResult> AddBuyAsync(string pidId, AddBuyTradeRequest addBuyTradeRequest)
         {
-            var userId = Request.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
-            if (userId == null)
-                return Unauthorized();
-
             var card = _cardsCache.Cards.FirstOrDefault(c => c.CardId == addBuyTradeRequest.CardId);
             var buyCardDTO = _mapper.Map<BuyCardDTO>(addBuyTradeRequest);
             if (card is not null)
@@ -68,7 +52,7 @@ namespace Magnus.Futbot.Api.Controllers
                 TradeHistoryActionType = TradeHistoryActionType.Buy
             };
 
-            await _tradeHistoryService.AddTradeAsync(pidId, userId, buyCardDTO);
+            await _tradeHistoryService.AddTradeAsync(pidId, buyCardDTO);
 
             return Ok();
         }

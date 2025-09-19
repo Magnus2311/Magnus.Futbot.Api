@@ -15,5 +15,12 @@ namespace Magnus.Futbot.Database.Repositories
         }
 
         public IChangeStreamCursor<ChangeStreamDocument<Card>> Cursor { get; }
+
+        public async Task<HashSet<int>> GetExistingEaIdsAsync(IEnumerable<int> eaIds)
+        {
+            var filter = Builders<Card>.Filter.In(c => c.EAId, eaIds);
+            var existing = await _collection.Find(filter).ToListAsync();
+            return existing.Select(c => c.EAId).ToHashSet();
+        }
     }
 }

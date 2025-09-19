@@ -17,11 +17,8 @@ namespace Magnus.Futbot.Api.Caches
             _cardsRepository = cardsRepository;
             _cardsConnection = cardsConnection;
 
-            Cards = new ConcurrentBag<Card>(_cardsRepository.GetAll().Result);
-            Task.Run(async () =>
-            {
-                await OnCardAdded();
-            });
+            Cards = [.. _cardsRepository.GetAll().Result];
+            Task.Run(OnCardAdded);
         }
 
         public ConcurrentBag<Card> Cards { get; private set; }
@@ -36,7 +33,7 @@ namespace Magnus.Futbot.Api.Caches
                 Cards.Add(card);
 
                 // Should be optimised somehow
-                Cards = new ConcurrentBag<Card>(Cards.OrderByDescending(c => c.OverallRating));
+                Cards = [.. Cards.OrderByDescending(c => c.OverallRating)];
                 await _cardsConnection.AddCard(card);
             }
         }
