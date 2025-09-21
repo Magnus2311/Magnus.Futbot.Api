@@ -94,6 +94,10 @@ namespace Magnus.Futbot.Api.Helpers
                 .ForMember(dest => dest.LastUpdated, options => options.MapFrom(src => src.Prices.OrderByDescending(p => p.CreatedDate).FirstOrDefault().CreatedDate));
 
             CreateMap<AddBuyTradeRequest, BuyCardDTO>();
+
+            // Successful Purchase mappings
+            CreateMap<AddSuccessfulPurchaseRequest, SuccessfulPurchase>();
+            CreateMap<SuccessfulPurchase, SuccessfulPurchaseResponse>();
         }
     }
 }

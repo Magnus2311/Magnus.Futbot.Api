@@ -53,7 +53,8 @@ builder.Services
     .AddTransient<SellActionRepository>()
     .AddTransient<PauseActionRepository>()
     .AddTransient<TradesRepository>()
-    .AddTransient<PriceRepository>();
+    .AddTransient<PriceRepository>()
+    .AddTransient<SuccessfulPurchaseRepository>();
 
 builder.Services.AddMemoryCache();
 
@@ -79,7 +80,8 @@ builder.Services
     .AddTransient<ProfilesNotifier>()
     .AddTransient<ActionsDeactivator>()
     .AddTransient<TradeHistoryService>()
-    .AddTransient<PriceService>();
+    .AddTransient<PriceService>()
+    .AddTransient<SuccessfulPurchaseService>();
 
 // Selenium Services
 builder.Services
