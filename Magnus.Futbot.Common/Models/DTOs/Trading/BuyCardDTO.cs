@@ -29,5 +29,7 @@ namespace Magnus.Futbot.Common.Models.DTOs.Trading
         public int Price { get; set; }
 
         public int MaxMinBuyPrice { get; set; }
+
+        public int SellPrice { get; set; }
     }
 }
