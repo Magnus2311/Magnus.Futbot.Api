@@ -15,11 +15,9 @@ namespace Magnus.Futbot.Database.Models
         public ObjectId UserId { get; set; }
 
         public string PidId { get; set; } = string.Empty;
-        public string TradeId { get; set; } = string.Empty;
-        public string ItemId { get; set; } = string.Empty;
-        public Card Card { get; set; } = new();
+        public long TradeId { get; set; }
+        public long ItemId { get; set; } 
         public int PurchasePrice { get; set; }
         public DateTime PurchaseDate { get; set; } = DateTime.Now;
-        public string Description { get; set; } = string.Empty;
     }
 }

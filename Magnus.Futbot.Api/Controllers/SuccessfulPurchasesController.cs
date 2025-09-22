@@ -1,5 +1,4 @@
 using Magnus.Futbot.Api.Models.Requests;
-using Magnus.Futbot.Api.Models.Responses;
 using Magnus.Futbot.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -57,20 +56,6 @@ namespace Magnus.Futbot.Api.Controllers
             try
             {
                 var purchases = await successfulPurchaseService.GetByPidIdAndDateRangeAsync(pidId, startDate, endDate);
-                return Ok(purchases);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-        }
-
-        [HttpGet("card/{cardId}")]
-        public async Task<IActionResult> GetByCardId(string cardId)
-        {
-            try
-            {
-                var purchases = await successfulPurchaseService.GetByCardIdAsync(cardId);
                 return Ok(purchases);
             }
             catch (Exception ex)
