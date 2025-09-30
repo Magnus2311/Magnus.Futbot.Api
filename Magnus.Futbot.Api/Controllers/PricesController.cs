@@ -30,5 +30,27 @@ namespace Magnus.Futbot.Api.Controllers
 
             return Ok(new { success = true, message = "Prices saved successfully" });
         }
+
+        [HttpPost("bulk")]
+        public async Task<IActionResult> GetBulkPrices(BulkPricesRequest bulkPricesRequest)
+        {
+            if (bulkPricesRequest.CardIds == null || !bulkPricesRequest.CardIds.Any())
+            {
+                return BadRequest("CardIds cannot be null or empty.");
+            }
+
+            var playerPrices = await priceService.Get(bulkPricesRequest.CardIds);
+
+            var result = playerPrices.ToDictionary(
+                pp => pp.CardId,
+                pp => new
+                {
+                    prices = pp.Prices.Select(p => p.Prize).ToList(),
+                    lastUpdated = pp.Prices.Any() ? pp.Prices.Max(p => p.UpdatedDate) : DateTime.MinValue
+                }
+            );
+
+            return Ok(result);
+        }
     }
 }

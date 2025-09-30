@@ -54,7 +54,8 @@ builder.Services
     .AddTransient<PauseActionRepository>()
     .AddTransient<TradesRepository>()
     .AddTransient<PriceRepository>()
-    .AddTransient<SuccessfulPurchaseRepository>();
+    .AddTransient<SuccessfulPurchaseRepository>()
+    .AddTransient<PlayerListRepository>();
 
 builder.Services.AddMemoryCache();
 
@@ -81,7 +82,8 @@ builder.Services
     .AddTransient<ActionsDeactivator>()
     .AddTransient<TradeHistoryService>()
     .AddTransient<PriceService>()
-    .AddTransient<SuccessfulPurchaseService>();
+    .AddTransient<SuccessfulPurchaseService>()
+    .AddTransient<PlayerListService>();
 
 // Selenium Services
 builder.Services
@@ -102,7 +104,7 @@ builder.Services
 
 // Background workers
 builder.Services
-    .AddHostedService<RefreshPlayersWorker>()
+    //.AddHostedService<RefreshPlayersWorker>()
     //.AddHostedService<RelistPlayersWorker>()
     .AddHostedService<DeactivateAllActionsOnStartUp>();
 
