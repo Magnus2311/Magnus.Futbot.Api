@@ -33,5 +33,22 @@ namespace Magnus.Futbot.Api.Services
         {
             return await repository.GetCountByPidIdAsync(pidId);
         }
+
+        public async Task<IEnumerable<SuccessfulPurchaseResponse>> GetFilteredPurchasesAsync(string pidId, string? position = null, string? quality = null, string? league = null, string? club = null)
+        {
+            var purchases = await repository.GetFilteredPurchasesAsync(pidId, position, quality, league, club);
+            return mapper.Map<IEnumerable<SuccessfulPurchaseResponse>>(purchases);
+        }
+
+        public async Task<IEnumerable<SuccessfulPurchaseResponse>> GetByFilterDescriptionAsync(string pidId, string filterDescription)
+        {
+            var purchases = await repository.GetByFilterDescriptionAsync(pidId, filterDescription);
+            return mapper.Map<IEnumerable<SuccessfulPurchaseResponse>>(purchases);
+        }
+
+        public async Task<long> GetFilteredPurchasesCountAsync(string pidId)
+        {
+            return await repository.GetFilteredPurchasesCountAsync(pidId);
+        }
     }
 }

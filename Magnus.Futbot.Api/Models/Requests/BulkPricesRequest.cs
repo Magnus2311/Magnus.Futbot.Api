@@ -5,3 +5,4 @@ namespace Magnus.Futbot.Api.Models.Requests
         public List<string> CardIds { get; set; } = [];
     }
 }
+

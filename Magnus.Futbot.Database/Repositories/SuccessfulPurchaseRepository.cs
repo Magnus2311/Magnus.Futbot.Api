@@ -24,5 +24,45 @@ namespace Magnus.Futbot.Database.Repositories
         {
             return await _collection.CountDocumentsAsync(sp => sp.PidId == pidId && !sp.IsDeleted);
         }
+
+        public async Task<IEnumerable<SuccessfulPurchase>> GetFilteredPurchasesAsync(string pidId, string? position = null, string? quality = null, string? league = null, string? club = null)
+        {
+            var filter = Builders<SuccessfulPurchase>.Filter.And(
+                Builders<SuccessfulPurchase>.Filter.Eq(sp => sp.PidId, pidId),
+                Builders<SuccessfulPurchase>.Filter.Eq(sp => sp.IsDeleted, false),
+                Builders<SuccessfulPurchase>.Filter.Eq(sp => sp.IsFilteredPurchase, true)
+            );
+
+            if (!string.IsNullOrEmpty(position))
+                filter = Builders<SuccessfulPurchase>.Filter.And(filter, Builders<SuccessfulPurchase>.Filter.Eq(sp => sp.Position, position));
+
+            if (!string.IsNullOrEmpty(quality))
+                filter = Builders<SuccessfulPurchase>.Filter.And(filter, Builders<SuccessfulPurchase>.Filter.Eq(sp => sp.Quality, quality));
+
+            if (!string.IsNullOrEmpty(league))
+                filter = Builders<SuccessfulPurchase>.Filter.And(filter, Builders<SuccessfulPurchase>.Filter.Eq(sp => sp.League, league));
+
+            if (!string.IsNullOrEmpty(club))
+                filter = Builders<SuccessfulPurchase>.Filter.And(filter, Builders<SuccessfulPurchase>.Filter.Eq(sp => sp.Club, club));
+
+            return await (await _collection.FindAsync(filter)).ToListAsync();
+        }
+
+        public async Task<IEnumerable<SuccessfulPurchase>> GetByFilterDescriptionAsync(string pidId, string filterDescription)
+        {
+            return await (await _collection.FindAsync(sp =>
+                sp.PidId == pidId &&
+                !sp.IsDeleted &&
+                sp.IsFilteredPurchase &&
+                sp.FilterDescription.Contains(filterDescription))).ToListAsync();
+        }
+
+        public async Task<long> GetFilteredPurchasesCountAsync(string pidId)
+        {
+            return await _collection.CountDocumentsAsync(sp =>
+                sp.PidId == pidId &&
+                !sp.IsDeleted &&
+                sp.IsFilteredPurchase);
+        }
     }
 }
