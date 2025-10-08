@@ -25,5 +25,7 @@ namespace Magnus.Futbot.Database.Repositories
 
         public async Task<IEnumerable<PlayerDocument>> GetAll()
             => (await _collection.FindAsync(FilterDefinition<PlayerDocument>.Empty)).ToList();
+
+        public IMongoCollection<PlayerDocument> GetCollection() => _collection;
     }
 }

@@ -83,7 +83,8 @@ builder.Services
     .AddTransient<TradeHistoryService>()
     .AddTransient<PriceService>()
     .AddTransient<SuccessfulPurchaseService>()
-    .AddTransient<PlayerListService>();
+    .AddTransient<PlayerListService>()
+    .AddTransient<DatabaseIndexService>();
 
 // Selenium Services
 builder.Services
@@ -106,7 +107,8 @@ builder.Services
 builder.Services
     //.AddHostedService<RefreshPlayersWorker>()
     //.AddHostedService<RelistPlayersWorker>()
-    .AddHostedService<DeactivateAllActionsOnStartUp>();
+    .AddHostedService<DeactivateAllActionsOnStartUp>()
+    .AddHostedService<InitializeCachesOnStartUp>();
 
 builder.Services
     .AddSingleton<IUserIdProvider, UserProvider>()

@@ -22,5 +22,16 @@ namespace Magnus.Futbot.Database.Repositories
             var existing = await _collection.Find(filter).ToListAsync();
             return existing.Select(c => c.EAId).ToHashSet();
         }
+
+        public async Task<IEnumerable<Card>> GetAllPagedAsync(int skip, int limit)
+        {
+            return await _collection
+                .Find(FilterDefinition<Card>.Empty)
+                .Skip(skip)
+                .Limit(limit)
+                .ToListAsync();
+        }
+
+        public IMongoCollection<Card> GetCollection() => _collection;
     }
 }

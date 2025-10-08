@@ -1,25 +1,6 @@
-#nullable enable
-
-namespace Magnus.Futbot.Api.Models.Requests
+namespace Magnus.Futbot.Database.Models
 {
-    public class AddSuccessfulPurchaseRequest
-    {
-        public string PidId { get; set; } = string.Empty;
-        public long TradeId { get; set; }
-        public long ItemId { get; set; }
-        public int PurchasePrice { get; set; }
-        public DateTime? PurchaseDate { get; set; }
-        public string Description { get; set; } = string.Empty;
-
-        // Card ID (for player purchases) - simplified to just store the ID
-        public long? CardId { get; set; }
-
-        // Filters object from frontend (optional)
-        public FiltersDto? Filters { get; set; }
-    }
-
-    // DTO for filters object matching the frontend structure
-    public class FiltersDto
+    public class Filters
     {
         public string MinOvr { get; set; } = string.Empty;
         public string MaxOvr { get; set; } = string.Empty;
@@ -36,3 +17,4 @@ namespace Magnus.Futbot.Api.Models.Requests
         public int Price { get; set; }
     }
 }
+

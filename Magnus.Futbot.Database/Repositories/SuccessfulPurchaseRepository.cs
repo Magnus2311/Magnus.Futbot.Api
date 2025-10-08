@@ -30,31 +30,22 @@ namespace Magnus.Futbot.Database.Repositories
             var filter = Builders<SuccessfulPurchase>.Filter.And(
                 Builders<SuccessfulPurchase>.Filter.Eq(sp => sp.PidId, pidId),
                 Builders<SuccessfulPurchase>.Filter.Eq(sp => sp.IsDeleted, false),
-                Builders<SuccessfulPurchase>.Filter.Eq(sp => sp.IsFilteredPurchase, true)
+                Builders<SuccessfulPurchase>.Filter.Ne(sp => sp.Filters, null)
             );
 
             if (!string.IsNullOrEmpty(position))
-                filter = Builders<SuccessfulPurchase>.Filter.And(filter, Builders<SuccessfulPurchase>.Filter.Eq(sp => sp.Position, position));
+                filter = Builders<SuccessfulPurchase>.Filter.And(filter, Builders<SuccessfulPurchase>.Filter.Eq("Filters.Position", position));
 
             if (!string.IsNullOrEmpty(quality))
-                filter = Builders<SuccessfulPurchase>.Filter.And(filter, Builders<SuccessfulPurchase>.Filter.Eq(sp => sp.Quality, quality));
+                filter = Builders<SuccessfulPurchase>.Filter.And(filter, Builders<SuccessfulPurchase>.Filter.Eq("Filters.Quality", quality));
 
             if (!string.IsNullOrEmpty(league))
-                filter = Builders<SuccessfulPurchase>.Filter.And(filter, Builders<SuccessfulPurchase>.Filter.Eq(sp => sp.League, league));
+                filter = Builders<SuccessfulPurchase>.Filter.And(filter, Builders<SuccessfulPurchase>.Filter.Eq("Filters.League", league));
 
             if (!string.IsNullOrEmpty(club))
-                filter = Builders<SuccessfulPurchase>.Filter.And(filter, Builders<SuccessfulPurchase>.Filter.Eq(sp => sp.Club, club));
+                filter = Builders<SuccessfulPurchase>.Filter.And(filter, Builders<SuccessfulPurchase>.Filter.Eq("Filters.Club", club));
 
             return await (await _collection.FindAsync(filter)).ToListAsync();
-        }
-
-        public async Task<IEnumerable<SuccessfulPurchase>> GetByFilterDescriptionAsync(string pidId, string filterDescription)
-        {
-            return await (await _collection.FindAsync(sp =>
-                sp.PidId == pidId &&
-                !sp.IsDeleted &&
-                sp.IsFilteredPurchase &&
-                sp.FilterDescription.Contains(filterDescription))).ToListAsync();
         }
 
         public async Task<long> GetFilteredPurchasesCountAsync(string pidId)
@@ -62,7 +53,7 @@ namespace Magnus.Futbot.Database.Repositories
             return await _collection.CountDocumentsAsync(sp =>
                 sp.PidId == pidId &&
                 !sp.IsDeleted &&
-                sp.IsFilteredPurchase);
+                sp.Filters != null);
         }
     }
 }

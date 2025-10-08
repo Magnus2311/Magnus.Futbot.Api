@@ -10,8 +10,17 @@ namespace Magnus.Futbot.Api.Services
     {
         public async Task<SuccessfulPurchaseResponse> AddSuccessfulPurchaseAsync(AddSuccessfulPurchaseRequest request)
         {
-            var successfulPurchase = mapper.Map<SuccessfulPurchase>(request);
-            successfulPurchase.PurchaseDate = DateTime.Now;
+            var successfulPurchase = new SuccessfulPurchase
+            {
+                PidId = request.PidId,
+                TradeId = request.TradeId,
+                ItemId = request.ItemId,
+                PurchasePrice = request.PurchasePrice,
+                PurchaseDate = request.PurchaseDate ?? DateTime.Now,
+                Description = request.Description,
+                CardId = request.CardId,
+                Filters = request.Filters != null ? mapper.Map<Filters>(request.Filters) : null
+            };
 
             var addedPurchase = await repository.Add(successfulPurchase);
             return mapper.Map<SuccessfulPurchaseResponse>(addedPurchase);
@@ -34,15 +43,9 @@ namespace Magnus.Futbot.Api.Services
             return await repository.GetCountByPidIdAsync(pidId);
         }
 
-        public async Task<IEnumerable<SuccessfulPurchaseResponse>> GetFilteredPurchasesAsync(string pidId, string? position = null, string? quality = null, string? league = null, string? club = null)
+        public async Task<IEnumerable<SuccessfulPurchaseResponse>> GetFilteredPurchasesAsync(string pidId, string position = null, string quality = null, string league = null, string club = null)
         {
             var purchases = await repository.GetFilteredPurchasesAsync(pidId, position, quality, league, club);
-            return mapper.Map<IEnumerable<SuccessfulPurchaseResponse>>(purchases);
-        }
-
-        public async Task<IEnumerable<SuccessfulPurchaseResponse>> GetByFilterDescriptionAsync(string pidId, string filterDescription)
-        {
-            var purchases = await repository.GetByFilterDescriptionAsync(pidId, filterDescription);
             return mapper.Map<IEnumerable<SuccessfulPurchaseResponse>>(purchases);
         }
 

@@ -98,6 +98,10 @@ namespace Magnus.Futbot.Api.Helpers
             // Successful Purchase mappings
             CreateMap<AddSuccessfulPurchaseRequest, SuccessfulPurchase>();
             CreateMap<SuccessfulPurchase, SuccessfulPurchaseResponse>();
+
+            // Filters mappings
+            CreateMap<FiltersDto, Filters>();
+            CreateMap<Filters, FiltersDto>();
         }
     }
 }

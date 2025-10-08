@@ -16,8 +16,8 @@ namespace Magnus.Futbot.Api.Controllers
                 .Cards
                 .Where(c => c.Name.ToLower().Contains(search.ToLower()))
                 .OrderByDescending(c => c.OverallRating)
-                .DistinctBy(c => new { c.OverallRating, c.Name, c.EAId }); 
-            
+                .DistinctBy(c => new { c.OverallRating, c.Name, c.EAId });
+
             var pagedPlayers = totalFilteredCards
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
@@ -44,16 +44,31 @@ namespace Magnus.Futbot.Api.Controllers
 
             var players = cardsCache
                 .Cards
-                .Where(c => assetIdList.Contains(c.EAId))
+                .Where(c => assetIdList.Contains(c.EAId) || assetIdList.Contains(c.AssetId))
                 .ToList();
 
-            var cardIds = players.Select(p => p.CardId.ToString()).ToList();
+
+            var cardIds = players.Select(p => p.EAId.ToString()).ToList();
             var prices = await priceService.Get(cardIds);
 
             var playersWithPrices = players.Select(player => new
             {
-                Player = player,
-                Prices = prices.Where(p => p.CardId == player.CardId).Select(pp => pp.Prices.Select(p => p.Prize))
+                player = new
+                {
+                    eaId = player.EAId,
+                    cardId = player.CardId,
+                    name = player.Name,
+                    overallRating = player.OverallRating,
+                    assetId = player.AssetId != 0 ? player.AssetId : player.EAId,
+                    clubId = player.ClubId,
+                    leagueId = player.LeagueId,
+                    nationId = player.NationId,
+                    shieldUrl = player.ShieldUrl
+                },
+                prices = prices.Where(p => p.CardId == player.CardId)
+                    .SelectMany(pp => pp.Prices)
+                    .Select(p => p.Prize)
+                    .ToList()
             }).ToList();
 
             return Ok(playersWithPrices);

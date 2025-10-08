@@ -65,7 +65,7 @@ namespace Magnus.Futbot.Api.Controllers
         }
 
         [HttpGet("{pidId}/filtered")]
-        public async Task<IActionResult> GetFilteredPurchases(string pidId, [FromQuery] string? position = null, [FromQuery] string? quality = null, [FromQuery] string? league = null, [FromQuery] string? club = null)
+        public async Task<IActionResult> GetFilteredPurchases(string pidId, [FromQuery] string position = null, [FromQuery] string quality = null, [FromQuery] string league = null, [FromQuery] string club = null)
         {
             try
             {
@@ -85,20 +85,6 @@ namespace Magnus.Futbot.Api.Controllers
             {
                 var count = await successfulPurchaseService.GetFilteredPurchasesCountAsync(pidId);
                 return Ok(new { count });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-        }
-
-        [HttpGet("{pidId}/filter-description")]
-        public async Task<IActionResult> GetByFilterDescription(string pidId, [FromQuery] string filterDescription)
-        {
-            try
-            {
-                var purchases = await successfulPurchaseService.GetByFilterDescriptionAsync(pidId, filterDescription);
-                return Ok(purchases);
             }
             catch (Exception ex)
             {

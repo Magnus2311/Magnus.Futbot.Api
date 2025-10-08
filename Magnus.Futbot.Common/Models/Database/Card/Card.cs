@@ -63,12 +63,12 @@ namespace Magnus.Futbot.Common.Models.Database.Card
         public DateTime UpdatedDate { get; set; } = DateTime.Now;
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         public ObjectId UserId { get; set; }
-        public int AssetId { get; internal set; }
-        public int ClubId { get; internal set; }
-        public int LeagueId { get; internal set; }
-        public int NationId { get; internal set; }
+        public int AssetId { get; set; }
+        public int ClubId { get; set; }
+        public int LeagueId { get; set; }
+        public int NationId { get; set; }
 
-        
+
     }
 
     public class AlternatePosition
